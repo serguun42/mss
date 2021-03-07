@@ -4,8 +4,8 @@
 * [master](../../tree/master) – общий README, смёрженные папки из других веток. Папки-ветки мёржатся КТТС.
 * [scrapper](../../tree/scrapper) – движок сборщика расписания, фетчит и распихивает в БД.
 * [telegram](../../tree/telegram) – Telegram-бот.
-* [backend](../../tree/backend) – Back-end для [mss.serguun42.ru](https://mss.serguun42.ru).
-* [frontend](../../tree/frontend) – Frond-end для [mss.serguun42.ru](https://mss.serguun42.ru).
+* [backend](../../tree/backend) – Back-end для [mirea.xyz](https://mirea.xyz).
+* [frontend](../../tree/frontend) – Frond-end для [mirea.xyz](https://mirea.xyz).
 * [app](../../tree/app) – Android-приложение.
 * [nofitier](../../tree/nofitier) – обработка уведомлений (рассылка через Telegram, логгирование).
 
