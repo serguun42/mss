@@ -6,7 +6,7 @@ Runs local HTTP server, notifies into *System Telegram*, logs into *stdout*, *st
 Use tags (inner and passed), determines which output(s) will be used to log/notify.
 <br>
 
-HTTP server runs on port, defined in `notifier.config.json`;
+HTTP server runs on port, defined in `notifier-and-logger.config.json`;
 
 ## Commands
 
@@ -15,4 +15,4 @@ HTTP server runs on port, defined in `notifier.config.json`;
 
 
 ## Some other files
-`notifier.config.json` – File for tokens, port, etc.
+`notifier-and-logger.config.json` – File for tokens, port, etc.
