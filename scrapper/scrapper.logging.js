@@ -1,6 +1,9 @@
 const
 	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
-	{ LOGGING_PORT, LOGGING_TAG } = DEV ? require("../../DEV_CONFIGS/scrapper.config.json") : require("./scrapper.config.json"),
+	{
+		LOGGING_PORT,
+		LOGGING_TAG
+	} = DEV ? require("../../DEV_CONFIGS/scrapper.config.json") : require("./scrapper.config.json"),
 	NodeFetch = require("node-fetch");
 
 

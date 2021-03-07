@@ -13,7 +13,7 @@ const
 		DAYS_OF_WEEK,
 		SCHEDULE_LINK,
 		INDEX_OF_LINE_WITH_GROUPS_NAMES,
-	} = require("./scrapper.config.json"),
+	} = DEV ? require("../../DEV_CONFIGS/scrapper.config.json") : require("./scrapper.config.json"),
 	FIXES = require("./scrapper.fixes.json"),
 
 
