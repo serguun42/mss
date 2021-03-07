@@ -1,6 +1,6 @@
 # MIREA Schedule System
 
-## Branch SCRAPPER
+## SCRAPPER
 
 Parses schedule page, gets links to `.xlsx`-files, parses them then, builds table models for each and every possible study group, updates DB schedule for each group of those ones.
 <br>
