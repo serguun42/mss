@@ -1,16 +1,16 @@
 # MIREA Schedule System
 
+## Branches and folders
+* [master](../../tree/master) – общий README, смёрженные папки из других веток. Папки-ветки мёржатся КТТС.
+* [scrapper](../../tree/scrapper) – движок сборщика расписания, фетчит и распихивает в БД.
+* [telegram](../../tree/telegram) – Telegram-бот.
+* [backend](../../tree/backend) – Back-end для [mss.serguun42.ru](https://mss.serguun42.ru).
+* [frontend](../../tree/frontend) – Frond-end для [mss.serguun42.ru](https://mss.serguun42.ru).
+* [app](../../tree/app) – Android-приложение.
+* [nofitier](../../tree/nofitier) – обработка уведомлений (рассылка через Telegram, логгирование).
+
 ## Codex
 * Не коммитить в ветку `master`. Только pull-реквесты.
 * Перед коммитом и пушем проверяем ветку.
 * **Не заливаем** конфиги, храним их *локально*. Заливаем только **образцы** конфигов, а в коде делаем проверку на конфиг (сравниваем с локальным глобальным), и/или подменяем во время CI/CD, и/или как угодно. Но не Secrets – плохо быть завязанным на архитектуру какого-либо сервиса.
 * В каждой ветке сохраняем папочную структуру и **работаем только в той папке, которая предназначена для этой ветки**.
-
-## Branches and folders
-* [master](../../tree/master) – только общий README, содержит смёрженные папки из других веток (КТТС они готовы к мёржу)
-* [scrapper](../../tree/scrapper) – движок сборщика расписания, фетчит и распихивает в БД
-* [telegram](../../tree/telegram) – Telegram-бот
-* [backend](../../tree/backend) – Back-end для [mss.serguun42.ru](https://mss.serguun42.ru)
-* [frontend](../../tree/frontend) – Frond-end для [mss.serguun42.ru](https://mss.serguun42.ru)
-* [app](../../tree/app) – Android-приложение
-* [nofitier](../../tree/nofitier) – обработка уведомлений (рассылка через Telegram, логгирование)
