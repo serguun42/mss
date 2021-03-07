@@ -1,0 +1,12 @@
+{
+	"CERTS": {
+		"key": "$MSS/certs/key.pem",
+		"cert": "$MSS/certs/cert.pem"
+	},
+	"FRONT_ROOT": "$MSS/front/",
+	"HOSTNAME": "mirea.xyz",
+	"DATABASE_NAME": "mss",
+	"GITHUB_HOOK_KEY": "00000011111111112222222222222333333333333333",
+	"LOGGING_TAG": "backend",
+	"LOGGING_PORT": 5050
+}
