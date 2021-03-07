@@ -1,0 +1,14 @@
+{
+  "name": "notifier",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "notifier": "node ./notifier-and-logger.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "telegraf": "^4.1.2"
+  }
+}
