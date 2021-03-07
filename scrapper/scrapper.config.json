@@ -9,5 +9,7 @@
 		"суббота"
 	],
 	"SCHEDULE_LINK": "https://www.mirea.ru/schedule/",
-	"INDEX_OF_LINE_WITH_GROUPS_NAMES": 1
+	"INDEX_OF_LINE_WITH_GROUPS_NAMES": 1,
+	"LOGGING_TAG": "scrapper",
+	"LOGGING_PORT": 5050
 }

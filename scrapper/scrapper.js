@@ -206,7 +206,7 @@ const GetTablesFiles = (iXLSXFileDefinitions) => new Promise((resolve, reject) =
 			return resolve(allXLSXFilesData);
 
 
-		if (DEV) console.log(`Getting file ${encodeURI(gettingFileProps.remoteFile)}`);
+		if (DEV) Logging(`Getting file ${encodeURI(gettingFileProps.remoteFile)}`);
 
 		NodeFetch(encodeURI(gettingFileProps.remoteFile)).then((res) => {
 			if (res.status === 200)
@@ -419,7 +419,7 @@ GetLinkToFiles()
 .then((allXLSXFilesData) => BuildGlobalSchedule(allXLSXFilesData))
 .then(() => {
 	if (DEV) {
-		console.log("Got all files. Go see ./out/global-schedule.json");
+		Logging("Got all files. Go see ./out/global-schedule.json");
 		fsWriteFile("./out/global-schedule.json", JSON.stringify(GLOBAL_SCHEDULE, false, "\t"));
 	};
 
@@ -459,31 +459,3 @@ GetLinkToFiles()
 	Logging(e);
 	mongoDispatcher.closeConnection();
 });
-
-
-// /** @type {String[]} */
-// let allFilenames = [];
-// fsReadDir("./data/")
-// .then((xlsxFilenames) => {
-// 	allFilenames = xlsxFilenames;
-
-// 	return Promise.all(
-// 		xlsxFilenames
-// 		.filter((xlsxFilename) => !(/^skip/i.test(xlsxFilename)))
-// 		.map((xlsxFilename) => fsReadFile(`./data/${xlsxFilename}`))
-// 	)
-// })
-// .then((allXLSXFilesBuffers) => BuildGlobalSchedule(allXLSXFilesBuffers.map((buffer, index) => ({
-// 	fileData: buffer,
-// 	remoteFile: allFilenames[index],
-// 	unitCourse: allFilenames[index].match(/\dк/i)[0],
-// 	unitName: allFilenames[index].slice(0, allFilenames[index].match(/\dк/i).index)
-// }))))
-// .then(() => {
-// 	if (DEV) fsWriteFile("./out/global-schedule.json", JSON.stringify(GLOBAL_SCHEDULE, false, "\t"));
-
-
-// 	fsWriteFile("./out/IKBO-03-20.html", BuildWeek("ИКБО-03-20", 1));
-// 	fsWriteFile("./out/ЭОМО-01-20 (ПОЛЮС).html", BuildWeek("ЭОМО-01-20 (ПОЛЮС)", 10));
-// })
-// .catch(console.warn)
