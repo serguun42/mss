@@ -7,7 +7,7 @@
 * [backend](../../tree/backend) – Back-end для [mirea.xyz](https://mirea.xyz).
 * [frontend](../../tree/frontend) – Frond-end для [mirea.xyz](https://mirea.xyz).
 * [app](../../tree/app) – Android-приложение.
-* [nofitier](../../tree/nofitier) – обработка уведомлений (рассылка через Telegram, логгирование).
+* [nofitier](../../tree/nofitier) – обработка логов (рассылка через Telegram, логи в stdout/stderr).
 
 ## Codex
 * Не коммитить в ветку `master`. Только pull-реквесты.
