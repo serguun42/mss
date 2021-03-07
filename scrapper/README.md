@@ -5,7 +5,7 @@
 Parses schedule page, gets links to `.xlsx`-files, parses them then, builds table models for each and every possible study group, updates DB schedule for each group of those ones.
 <br>
 
-If necessary, notifies via [system Telegram channel](../../tree/logging).
+If necessary, notifies via [notifier](https://github.com/serguun42/mss/tree/master/notifier).
 
 
 ## Commands
