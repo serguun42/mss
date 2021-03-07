@@ -1,0 +1,28 @@
+{
+  "name": "scrapper-branch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "scrap": "node ./scrapper.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serguun42/mss.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/serguun42/mss/issues"
+  },
+  "homepage": "https://github.com/serguun42/mss#readme",
+  "dependencies": {
+    "mongodb": "^3.6.3",
+    "node-fetch": "^2.6.1",
+    "node-html-parser": "^3.0.4",
+    "node-xlsx": "^0.16.1"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.3"
+  }
+}

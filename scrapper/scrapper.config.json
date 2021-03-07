@@ -1,0 +1,13 @@
+{
+	"DATABASE_NAME": "mss",
+	"DAYS_OF_WEEK": [
+		"понедельник",
+		"вторник",
+		"среда",
+		"четверг",
+		"пятница",
+		"суббота"
+	],
+	"SCHEDULE_LINK": "https://www.mirea.ru/schedule/",
+	"INDEX_OF_LINE_WITH_GROUPS_NAMES": 1
+}
