@@ -1,13 +1,13 @@
 # MIREA Schedule System
 
 ## Branches and folders
-* [master](../../tree/master) – общий README, смёрженные папки из других веток. Папки-ветки мёржатся КТТС.
-* [scrapper](../../tree/scrapper) – движок сборщика расписания, фетчит и распихивает в БД.
-* [telegram](../../tree/telegram) – Telegram-бот.
-* [backend](../../tree/backend) – Back-end для [mirea.xyz](https://mirea.xyz).
-* [frontend](../../tree/frontend) – Frond-end для [mirea.xyz](https://mirea.xyz).
-* [app](../../tree/app) – Android-приложение.
-* [nofitier](../../tree/nofitier) – обработка логов (рассылка через Telegram, логи в stdout/stderr).
+* [master](./master) – общий README, смёрженные папки из других веток. Папки-ветки мёржатся КТТС.
+* [scrapper](./scrapper) – движок сборщика расписания, фетчит и распихивает в БД.
+* [telegram](./telegram) – Telegram-бот.
+* [backend](./backend) – Back-end для [mirea.xyz](https://mirea.xyz).
+* [frontend](./frontend) – Frond-end для [mirea.xyz](https://mirea.xyz).
+* [app](./app) – Android-приложение.
+* [nofitier](./nofitier) – обработка логов (рассылка через Telegram, логи в stdout/stderr).
 
 ## Codex
 * Не коммитить в ветку `master`. Только pull-реквесты.
