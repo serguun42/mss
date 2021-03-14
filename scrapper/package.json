@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/serguun42/mss#readme",
   "dependencies": {
-    "mongodb": "^3.6.3",
+    "mongodb": "3.6.3",
     "node-fetch": "^2.6.1",
     "node-html-parser": "^3.0.4",
     "node-xlsx": "^0.16.1"
