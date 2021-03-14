@@ -3,7 +3,7 @@ const
 	{
 		LOGGING_PORT,
 		LOGGING_TAG
-	} = DEV ? require("../../../DEV_CONFIGS/backend.config.json") : require("./backend.config.json"),
+	} = DEV ? require("../../../DEV_CONFIGS/backend.config.json") : require("../backend.config.json"),
 	NodeFetch = require("node-fetch");
 
 
