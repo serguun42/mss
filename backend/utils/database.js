@@ -1,4 +1,5 @@
 const
+	Logging = require("./logging"),
 	mongoClient = require("mongodb").MongoClient,
 	MONGO_CONNECTION_OPTIONS = { useNewUrlParser: true, useUnifiedTopology: true },
 	MONGO_URL = "mongodb://localhost:27017/";
@@ -33,7 +34,7 @@ class MongoDispatcher {
 
 		mongoClient.connect(MONGO_URL, MONGO_CONNECTION_OPTIONS, (mongoError, mongoConnection) => {
 			if (mongoError) {
-				console.error("Error with connection to MongoDB on start-up");
+				Logging("Error with connection to MongoDB on start-up", mongoError);
 			} else {
 				this.DB = mongoConnection.db(iDatabaseName);
 
