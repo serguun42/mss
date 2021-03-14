@@ -1,0 +1,32 @@
+{
+	"name": "<%= VUE_APP_NAME %>",
+	"short_name": "<%= VUE_APP_NAME %>",
+	"theme_color": "<%= VUE_APP_PRIMARY_COLOR %>",
+	"icons": [
+		{
+			"src": "/img/icons/round/round_192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "/img/icons/round/round_512x512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		},
+		{
+			"src": "/img/icons/maskable/maskable_192x192.png",
+			"sizes": "192x192",
+			"type": "image/png",
+			"purpose": "maskable"
+		},
+		{
+			"src": "/img/icons/maskable/maskable_512x512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable"
+		}
+	],
+	"start_url": "<%= VUE_APP_RELATIVE_PATH %>",
+	"display": "standalone",
+	"background_color": "<%= VUE_APP_BACKGROUND_COLOR %>"
+}

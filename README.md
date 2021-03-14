@@ -1,5 +1,7 @@
 # MIREA Schedule System
 
+![MSS](https://mirea.xyz/img/logo_wide.png)
+
 ## Branches and folders
 * [master](./master) – общий README, смёрженные папки из других веток. Папки-ветки мёржатся КТТС.
 * [scrapper](./scrapper) – движок сборщика расписания, фетчит и распихивает в БД.
