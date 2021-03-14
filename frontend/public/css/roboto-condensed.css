@@ -1,0 +1,59 @@
+@font-face {
+	font-display: swap;
+	font-family: "Roboto Condensed";
+	font-style: normal;
+	font-weight: 300;
+	src: local("Roboto Condensed Light"), local(RobotoCondensed-Light), url(/fonts/RobotoCondensed-Light.woff) format("woff");
+	unicode-range: U + 400 -045f, U + 490 -0491, U + 04b0-04b1, U + 2116;
+}
+
+@font-face {
+	font-display: swap;
+	font-family: "Roboto Condensed";
+	font-style: normal;
+	font-weight: 300;
+	src: local("Roboto Condensed Light"), local(RobotoCondensed-Light), url(/fonts/RobotoCondensed-Light.woff) format("woff");
+	unicode-range: U + 0 -00ff, U + 0131, U + 152 -0153, U + 02c6, U + 02da,
+		U + 02dc, U + 2000 -206f, U + 2074, U + 20ac, U + 2212, U + 2215, U + E0FF,
+		U + EFFD, U + F000;
+}
+
+@font-face {
+	font-display: swap;
+	font-family: "Roboto Condensed";
+	font-style: normal;
+	font-weight: 400;
+	src: local("Roboto Condensed"), local(RobotoCondensed-Regular), url(/fonts/RobotoCondensed-Regular.woff) format("woff");
+	unicode-range: U + 400 -045f, U + 490 -0491, U + 04b0-04b1, U + 2116;
+}
+
+@font-face {
+	font-display: swap;
+	font-family: "Roboto Condensed";
+	font-style: normal;
+	font-weight: 400;
+	src: local("Roboto Condensed"), local(RobotoCondensed-Regular), url(/fonts/RobotoCondensed-Regular.woff) format("woff");
+	unicode-range: U + 0 -00ff, U + 0131, U + 152 -0153, U + 02c6, U + 02da,
+		U + 02dc, U + 2000 -206f, U + 2074, U + 20ac, U + 2212, U + 2215, U + E0FF,
+		U + EFFD, U + F000;
+}
+
+@font-face {
+	font-display: swap;
+	font-family: "Roboto Condensed";
+	font-style: normal;
+	font-weight: 700;
+	src: local("Roboto Condensed Bold"), local(RobotoCondensed-Bold), url(/fonts/RobotoCondensed-Bold.woff) format("woff");
+	unicode-range: U + 400 -045f, U + 490 -0491, U + 04b0-04b1, U + 2116;
+}
+
+@font-face {
+	font-display: swap;
+	font-family: "Roboto Condensed";
+	font-style: normal;
+	font-weight: 700;
+	src: local("Roboto Condensed Bold"), local(RobotoCondensed-Bold), url(/fonts/RobotoCondensed-Bold.woff) format("woff");
+	unicode-range: U + 0 -00ff, U + 0131, U + 152 -0153, U + 02c6, U + 02da,
+		U + 02dc, U + 2000 -206f, U + 2074, U + 20ac, U + 2212, U + 2215, U + E0FF,
+		U + EFFD, U + F000;
+}

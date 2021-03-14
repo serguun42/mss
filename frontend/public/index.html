@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0">
+	<link rel="icon" href="<%= BASE_URL %>favicon.ico">
+
+	<meta name="theme-color" data-meta-name="theme-color" content="<%= process.env.VUE_APP_PRIMARY_COLOR %>">
+	<link rel="icon" sizes="512x512" href="/img/icons/round/round_512x512.png">
+	<link rel="icon" sizes="192x192" href="/img/icons/round/round_192x192.png">
+
+	<meta name="apple-mobile-web-app-status-bar-style" data-meta-name="theme-color" content="<%= process.env.VUE_APP_PRIMARY_COLOR %>">
+	<link rel="apple-touch-icon" sizes="180x180" href="/img/icons/round/round_180x180.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="/img/icons/round/round_152x152.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="/img/icons/round/round_120x120.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="/img/icons/round/round_76x76.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="/img/icons/round/round_60x60.png">
+	<link rel="apple-touch-icon-precomposed" sizes="180x180" href="/img/icons/round/round_180x180.png">
+	<link rel="apple-touch-icon-precomposed" sizes="152x152" href="/img/icons/round/round_152x152.png">
+	<link rel="apple-touch-icon-precomposed" sizes="120x120" href="/img/icons/round/round_120x120.png">
+	<link rel="apple-touch-icon-precomposed" sizes="76x76" href="/img/icons/round/round_76x76.png">
+	<link rel="apple-touch-icon-precomposed" sizes="60x60" href="/img/icons/round/round_60x60.png">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+	<meta name="apple-mobile-web-app-title" content="<%= process.env.VUE_APP_NAME %>">
+
+	<meta name="msapplication-TileColor" data-meta-name="theme-color" content="<%= process.env.VUE_APP_PRIMARY_COLOR %>">
+	<meta name="msapplication-TileImage" content="/img/icons/round/round_144x144.png">
+
+	<meta name="mobile-web-app-capable" content="yes">
+	<link rel="manifest" href="/manifest.json">
+	<link rel="manifest" href="/manifest.webmanifest">
+
+	<link rel="preload" as="font" href="/fonts/material-icons-round-v43.woff2" type="font/woff2" crossorigin="anonymous">
+
+	<meta property="keywords" content="<%= process.env.VUE_APP_OPENGRAPH_KEYWORDS %>">
+	<meta property="description" content="<%= process.env.VUE_APP_OPENGRAPH_DESCRIPTION %>">
+	<meta property="og:url" content="<%= process.env.VUE_APP_FULL_PATH %>">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="<%= process.env.VUE_APP_NAME %>">
+	<meta property="og:description" content="<%= process.env.VUE_APP_OPENGRAPH_DESCRIPTION %>">
+	<meta property="og:image" content="<%= process.env.VUE_APP_OPENGRAPH_IMAGE %>">
+	<meta property="og:site_name" content="<%= process.env.VUE_APP_OPENGRAPH_SITE_NAME %>">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:site" content="@serguun42">
+	<meta name="twitter:creator" content="@serguun42">
+
+	<link rel="stylesheet" href="<%= BASE_URL %>css/default.css">
+	<link rel="stylesheet" href="<%= BASE_URL %>css/roboto-condensed.css">
+	<link rel="stylesheet" href="<%= BASE_URL %>css/material-icons.css">
+	<title><%= process.env.VUE_APP_NAME %></title>
+</head>
+
+<body class="global-scroll">
+	<noscript>
+		<p style="color: whitesmoke;">
+			<strong>
+				We're sorry but <%= process.env.VUE_APP_NAME %> doesn't work properly without JavaScript enabled. Please enable it to continue.
+			</strong>
+		</p>
+
+		<p style="color: greenyellow;">
+			Make sure to reload page after enabling!
+		</p>
+	</noscript>
+
+	<div id="app"></div>
+</body>
+
+</html>
