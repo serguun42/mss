@@ -1,6 +1,10 @@
 const
 	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
-	{ DATABASE_NAME } = DEV ? require("../../../DEV_CONFIGS/backend.config.json") : require("./backend.config.json"),
+	{
+		DATABASE_NAME,
+		HOSTNAME
+	} = DEV ? require("../../../DEV_CONFIGS/backend.config.json") : require("../backend.config.json"),
+	RateLimiter = require("../utils/rate-limiter"),
 	MongoDispatcher = require("../utils/database"),
 	Logging = require("../utils/logging");
 
@@ -12,7 +16,14 @@ const mongoDispatcher = new MongoDispatcher(DATABASE_NAME);
  * @param {import("../utils/urls-and-cookies").ModuleCallingObjectType} iModuleDataObject
  */
 module.exports = (iModuleDataObject) => {
-	const { queries, path, GlobalSendCustom } = iModuleDataObject;
+	const { req, queries, path, GlobalSend, GlobalSendCustom } = iModuleDataObject;
+
+
+	if (RateLimiter(req)) {
+		Logging(`Too many requests from ${req?.socket?.remoteAddress} on ${HOSTNAME}${req.url}`);
+		return GlobalSend(429);
+	};
+
 
 	if (path[0] !== "api") return GlobalSendCustom(400, {error: true, message: "No such version"});
 
@@ -21,7 +32,7 @@ module.exports = (iModuleDataObject) => {
 			case "groups":
 				if (queries["getAll"])
 					mongoDispatcher.callDB()
-					.then((DB) => DB.collection("study-groups").find({}).project({groupName: 1, groupSuffix: 1, _id: 0}).toArray())
+					.then((DB) => DB.collection("study-groups").find({}).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
 					.then((names) => GlobalSendCustom(200, names))
 					.catch(Logging);
 				else if (queries["get"]) {
@@ -31,24 +42,22 @@ module.exports = (iModuleDataObject) => {
 
 					if (queries["suffix"] && typeof queries["suffix"] === "string")
 						selector["groupSuffix"] = queries["suffix"];
-					
+
 					mongoDispatcher.callDB()
-					.then((DB) => DB.collection("study-groups").find(selector).project({_id: 0}).toArray())
+					.then((DB) => DB.collection("study-groups").find(selector).project({ _id: 0 }).toArray())
 					.then((groups) => {
 						if (!groups.length)
-							GlobalSendCustom(400, {error: true, message: "Not found"});
-						else if (groups.length === 1)
-							GlobalSendCustom(200, groups[0]);
+							GlobalSendCustom(404, []);
 						else
 							GlobalSendCustom(200, groups);
 					})
 					.catch(Logging);
 				} else
-					GlobalSendCustom(400, {error: true, message: "No such method"});
+					GlobalSendCustom(400, {error: true, message: "No such action"});
 			break;
 
 			default: GlobalSendCustom(400, {error: true, message: "No such method"}); break;
 		}
 	} else
-		return GlobalSendCustom(400, {error: true, message: "No such version"});
+		return GlobalSendCustom(400, {error: true, message: "No such API version"});
 };
