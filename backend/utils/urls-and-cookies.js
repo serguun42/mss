@@ -49,7 +49,7 @@ const SafeDecode = iString => {
 
 	try {
 		const decoded = decodeURIComponent(iString);
-		return decoded;
+		return SafeEscape(decoded);
 	} catch (e) {
 		return SafeEscape(iString);
 	};

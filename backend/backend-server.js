@@ -163,7 +163,7 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 
 	let redirectionChecker = false;
 
-	REDIRECTIONS.findIndex((redir) => {
+	REDIRECTIONS.forEach((redir) => {
 		if (
 			(
 				typeof redir.required == "string" &&
@@ -251,7 +251,8 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 		cookies,
 		GlobalError404,
 		GlobalSend,
-		GlobalSendCustom
+		GlobalSendCustom,
+		...UTIL
 	};
 
 
