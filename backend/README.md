@@ -6,7 +6,7 @@ Handles back for front, back for api.
 <br>
 Proxies logs from [app](https://github.com/serguun42/mss/tree/master/app) to [notifier](https://github.com/serguun42/mss/tree/master/notifier).
 <br>
-Handles Git hooks.
+Handles git hooks. Set Git secret key in `backend.config.json`. URL for hooks: _/git-hooks_
 
 
 ## Commands

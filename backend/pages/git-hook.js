@@ -28,7 +28,7 @@ module.exports = (iModuleDataObject) => {
 
 			try {
 				const payloadParsed = JSON.parse(payloadString);
-				Logging(`Git post hook:`, JSON.stringify(payloadParsed, false, "\t"));
+				console.log(`Git post hook:`, JSON.stringify(payloadParsed, false, "\t"));
 
 				GlobalSend(200);
 			} catch (e) {
