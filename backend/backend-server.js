@@ -45,14 +45,16 @@ const HTTPS_SERVER_OPTIONS = {
  */
 const PAGES = [
 	"/",
-	"/about"
+	"/about",
+	"/git-hook"
 ];
 /**
  * Back-end Modules
  * @type {String[]}
  */
 const BACKEND_PAGES = [
-	"/about"
+	"/about",
+	"/git-hook"
 ];
 /**
  * URLs with redirection
