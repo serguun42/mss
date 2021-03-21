@@ -175,14 +175,28 @@ const TGUE = iStringToUnescape => {
 const LogViaTelegram = (payload) => {
 	if (!telegram || !TELEGRAM_SYSTEM_CHANNEL) return;
 
+	/**
+	 * @param {String} iMessage
+	 * @returns {String}
+	 */
+	const LocalTrimAndMarkIfNeeded = iMessage => iMessage.length > 4000 ? iMessage.slice(0, 3500) + "\n… (message too long)" : iMessage;
+
 	new Promise((resolve) => {
 		if (typeof payload === "string") {
-			resolve(`${TGE(payload.toString())}\n\n${/error/gi.test(payload) ? "#error" : "#logs"} #unknown`);
+			resolve(`${TGE(LocalTrimAndMarkIfNeeded(payload.toString()))}\n\n${/error/gi.test(payload) ? "#error" : "#logs"} #unknown`);
 		} else {
-			resolve(`${payload.args && payload.args instanceof Array ? TGE(payload.args.join("\n")) : `<pre>${TGE(JSON.stringify(payload))}</pre>`}\n\n${[payload.tag].concat(payload.error ? "error" : "logs").filter(tag => !!tag).map(tag => `#${tag}`).join(" ")}`);
+			const stringifiedPayload = (
+				payload.args && payload.args instanceof Array
+				?
+					TGE(LocalTrimAndMarkIfNeeded(payload.args.join("\n")))
+				:
+					`<pre>${TGE(LocalTrimAndMarkIfNeeded(JSON.stringify(payload)))}</pre>`
+			);
+
+			resolve(`${stringifiedPayload}\n\n${[payload.tag].concat(payload.error ? "error" : "logs").filter(tag => !!tag).map(tag => `#${tag}`).join(" ")}`);
 		};
 	})
-	.then((messageToSend) => telegram.sendMessage(TELEGRAM_SYSTEM_CHANNEL, messageToSend, {
+	.then(/** @param {String} messageToSend */ (messageToSend) => telegram.sendMessage(TELEGRAM_SYSTEM_CHANNEL, messageToSend, {
 		disable_notification: true,
 		disable_web_page_preview: true,
 		parse_mode: "HTML"
