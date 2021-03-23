@@ -221,7 +221,7 @@ const GetTablesFiles = (iXLSXFileDefinitions) => new Promise((resolve, reject) =
 
 			if (DEV) fsWriteFile(`./data/${gettingFileProps.remoteFile.replace("https://webservices.mirea.ru/upload/iblock", "").replace(/[^\wа-я]/gi, "_")}`, fileData).catch(() => {});
 		}).catch((e) => {
-			Logging(`Error on getting ${gettingFileProps.remoteFile}`, e);
+			Logging(`Error on getting ${gettingFileProps.remoteFile}`, new Error(e));
 		}).finally(() => setTimeout(() => LocalRecurion(iIndex + 1), 500));
 	};
 
