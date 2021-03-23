@@ -9,3 +9,4 @@ package-lock.json
 tsconfig.json
 tsconfig.create.bat
 *.d.ts
+*.example.json
