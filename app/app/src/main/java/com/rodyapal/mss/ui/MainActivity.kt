@@ -1,7 +1,8 @@
-package com.rodyapal.mss
+package com.rodyapal.mss.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.rodyapal.mss.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

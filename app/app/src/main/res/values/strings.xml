@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Mss</string>
+    <string name="error_no_internet_connection">No internet connection</string>
 </resources>
