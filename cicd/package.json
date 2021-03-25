@@ -1,0 +1,14 @@
+{
+  "name": "cicd",
+  "version": "1.0.0",
+  "description": "## CI/CD",
+  "main": "ci-server.js",
+  "scripts": {
+    "ci-server": "node ci-server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
