@@ -17,7 +17,13 @@ const GlobalRunCIScript = () => {
 
 	const ciScriptProcess = spawn(CI_SCRIPT.executing_shell, [ CI_SCRIPT.filename ]);
 
-	ciScriptProcess.stderr.on("data", (data) => Logging(new Error(data?.toString() || data)));
+	ciScriptProcess.stderr.on("data", (data) => {
+		if (data && data.toString && data.toString().length)
+			console.warn(data);
+	});
+
+
+	let erroredOrClosed = false;
 
 	ciScriptProcess.on("close", (code) => {
 		if (erroredOrClosed) return;
