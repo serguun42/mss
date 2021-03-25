@@ -1,0 +1,14 @@
+{
+	"CERTS": {
+		"key": "$MSS/certs/key.key",
+		"cert": "$MSS/certs/cert.crt"
+	},
+	"LOGGING_TAG": "ci",
+	"LOGGING_PORT": 5050,
+	"GIT_HOOK_PORT": 9000,
+	"GIT_HOOK_KEY": "AAABCDDDDD0000000123456789",
+	"CI_SCRIPT": {
+		"executing_shell": "sh",
+		"filename": "$MSS/scripts-for-ci/main.sh"
+	}
+}
