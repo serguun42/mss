@@ -17,7 +17,13 @@ const GlobalRunCIScript = () => {
 
 	const ciScriptProcess = spawn(CI_SCRIPT.executing_shell, [ CI_SCRIPT.filename ]);
 
-	ciScriptProcess.stderr.on("data", (data) => Logging(new Error(data?.toString() || data)));
+	ciScriptProcess.stderr.on("data", (data) => {
+		if (data && data.toString && data.toString().length)
+			console.warn(data);
+	});
+
+
+	let erroredOrClosed = false;
 
 	ciScriptProcess.on("close", (code) => {
 		if (erroredOrClosed) return;
@@ -27,10 +33,8 @@ const GlobalRunCIScript = () => {
 			if (code === 0) {
 				Logging(`CI process ran successfully`);
 			} else {
-				Logging(`CI process ended with code = ${code}`);
+				Logging(`CI process ended with code ${code}`);
 			}
-
-			Logging("Exiting this node process");
 		}, 10e3);
 	});
 
@@ -38,7 +42,7 @@ const GlobalRunCIScript = () => {
 		if (erroredOrClosed) return;
 		erroredOrClosed = true;
 
-		Logging(`CI process errored`, e);
+		console.warn(`CI process errored`, e);
 	});
 };
 
@@ -80,11 +84,16 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 		try {
 			const payloadParsed = JSON.parse(payloadString);
 
-			res.statusCode = 200;
-			res.end("200 OK");
+			if (payloadParsed.ref !== "refs/heads/master" && payloadParsed.ref !== "refs/heads/main") {
+				res.statusCode = 200;
+				res.end("Not our case");
+				return;
+			};
 
-			if (payloadParsed.ref !== "refs/heads/master" && payloadParsed.ref !== "refs/heads/main") return false;
-			Logging(`Git hook with ref = refs/heads/master`);
+			res.statusCode = 200;
+			res.end(`Git hook with ref "refs/heads/master". So starting waiting to start CI script.`);
+
+			Logging(`Git hook with ref "refs/heads/master". So starting waiting to start CI script.`);
 
 
 			lastTimeMasterChanged = Date.now();
