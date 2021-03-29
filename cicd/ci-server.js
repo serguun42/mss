@@ -19,7 +19,7 @@ const GlobalRunCIScript = () => {
 
 	ciScriptProcess.stderr.on("data", (data) => {
 		if (data && data.toString && data.toString().length)
-			console.warn(data);
+			console.warn(data.toString());
 	});
 
 
