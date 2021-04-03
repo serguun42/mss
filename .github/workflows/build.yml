@@ -35,17 +35,14 @@ jobs:
     needs: copy
 
     steps:
-      - name: npm install @ notifier
-        run: cd ~/mss/notifier/ && npm install --no-progress
-        working-directory: ~/mss/notifier/
-      - name: delete old pm2 instance
-        run: pm2 delete notifier-and-logger
-      - name: delete previous pm2 logs
+      - name: npm install
+        run: cd ~/mss/notifier/ && npm install --progress=false
+      - name: Delete old PM2 instance
+        run: pm2 delete notifier-and-logger || echo "Process <notifier-and-logger> not ran on PM2"
+      - name: Delete previous PM2 logs
         run: cd ~/.pm2/logs/ && rm notifier-and-logger-*
-        working-directory: ~/.pm2/logs/
-      - name: start new pm2 instance
+      - name: Start new PM2 instance
         run: cd ~/mss/notifier/ && pm2 start notifier-and-logger.js
-        working-directory: ~/mss/notifier/
 
   cicd:
     name: Folder for CI/CD
@@ -53,9 +50,8 @@ jobs:
     needs: [ copy, notifier ]
 
     steps:
-      - name: npm install @ cicd
-        run: cd ~/mss/cicd/ && npm install --no-progress
-        working-directory: ~/mss/cicd/
+      - name: npm install
+        run: cd ~/mss/cicd/ && npm install --progress=false
 
   scrapper:
     name: Folder for SCRAPPER
@@ -63,9 +59,8 @@ jobs:
     needs: [ copy, notifier ]
 
     steps:
-      - name: npm install @ scrapper
-        run: cd ~/mss/scrapper/ && npm install --no-progress
-        working-directory: ~/mss/scrapper/
+      - name: npm install
+        run: cd ~/mss/scrapper/ && npm install --progress=false
 
   backend:
     name: Folder for BACKEND
@@ -73,17 +68,14 @@ jobs:
     needs: [ copy, notifier ]
 
     steps:
-      - name: npm install @ backend
-        run: cd ~/mss/backend/ && npm install --no-progress
-        working-directory: ~/mss/backend/
-      - name: delete old pm2 instance
-        run: pm2 delete backend-server
-      - name: delete previous pm2 logs
+      - name: npm install
+        run: cd ~/mss/backend/ && npm install --progress=false
+      - name: Delete old PM2 instance
+        run: pm2 delete backend-server || echo Process <backend-server> not ran on PM2"
+      - name: Delete previous PM2 logs
         run: cd ~/.pm2/logs/ && rm backend-server-*
-        working-directory: ~/.pm2/logs/
-      - name: start new pm2 instance
+      - name: Start new PM2 instance
         run: cd ~/mss/backend/ && pm2 start backend-server.js
-        working-directory: ~/mss/backend/
 
   frontend:
     name: Folder for FRONTEND
@@ -91,12 +83,10 @@ jobs:
     needs: [ copy, notifier ]
 
     steps:
-      - name: npm install @ frontend
-        run: cd ~/mss/frontend/ && npm install --no-progress
-        working-directory: ~/mss/frontend/
-      - name: npm run build @ frontend
+      - name: npm install
+        run: cd ~/mss/frontend/ && npm install --progress=false
+      - name: npm run build
         run: cd ~/mss/frontend/ && npm run build
-        working-directory: ~/mss/frontend/
 
   final:
     name: Showing final logs
