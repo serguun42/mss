@@ -86,7 +86,7 @@ module.exports = MODE === "development" ? {
 			https: true,
 			key: fs.readFileSync("../../DEV_CONFIGS/certs/localhost.key"),
 			cert: fs.readFileSync("../../DEV_CONFIGS/certs/localhost.crt"),
-			port: 443
+			port: 5057
 		} : null
 	},
 
