@@ -101,7 +101,7 @@ jobs:
         run: cd ~/mss/frontend/ && npm run build
 
   final:
-    name: Showing final logs
+    name: Showing and sending final logs
     runs-on: self-hosted
     needs:
       - copy
@@ -112,6 +112,10 @@ jobs:
       - frontend
 
     steps:
-      - name: Show pm2 list
+      - name: Show PM2 processes list
         run: pm2 list
-    
+      - name: Send notification in Telegram
+        run: |
+          [ -f ~/mss/cicd/ci-notify.js ] &&
+          node ~/mss/cicd/ci-notify.js "Done merge into master | Actor: $GITHUB_ACTOR" ||
+          echo "No CI notifier (Done merge into master | Actor: $GITHUB_ACTOR)"
