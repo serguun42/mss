@@ -14,5 +14,5 @@ jobs:
       - name: Actual notify step
         run: |
           [ -f ~/mss/cicd/ci-notify.js ] &&
-          node ~/mss/cicd/ci-notify.js "Actor: $GITHUB_ACTOR | Brahch: ${GITHUB_REF#refs/heads/} | Event: $GITHUB_EVENT_NAME" ||
-          echo "No CI notifier (Actor: $GITHUB_ACTOR | Brahch: ${GITHUB_REF#refs/heads/} | Event: $GITHUB_EVENT_NAME)"
+          node ~/mss/cicd/ci-notify.js "Actor: $GITHUB_ACTOR | Branch: ${GITHUB_REF#refs/heads/} | Event: $GITHUB_EVENT_NAME" ||
+          echo "No CI notifier (Actor: $GITHUB_ACTOR | Branch: ${GITHUB_REF#refs/heads/} | Event: $GITHUB_EVENT_NAME)"
