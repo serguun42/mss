@@ -1,8 +1,6 @@
 name: Pipeline for only MASTER
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
     types:
@@ -26,31 +24,15 @@ jobs:
           rm -rf mss_old/ &&
           [ -d mss ] &&
           mv mss mss_old &&
-          figlet "Moved old ~/mss"
+          figlet "Moved old ~/mss" ||
+          echo "No old folder so not deleting it"
       - name: Copy fresh project into ~/mss folder
         run: cd .. && cp -r mss ~/mss
-
-  cicd:
-    name: Folder for CI/CD
-    runs-on: self-hosted
-
-    steps:
-      - name: npm install @ cicd
-        run: npm install --no-progress
-        working-directory: ~/mss/cicd/
-
-  scrapper:
-    name: Folder for SCRAPPER
-    runs-on: self-hosted
-
-    steps:
-      - name: npm install @ scrapper
-        run: npm install --no-progress
-        working-directory: ~/mss/scrapper/
 
   notifier:
     name: Folder for NOTIFIER
     runs-on: self-hosted
+    needs: copy
 
     steps:
       - name: npm install @ notifier
@@ -65,9 +47,30 @@ jobs:
         run: notifier-and-logger.js
         working-directory: ~/mss/notifier/
 
+  cicd:
+    name: Folder for CI/CD
+    runs-on: self-hosted
+    needs: [ copy, notifier ]
+
+    steps:
+      - name: npm install @ cicd
+        run: npm install --no-progress
+        working-directory: ~/mss/cicd/
+
+  scrapper:
+    name: Folder for SCRAPPER
+    runs-on: self-hosted
+    needs: [ copy, notifier ]
+
+    steps:
+      - name: npm install @ scrapper
+        run: npm install --no-progress
+        working-directory: ~/mss/scrapper/
+
   backend:
     name: Folder for BACKEND
     runs-on: self-hosted
+    needs: [ copy, notifier ]
 
     steps:
       - name: npm install @ backend
@@ -85,6 +88,7 @@ jobs:
   frontend:
     name: Folder for FRONTEND
     runs-on: self-hosted
+    needs: [ copy, notifier ]
 
     steps:
       - name: npm install @ frontend
@@ -97,6 +101,7 @@ jobs:
   final:
     name: Showing final logs
     runs-on: self-hosted
+    needs: [ copy, notifier ]
 
     steps:
       - name: Show pm2 list
