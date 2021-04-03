@@ -29,3 +29,6 @@ jsconfig.json
 tsconfig.json
 tsconfig.create.bat
 package-lock.json
+public/manifest.json
+public/manifest.webmanifest
+public/version.txt
