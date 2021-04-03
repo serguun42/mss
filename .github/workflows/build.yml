@@ -1,0 +1,27 @@
+name: Master
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  
+  copy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Clear old workdir
+        run: rm -rf $GITHUB_WORKSPACE/*
+      - uses: actions/checkout@v2
+      - name: Move old mss dir
+        run: |
+          cd ~ &&
+          rm -rf mss_old/ &&
+          mv mss mss_old &&
+          figlet "Moved old ~/mss"
+      - name: Copy fresh project into ~/mss folder
+        run: cd .. && cp -r mss ~/mss

@@ -23,7 +23,3 @@ jobs:
           [ -f ~/mss/cicd/ci-notity.js ] &&
           node ~/mss/cicd/ci-notity.js "Actor: $GITHUB_ACTOR | Brahch: ${GITHUB_REF#refs/heads/} | Event: $GITHUB_EVENT_NAME" ||
           echo "No CI notifier"
-      - name: DIR
-        run: |
-          echo "Current dir: $(pwd)" && ls -alhF ./
-          
