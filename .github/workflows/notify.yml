@@ -1,0 +1,25 @@
+name: Notify on push and merge in every branch (except master)
+
+on:
+  push:
+    branches:
+      - '*'
+      - '*/*'
+      - '**'
+      - '!master'
+  pull_request:
+    branches:
+      - '*'
+      - '*/*'
+      - '**'
+      - '!master'
+
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: self-hosted
+    steps:
+      - name: 'Actual notify step'
+        run: 'cd ~ && echo "Actor: $GITHUB_ACTOR | Brahch: $GITHUB_REF | Event: $GITHUB_EVENT_NAME"'
+          
