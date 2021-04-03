@@ -38,7 +38,10 @@ jobs:
       - name: npm install
         run: cd ~/mss/notifier/ && npm install --progress=false
       - name: Delete old PM2 instance
-        run: pm2 delete notifier-and-logger || echo "Process <notifier-and-logger> not ran on PM2"
+        run: |
+          pm2 delete notifier-and-logger 2> /dev/null &&
+          echo "Process <notifier-and-logger> exited successfully" ||
+          echo "Process <notifier-and-logger> did not run on PM2"
       - name: Delete previous PM2 logs
         run: cd ~/.pm2/logs/ && rm notifier-and-logger-*
       - name: Start new PM2 instance
@@ -71,7 +74,10 @@ jobs:
       - name: npm install
         run: cd ~/mss/backend/ && npm install --progress=false
       - name: Delete old PM2 instance
-        run: pm2 delete backend-server || echo Process <backend-server> not ran on PM2"
+        run: |
+          pm2 delete backend-server 2> /dev/null &&
+          echo "Process <backend-server> exited successfully" ||
+          echo "Process <backend-server> did not run on PM2"
       - name: Delete previous PM2 logs
         run: cd ~/.pm2/logs/ && rm backend-server-*
       - name: Start new PM2 instance
@@ -91,7 +97,13 @@ jobs:
   final:
     name: Showing final logs
     runs-on: self-hosted
-    needs: [ copy, notifier ]
+    needs:
+      - copy
+      - notifier
+      - cicd
+      - scrapper
+      - backend
+      - frontend
 
     steps:
       - name: Show pm2 list
