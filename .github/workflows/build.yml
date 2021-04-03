@@ -36,15 +36,15 @@ jobs:
 
     steps:
       - name: npm install @ notifier
-        run: npm install --no-progress
+        run: cd ~/mss/notifier/ && npm install --no-progress
         working-directory: ~/mss/notifier/
       - name: delete old pm2 instance
         run: pm2 delete notifier-and-logger
       - name: delete previous pm2 logs
-        run: rm notifier-and-logger-*
+        run: cd ~/.pm2/logs/ && rm notifier-and-logger-*
         working-directory: ~/.pm2/logs/
       - name: start new pm2 instance
-        run: notifier-and-logger.js
+        run: cd ~/mss/notifier/ && pm2 start notifier-and-logger.js
         working-directory: ~/mss/notifier/
 
   cicd:
@@ -54,7 +54,7 @@ jobs:
 
     steps:
       - name: npm install @ cicd
-        run: npm install --no-progress
+        run: cd ~/mss/cicd/ && npm install --no-progress
         working-directory: ~/mss/cicd/
 
   scrapper:
@@ -64,7 +64,7 @@ jobs:
 
     steps:
       - name: npm install @ scrapper
-        run: npm install --no-progress
+        run: cd ~/mss/scrapper/ && npm install --no-progress
         working-directory: ~/mss/scrapper/
 
   backend:
@@ -74,15 +74,15 @@ jobs:
 
     steps:
       - name: npm install @ backend
-        run: npm install --no-progress
+        run: cd ~/mss/backend/ && npm install --no-progress
         working-directory: ~/mss/backend/
       - name: delete old pm2 instance
         run: pm2 delete backend-server
       - name: delete previous pm2 logs
-        run: rm backend-server-*
+        run: cd ~/.pm2/logs/ && rm backend-server-*
         working-directory: ~/.pm2/logs/
       - name: start new pm2 instance
-        run: backend-server.js
+        run: cd ~/mss/backend/ && pm2 start backend-server.js
         working-directory: ~/mss/backend/
 
   frontend:
@@ -92,10 +92,10 @@ jobs:
 
     steps:
       - name: npm install @ frontend
-        run: npm install --no-progress
+        run: cd ~/mss/frontend/ && npm install --no-progress
         working-directory: ~/mss/frontend/
       - name: npm run build @ frontend
-        run: npm run build
+        run: cd ~/mss/frontend/ && npm run build
         working-directory: ~/mss/frontend/
 
   final:
