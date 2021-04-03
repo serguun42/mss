@@ -25,5 +25,5 @@ jobs:
           echo "No CI notifier"
       - name: DIR
         run: |
-          echo "Current dir:" && ls -alhF ./
+          echo "Current dir: $(pwd)" && ls -alhF ./
           
