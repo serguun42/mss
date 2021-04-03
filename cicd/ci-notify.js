@@ -3,7 +3,7 @@ const
 	{
 		LOGGING_PORT,
 		LOGGING_TAG
-	} = DEV ? require("../../../DEV_CONFIGS/ci.config.json") : require("../ci.config.json"),
+	} = DEV ? require("../../DEV_CONFIGS/ci.config.json") : require("./ci.config.json"),
 	NodeFetch = require("node-fetch");
 
 
@@ -34,4 +34,6 @@ const Logging = (...args) => {
 	});
 };
 
-module.exports = Logging;
+if (process.argv && process.argv.length > 2) {
+	Logging(process.argv.slice(2));
+}

@@ -2,15 +2,6 @@
 
 ## CI/CD
 
-Handles CI/CD hooks, starts CI script when needed.
-<br>
-Should be placed in distant (not $MSS/) folder.
-
-## Commands
-
-1. Install all dependencies `npm install`
-2. Run CD/CD server `npm run ci-server`
-
-
-## Some other files
-`ci.config.json` – File for certs, hooks, port, etc.
+Uses Github Actions self-hosted runner. [More about it](https://docs.github.com/en/actions/hosting-your-own-runners)
+<br />
+See [.github/workflows/main.yml](https://github.com/serguun42/mss/blob/master/.github/workflows/main.yml)

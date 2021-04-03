@@ -212,7 +212,7 @@ const GetTablesFiles = (iXLSXFileDefinitions) => new Promise((resolve, reject) =
 			if (res.status === 200)
 				return res.buffer();
 			else
-				return Promise.reject(res.status);
+				return Promise.reject(new Error(`Status code ${res.status} ${res.statusText}`));
 		}).then(/** @param {Buffer} fileData */ (fileData) => {
 			allXLSXFilesData.push({
 				fileData,
@@ -221,7 +221,7 @@ const GetTablesFiles = (iXLSXFileDefinitions) => new Promise((resolve, reject) =
 
 			if (DEV) fsWriteFile(`./data/${gettingFileProps.remoteFile.replace("https://webservices.mirea.ru/upload/iblock", "").replace(/[^\wа-я]/gi, "_")}`, fileData).catch(() => {});
 		}).catch((e) => {
-			Logging(`Error on getting ${gettingFileProps.remoteFile}`, new Error(e));
+			Logging(`Error on getting ${gettingFileProps.remoteFile}`, e);
 		}).finally(() => setTimeout(() => LocalRecurion(iIndex + 1), 500));
 	};
 
