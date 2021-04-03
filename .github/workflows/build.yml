@@ -28,6 +28,12 @@ jobs:
           echo "No old folder so not deleting it"
       - name: Copy fresh project into ~/mss folder
         run: cd .. && cp -r mss ~/mss
+      - name: Copy configs to each folder
+        run: |
+          cp ~/MSS_CONFIGS/notifier-and-logger.config.json ~/mss/notifier/ &&
+          cp ~/MSS_CONFIGS/ci.config.json ~/mss/cicd/ &&
+          cp ~/MSS_CONFIGS/scrapper.config.json ~/mss/scrapper/ &&
+          cp ~/MSS_CONFIGS/backend.config.json ~/mss/backend/
 
   notifier:
     name: Folder for NOTIFIER
@@ -46,12 +52,6 @@ jobs:
         run: cd ~/.pm2/logs/ && rm notifier-and-logger-*
       - name: Start new PM2 instance
         run: cd ~/mss/notifier/ && pm2 start notifier-and-logger.js
-      - name: Copy configs to each folder
-        run: |
-          cp ~/MSS_CONFIGS/notifier-and-logger.config.json ~/mss/notifier/ &&
-          cp ~/MSS_CONFIGS/ci.config.json ~/mss/cicd/ &&
-          cp ~/MSS_CONFIGS/scrapper.config.json ~/mss/scrapper/ &&
-          cp ~/MSS_CONFIGS/backend.config.json ~/mss/backend/
 
   cicd:
     name: Folder for CI/CD
