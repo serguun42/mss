@@ -2,17 +2,8 @@ name: Notify on push and merge
 
 on:
   push:
-    branches:
-      - '*'
-      - '*/*'
-      - '**'
-  pull_request:
-    types:
-      - closed
-    branches:
-      - '*'
-      - '*/*'
-      - '**'
+    branches-ignore:
+      - master
 
   workflow_dispatch:
 
