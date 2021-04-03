@@ -1,0 +1,109 @@
+name: Pipeline for only MASTER
+
+on:
+  pull_request:
+    branches: [ master ]
+    types:
+      - closed
+
+  workflow_dispatch:
+
+jobs:
+  
+  copy:
+    name: Remove old project folder and copy to its place new one
+    runs-on: self-hosted
+
+    steps:
+      - name: Clear old workdir
+        run: rm -rf $GITHUB_WORKSPACE/*
+      - uses: actions/checkout@v2
+      - name: Move old mss dir
+        run: |
+          cd ~ &&
+          rm -rf mss_old/ &&
+          [ -d mss ] &&
+          mv mss mss_old &&
+          figlet "Moved old ~/mss" ||
+          echo "No old folder so not deleting it"
+      - name: Copy fresh project into ~/mss folder
+        run: cd .. && cp -r mss ~/mss
+
+  notifier:
+    name: Folder for NOTIFIER
+    runs-on: self-hosted
+    needs: copy
+
+    steps:
+      - name: npm install @ notifier
+        run: npm install --no-progress
+        working-directory: ~/mss/notifier/
+      - name: delete old pm2 instance
+        run: pm2 delete notifier-and-logger
+      - name: delete previous pm2 logs
+        run: rm notifier-and-logger-*
+        working-directory: ~/.pm2/logs/
+      - name: start new pm2 instance
+        run: notifier-and-logger.js
+        working-directory: ~/mss/notifier/
+
+  cicd:
+    name: Folder for CI/CD
+    runs-on: self-hosted
+    needs: [ copy, notifier ]
+
+    steps:
+      - name: npm install @ cicd
+        run: npm install --no-progress
+        working-directory: ~/mss/cicd/
+
+  scrapper:
+    name: Folder for SCRAPPER
+    runs-on: self-hosted
+    needs: [ copy, notifier ]
+
+    steps:
+      - name: npm install @ scrapper
+        run: npm install --no-progress
+        working-directory: ~/mss/scrapper/
+
+  backend:
+    name: Folder for BACKEND
+    runs-on: self-hosted
+    needs: [ copy, notifier ]
+
+    steps:
+      - name: npm install @ backend
+        run: npm install --no-progress
+        working-directory: ~/mss/backend/
+      - name: delete old pm2 instance
+        run: pm2 delete backend-server
+      - name: delete previous pm2 logs
+        run: rm backend-server-*
+        working-directory: ~/.pm2/logs/
+      - name: start new pm2 instance
+        run: backend-server.js
+        working-directory: ~/mss/backend/
+
+  frontend:
+    name: Folder for FRONTEND
+    runs-on: self-hosted
+    needs: [ copy, notifier ]
+
+    steps:
+      - name: npm install @ frontend
+        run: npm install --no-progress
+        working-directory: ~/mss/frontend/
+      - name: npm run build @ frontend
+        run: npm run build
+        working-directory: ~/mss/frontend/
+
+  final:
+    name: Showing final logs
+    runs-on: self-hosted
+    needs: [ copy, notifier ]
+
+    steps:
+      - name: Show pm2 list
+        run: pm2 list
+    
