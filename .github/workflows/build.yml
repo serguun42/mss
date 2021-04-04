@@ -33,7 +33,10 @@ jobs:
           cp ~/MSS_CONFIGS/notifier-and-logger.config.json ~/mss/notifier/ &&
           cp ~/MSS_CONFIGS/ci.config.json ~/mss/cicd/ &&
           cp ~/MSS_CONFIGS/scrapper.config.json ~/mss/scrapper/ &&
-          cp ~/MSS_CONFIGS/backend.config.json ~/mss/backend/
+          cp ~/MSS_CONFIGS/backend.config.json ~/mss/backend/ &&
+          cp ~/MSS_CONFIGS/telegram-bot.config.json ~/mss/telegram/ &&
+          mv ~/mss/telegram/cats ~/mss/telegram/cats_old &&
+          ln -s ~/MSS_CONFIGS/cats ~/mss/telegram/cats
 
   notifier:
     name: Folder for NOTIFIER
@@ -127,6 +130,7 @@ jobs:
       - cicd
       - scrapper
       - backend
+      - telegram
       - frontend
 
     steps:
