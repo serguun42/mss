@@ -52,7 +52,7 @@ jobs:
           echo "Process <notifier-and-logger> exited successfully" ||
           echo "Process <notifier-and-logger> did not run on PM2"
       - name: Delete previous PM2 logs
-        run: cd ~/.pm2/logs/ && rm notifier-and-logger-*
+        run: cd ~/.pm2/logs/ && rm -rf notifier-and-logger-*
       - name: Start new PM2 instance
         run: cd ~/mss/notifier/ && pm2 start notifier-and-logger.js
 
@@ -88,7 +88,7 @@ jobs:
           echo "Process <backend-server> exited successfully" ||
           echo "Process <backend-server> did not run on PM2"
       - name: Delete previous PM2 logs
-        run: cd ~/.pm2/logs/ && rm backend-server-*
+        run: cd ~/.pm2/logs/ && rm -rf backend-server-*
       - name: Start new PM2 instance
         run: cd ~/mss/backend/ && pm2 start backend-server.js
 
@@ -106,7 +106,7 @@ jobs:
           echo "Process <telegram-bot> exited successfully" ||
           echo "Process <telegram-bot> did not run on PM2"
       - name: Delete previous PM2 logs
-        run: cd ~/.pm2/logs/ && rm telegram-bot-*
+        run: cd ~/.pm2/logs/ && rm -rf telegram-bot-*
       - name: Start new PM2 instance
         run: cd ~/mss/telegram/ && pm2 start telegram-bot.js
 
