@@ -15,4 +15,4 @@ HTTP server runs on port, defined in `notifier-and-logger.config.json`;
 
 
 ## Some other files
-`notifier-and-logger.config.json` – File for tokens, port, etc.
+`notifier-and-logger.config.json` – File for tokens, port, etc. `TELEGRAM_API_SERVER_PORT` can be omitted

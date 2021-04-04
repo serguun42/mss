@@ -15,19 +15,24 @@ const
 	STATUSES = GetStatusCodes(http.STATUS_CODES),
 
 
-	Telegraf = require("telegraf"),
+	Telegraf = require("telegraf").Telegraf,
 
 
 	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
 	{
 		TELEGRAM_BOT_TOKEN,
+		TELEGRAM_API_SERVER_PORT,
 		TELEGRAM_SYSTEM_CHANNEL,
 		LOGGING_PORT
 	} = DEV ? require("../../DEV_CONFIGS/notifier-and-logger.config.json") : require("./notifier-and-logger.config.json");
 
 
 
-const telegraf = TELEGRAM_BOT_TOKEN ? new Telegraf.Telegraf(TELEGRAM_BOT_TOKEN) : {};
+const telegraf = TELEGRAM_BOT_TOKEN ? new Telegraf(TELEGRAM_BOT_TOKEN, TELEGRAM_API_SERVER_PORT ? {
+	telegram: {
+		apiRoot: `http://127.0.0.1:${TELEGRAM_API_SERVER_PORT}`
+	}
+} : {}) : {};
 const telegram = TELEGRAM_BOT_TOKEN ? telegraf.telegram : null;
 
 
