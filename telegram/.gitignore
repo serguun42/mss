@@ -1,0 +1,10 @@
+.vscode
+/node_modules/
+package-lock.json
+
+/data/
+/out/
+/local-stuff/
+*test.js
+tsconfig.json
+tsconfig.create.bat

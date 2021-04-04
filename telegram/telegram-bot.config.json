@@ -1,0 +1,29 @@
+{
+	"TELEGRAM_BOT_TOKEN": "0000000000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+	"TELEGRAM_API_SERVER_PORT": 8081,
+	"ADMIN_TELEGRAM_DATA": {
+		"id": 123456789,
+		"username": "admin_username"
+	},
+	"START_OF_WEEKS": 1612731600000,
+	"DAYS_OF_WEEK": [
+		"понедельник",
+		"вторник",
+		"среда",
+		"четверг",
+		"пятница",
+		"суббота"
+	],
+	"LABELS_FOR_TIMES_OF_DAY": {
+		"morning": "Сегодня",
+		"evening": "Завтра",
+		"late_evening": "Завтра"
+	},
+	"CATS": {
+		"ENABLED": true,
+		"FOLDER": "./cats/"
+	},
+	"DATABASE_NAME": "mss",
+	"LOGGING_TAG": "telegram_bot",
+	"LOGGING_PORT": 5050
+}
