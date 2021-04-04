@@ -2,8 +2,11 @@ name: Notify on push and merge
 
 on:
   push:
-    branches-ignore:
-      - master
+    branches:
+      - '*'
+      - '*/*'
+      - '**'
+      - '!master'
 
   workflow_dispatch:
 

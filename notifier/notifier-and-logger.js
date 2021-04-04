@@ -15,51 +15,30 @@ const
 	STATUSES = GetStatusCodes(http.STATUS_CODES),
 
 
-	Telegraf = require("telegraf"),
+	Telegraf = require("telegraf").Telegraf,
 
 
 	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
 	{
 		TELEGRAM_BOT_TOKEN,
+		TELEGRAM_API_SERVER_PORT,
 		TELEGRAM_SYSTEM_CHANNEL,
 		LOGGING_PORT
 	} = DEV ? require("../../DEV_CONFIGS/notifier-and-logger.config.json") : require("./notifier-and-logger.config.json");
 
 
 
-const telegraf = TELEGRAM_BOT_TOKEN ? new Telegraf.Telegraf(TELEGRAM_BOT_TOKEN) : {};
+const telegraf = TELEGRAM_BOT_TOKEN ? new Telegraf(TELEGRAM_BOT_TOKEN, TELEGRAM_API_SERVER_PORT ? {
+	telegram: {
+		apiRoot: `http://127.0.0.1:${TELEGRAM_API_SERVER_PORT}`
+	}
+} : {}) : {};
 const telegram = TELEGRAM_BOT_TOKEN ? telegraf.telegram : null;
 
 
-
-/**
- * @param {String} iReqHeaders
- * @returns {{[name: string]: string}}
- */
-const GlobalParseCookie = iReqHeaders => {
-	if (!iReqHeaders.cookie) return {};
-
-	const returningList = {},
-		  cookies = iReqHeaders.cookie;
-
-	cookies.split(";").forEach((cookie) => {
-		const parts = cookie.split("="),
-			  cookieName = parts.shift().trim(),
-			  cookieValue = parts.join("=");
-
-		try {
-			returningList[cookieName] = decodeURIComponent(cookieValue);
-		} catch (e) {
-			returningList[cookieName] = cookieValue;
-		};
-	});
-
-	return returningList;
-};
-
 /**
  * @param {String} iQuery
- * @returns {Object.<string, (string|true)>}
+ * @returns {{[queryName: string]: string | true}}
  */
 const GlobalParseQuery = iQuery => {
 	if (!iQuery) return {};
@@ -78,22 +57,6 @@ const GlobalParseQuery = iQuery => {
 	});
 
 	return returningList;
-};
-
-/**
- * 
- * @param {String} iString
- * @returns {String}
- */
-const SafeDecode = iString => {
-	if (typeof iString !== "string") return iString;
-
-	try {
-		const decoded = decodeURIComponent(iString);
-		return decoded;
-	} catch (e) {
-		return iString;
-	};
 };
 
 /**
