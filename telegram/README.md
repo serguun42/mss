@@ -2,10 +2,9 @@
 
 ## TELEGRAM
 
-Parses schedule page, gets links to `.xlsx`-files, parses them then, builds table models for each and every possible study group, updates DB schedule for each group of those ones.
+Project's Telegram bot. [mirea-table-bot](https://github.com/serguun42/mirea-table-bot) was the base for it.
 <br>
-
-If necessary, notifies via [notifier](https://github.com/serguun42/mss/tree/master/notifier).
+Notifies via [notifier](https://github.com/serguun42/mss/tree/master/notifier), uses local Telegram API server (if specified), uses local MongoDB
 
 
 ## Commands
@@ -29,4 +28,4 @@ Folder contains essential files for
 
 
 ## Some other files
-`telegram.config.json` – File for tokens, admin, DB name, etc. `TELEGRAM_API_SERVER_PORT` can be omitted, bot connects to cloud server then
+`telegram.config.json` – File for tokens, admin, DB name, etc. `TELEGRAM_API_SERVER_PORT` can be omitted, bot connects to cloud server then.
