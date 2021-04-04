@@ -14,7 +14,7 @@ const
 const Logging = (...args) => {
 	const payload = {
 		error: args.findIndex((message) => message instanceof Error) > -1,
-		args: args,
+		args: args.map((arg) => arg instanceof Error ? { ERROR_name: arg.name, ERROR_message: arg.message } : arg),
 		tag: LOGGING_TAG
 	};
 
