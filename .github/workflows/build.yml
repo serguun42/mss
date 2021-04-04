@@ -33,7 +33,10 @@ jobs:
           cp ~/MSS_CONFIGS/notifier-and-logger.config.json ~/mss/notifier/ &&
           cp ~/MSS_CONFIGS/ci.config.json ~/mss/cicd/ &&
           cp ~/MSS_CONFIGS/scrapper.config.json ~/mss/scrapper/ &&
-          cp ~/MSS_CONFIGS/backend.config.json ~/mss/backend/
+          cp ~/MSS_CONFIGS/backend.config.json ~/mss/backend/ &&
+          cp ~/MSS_CONFIGS/telegram-bot.config.json ~/mss/telegram/ &&
+          mv ~/mss/telegram/cats ~/mss/telegram/cats_old &&
+          ln -s ~/MSS_CONFIGS/cats ~/mss/telegram/cats
 
   notifier:
     name: Folder for NOTIFIER
@@ -89,6 +92,24 @@ jobs:
       - name: Start new PM2 instance
         run: cd ~/mss/backend/ && pm2 start backend-server.js
 
+  telegram:
+    name: Folder for TELEGRAM
+    runs-on: self-hosted
+    needs: [ copy, notifier ]
+
+    steps:
+      - name: npm install
+        run: cd ~/mss/telegram/ && npm i --progress=false --only=prod
+      - name: Delete old PM2 instance
+        run: |
+          pm2 delete telegram-bot 2> /dev/null &&
+          echo "Process <telegram-bot> exited successfully" ||
+          echo "Process <telegram-bot> did not run on PM2"
+      - name: Delete previous PM2 logs
+        run: cd ~/.pm2/logs/ && rm telegram-bot-*
+      - name: Start new PM2 instance
+        run: cd ~/mss/telegram/ && pm2 start telegram-bot.js
+
   frontend:
     name: Folder for FRONTEND
     runs-on: self-hosted
@@ -109,6 +130,7 @@ jobs:
       - cicd
       - scrapper
       - backend
+      - telegram
       - frontend
 
     steps:
