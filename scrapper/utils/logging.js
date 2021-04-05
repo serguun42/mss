@@ -3,7 +3,7 @@ const
 	{
 		LOGGING_PORT,
 		LOGGING_TAG
-	} = DEV ? require("../../DEV_CONFIGS/scrapper.config.json") : require("./scrapper.config.json"),
+	} = DEV ? require("../../../DEV_CONFIGS/scrapper.config.json") : require("../scrapper.config.json"),
 	NodeFetch = require("node-fetch");
 
 
@@ -14,7 +14,7 @@ const
 const Logging = (...args) => {
 	const payload = {
 		error: args.findIndex((message) => message instanceof Error) > -1,
-		args: args.map((arg) => arg instanceof Error ? { ERROR_name: arg.name, ERROR_message: arg.message } : arg),
+		args: args,
 		tag: LOGGING_TAG
 	};
 
