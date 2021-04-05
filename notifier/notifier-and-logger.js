@@ -151,9 +151,9 @@ const LogViaTelegram = (payload) => {
 			const stringifiedPayload = (
 				payload.args && payload.args instanceof Array
 				?
-					TGE(LocalTrimAndMarkIfNeeded(payload.args.join("\n")))
+					TGE(LocalTrimAndMarkIfNeeded(JSON.stringify(payload, false, "  ").args.join("\n")))
 				:
-					`<pre>${TGE(LocalTrimAndMarkIfNeeded(JSON.stringify(payload)))}</pre>`
+					`<pre>${TGE(LocalTrimAndMarkIfNeeded(JSON.stringify(payload, false, "  ")))}</pre>`
 			);
 
 			resolve(`${stringifiedPayload}\n\n${[payload.tag].concat(payload.error ? "error" : "logs").filter(tag => !!tag).map(tag => `#${tag}`).join(" ")}`);
