@@ -34,4 +34,4 @@ const Logging = (...args) => {
 	});
 };
 
-module.exports = Logging;
+module.exports = DEV ? console.log : Logging;
