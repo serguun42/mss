@@ -354,19 +354,23 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 
 				if (splittedLesson.name && splittedLesson.name instanceof Array)
 					splittedLesson.name.forEach((optionName, optionIndex) => {
-						let weeks = optionName.match(/^([\d\,]+)\s?н\.?\s/);
-						if (weeks && weeks[1])
-							weeks = weeks[1];
+						/** @type {Number[] | null} */
+						let weeks = null,
+							weeksExclude = [],
+							weeksMatch = optionName.match(/^([\d\,]+)\s?н\.?\s/);
+
+						if (weeksMatch && weeksMatch[1])
+							weeks = weeksMatch[1];
 						else
 							weeks = null;
 
 						if (!weeks) {
-							weeks = optionName.match(/^((\d+)\-(\d+))\s?н\.?\s/);
+							weeksMatch = optionName.match(/^((\d+)\-(\d+))\s?н\.?\s/);
 
-							if (weeks && weeks[1] && weeks[2] && weeks[3]) {
+							if (weeksMatch && weeksMatch[1] && weeksMatch[2] && weeksMatch[3]) {
 								let weeksArr = [],
-									startingWeek = parseInt(weeks[2]),
-									endingWeek = parseInt(weeks[3]);
+									startingWeek = parseInt(weeksMatch[2]),
+									endingWeek = parseInt(weeksMatch[3]);
 
 								for (let i = startingWeek; i <= endingWeek; i += 2)
 									weeksArr.push(i);
@@ -376,9 +380,54 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 								weeks = null;
 						};
 
+						if (!weeks) {
+							weeksMatch = optionName.match(/^кр\.?\s*([\d\,]+)\s*н\.?\s/i);
+
+							if (weeksMatch && weeksMatch[1]) {
+								weeksExclude = weeksMatch[1].split(",").map((week) => parseInt(week));
+							} else
+								weeksExclude = [];
+						};
+
+						if (weeksExclude.length) {
+							if (!weeks) {
+								weeks = [];
+
+								/**
+								 * if lessonOptionIndex % 2 === 0
+								 * then
+								 *  [0]    [2]    [4]   index
+								 * 	first, third, fifth, so on row – odd days
+								 * elif lessonOptionIndex % 2 === 1
+								 * then
+								 *  [1]    [3]    [5]   index
+								 * 	second, fourth, sixth
+								 * fi
+								 */
+								for (let i = 1 + lessonOptionIndex % 2; i <= 16; i += 2) {
+									if (!weeksExclude.includes(i))
+										weeks.push(i);
+								}
+
+								weeks = weeks.join(",");
+							} else {
+								weeks = weeks
+										.split(",").map((week) => parseInt(week))
+										.filter((week) => !weeksExclude.includes(week))
+										.join(",");
+							}
+						}
+
 						formedLesson.push({
-							weeks: weeks ? weeks.split(",").map(week => +week) : null,
-							name: weeks ? optionName.replace(/^([\d\,]+)\s?н\.?\s/, "").replace(/^((\d+)\-(\d+))\s?н\.?\s/, "").trim() : optionName.trim(),
+							weeks: weeks ? weeks.split(",").map((week) => parseInt(week)) : null,
+							name: weeks ?
+									optionName
+									.replace(/^([\d\,]+)\s?н\.?\s/, "")
+									.replace(/^((\d+)\-(\d+))\s?н\.?\s/, "")
+									.replace(/^кр\.?\s*([\d\,]+)\s*н\.?\s/i, "")
+									.trim()
+									:
+									optionName.trim(),
 							type: splittedLesson.type ? splittedLesson.type[optionIndex] || null : null,
 							tutor: splittedLesson.tutor ? splittedLesson.tutor[optionIndex] || null : null,
 							place: splittedLesson.place ? splittedLesson.place[optionIndex] || null : null,
