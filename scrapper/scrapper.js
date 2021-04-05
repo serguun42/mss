@@ -127,7 +127,7 @@ const GetLinkToFiles = () => new Promise((resolve, reject) => {
 		if (res.status === 200)
 			return res.text();
 		else
-			return Promise.reject(res.status);
+			return Promise.reject(new Error(`Status code ${res.status} ${res.statusText}`));
 	}).then(/** @param {String} page */ (page) => {
 		if (DEV) fsWriteFile("./out/mirea-ru-schedule.html", page).catch(() => {});
 
