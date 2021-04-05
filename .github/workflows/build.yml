@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - name: npm install
-        run: cd ~/mss/notifier/ && npm install --progress=false
+        run: cd ~/mss/notifier/ && npm i --progress=false --only=prod
       - name: Delete old PM2 instance
         run: |
           pm2 delete notifier-and-logger 2> /dev/null &&
@@ -59,29 +59,29 @@ jobs:
   cicd:
     name: Folder for CI/CD
     runs-on: self-hosted
-    needs: [ copy, notifier ]
+    needs: notifier
 
     steps:
       - name: npm install
-        run: cd ~/mss/cicd/ && npm install --progress=false
+        run: cd ~/mss/cicd/ && npm i --progress=false --only=prod
 
   scrapper:
     name: Folder for SCRAPPER
     runs-on: self-hosted
-    needs: [ copy, notifier ]
+    needs: notifier
 
     steps:
       - name: npm install
-        run: cd ~/mss/scrapper/ && npm install --progress=false
+        run: cd ~/mss/scrapper/ && npm i --progress=false --only=prod
 
   backend:
     name: Folder for BACKEND
     runs-on: self-hosted
-    needs: [ copy, notifier ]
+    needs: notifier
 
     steps:
       - name: npm install
-        run: cd ~/mss/backend/ && npm install --progress=false
+        run: cd ~/mss/backend/ && npm i --progress=false --only=prod
       - name: Delete old PM2 instance
         run: |
           pm2 delete backend-server 2> /dev/null &&
@@ -95,7 +95,7 @@ jobs:
   telegram:
     name: Folder for TELEGRAM
     runs-on: self-hosted
-    needs: [ copy, notifier ]
+    needs: notifier
 
     steps:
       - name: npm install
@@ -113,25 +113,22 @@ jobs:
   frontend:
     name: Folder for FRONTEND
     runs-on: self-hosted
-    needs: [ copy, notifier ]
+    needs:
+      - cicd
+      - scrapper
+      - backend
+      - telegram
 
     steps:
       - name: npm install
-        run: cd ~/mss/frontend/ && npm install --progress=false
+        run: cd ~/mss/frontend/ && npm i --progress=false --only=prod
       - name: npm run build
         run: cd ~/mss/frontend/ && npm run build
 
   final:
     name: Showing and sending final logs
     runs-on: self-hosted
-    needs:
-      - copy
-      - notifier
-      - cicd
-      - scrapper
-      - backend
-      - telegram
-      - frontend
+    needs: frontend
 
     steps:
       - name: Show PM2 processes list
