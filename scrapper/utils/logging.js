@@ -3,7 +3,7 @@ const
 	{
 		LOGGING_PORT,
 		LOGGING_TAG
-	} = DEV ? require("../../DEV_CONFIGS/scrapper.config.json") : require("./scrapper.config.json"),
+	} = DEV ? require("../../../DEV_CONFIGS/scrapper.config.json") : require("../scrapper.config.json"),
 	NodeFetch = require("node-fetch");
 
 
