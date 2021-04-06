@@ -4,6 +4,8 @@
 
 Project's Telegram bot. [mirea-table-bot](https://github.com/serguun42/mirea-table-bot) was the base for it.
 <br>
+Sends schedule on demand, stores users, does mailing on morning, evening and late evening.
+<br>
 Notifies via [notifier](https://github.com/serguun42/mss/tree/master/notifier), uses local Telegram API server (if specified), uses local MongoDB
 
 

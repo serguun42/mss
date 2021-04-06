@@ -8,7 +8,7 @@ Front-end. Vue, 🚴🏻‍♀️, 🦽
 
 ## Commands
 
-1. Install all dependencies `npm install`
+1. Install all dependencies `npm i --only=prod`
 2. Build front from sources `npm run build`
 
 
