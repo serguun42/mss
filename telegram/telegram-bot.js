@@ -321,7 +321,7 @@ const COMMANDS = {
  * @returns {String}
  */
 /**
- * @type {{text: SettingsCommandButtonTextSetter, regexp: RegExp, caller: ButtonCommandCaller}[]}
+ * @type {{text: SettingsCommandButtonTextSetter, regexp: RegExp, caller: ButtonCommandCaller, groupSelection?: Boolean}[]}
  */
 const SETTINGS_COMMANDS = [
 	{
@@ -659,20 +659,6 @@ setInterval(() => {
 		TelegramSend(messageData);
 }, 2000);
 
-/**
- * @param {String | String[] | Error | Error[]} message
- * @returns {void}
- */
-const TelegramSendToAdmin = (message) => {
-	if (!message) return;
-
-
-	telegram.sendMessage(ADMIN_TELEGRAM_DATA.id, message instanceof Array ? message.join("\n") : message, {
-		parse_mode: "HTML",
-		disable_web_page_preview: true
-	});
-};
-
 
 
 
@@ -731,17 +717,6 @@ telegraf.start(/** @param {import("telegraf").Context} ctx */ (ctx) => {
 
 telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 	const { chat, from } = ctx;
-
-
-	if (chat && chat["type"] === "private") {
-		if (chat.id === ADMIN_TELEGRAM_DATA.id) {
-			if (ctx.message && ctx.message.text === "/show_users") {
-				return TelegramSendToAdmin(`<b>Пользователи из процесса:</b>\n${USERS.map((user) =>
-					Object.keys(user).map((key) => `<i>${TGE(key)}</i> <code>${TGE(user[key])}</code>`).join(", ")
-				).join("\n\n")}`);
-			};
-		};
-	};
 
 
 	if (chat && chat["type"] === "private") {
@@ -837,7 +812,19 @@ const GlobalSendToAllUsers = (timeOfDay, layoutFunc) => {
 		if (!day) return;
 
 
+		/**
+		 * Deletes various `waiting…` props from users on usual sending schedule.
+		 * Users with unset group still will be asked for choosing one.
+		 */
+		const LocalDeleteWaitingStates = () => {
+			delete user["waitingForGroupSelection"];
+			delete user["waitingForTextForSettings"];
+			delete user["selectingGroupName"];
+		};
+
 		const LocalSendDefault = () => {
+			LocalDeleteWaitingStates();
+
 			PushIntoSendingMailingQueue({
 				text: `${LABELS_FOR_TIMES_OF_DAY[timeOfDay]} ${day.nameOfDay}. Расписание:\n\n${day.layout}`,
 				destination: user.id
@@ -853,6 +840,8 @@ const GlobalSendToAllUsers = (timeOfDay, layoutFunc) => {
 				GetCatImage(user.last_cat_photo)
 				.then((catImageToSend) => {
 					user.last_cat_photo = catImageToSend;
+
+					LocalDeleteWaitingStates();
 
 					SaveUser(user).catch((e) => Logging(new Error("Error on saving after cats send on morning"), e));
 
