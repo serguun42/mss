@@ -2,9 +2,13 @@
 	--accent-color: #00a6e2;
 	--primary-color: #03589C;
 	--primary-color-faded: #00a6e266;
+	--link-color: #03589C;
+	--ripple-color: #03589C;
 	--dark-color: #0f5097;
 	--text-color: #252525;
 	--background-color: #F1F1F1;
+	--navigation-color: #FFF;
+	--card-color: #FFF;
 }
 
 body {
@@ -13,10 +17,56 @@ body {
 	color: var(--text-color);
 	background-color: var(--background-color);
 
-	font-family: "Roboto Condensed", "SF Compact Display", "Helvetica Neue Condensed", sans-serif;
-	font-weight: 400;
+	font-family: "Manrope", "Roboto", "Arial", "Helvetica", sans-serif;
+	font-weight: 500;
 	font-size: 16px;
 	line-height: 1.35em;
+}
+
+.default-no-select {
+	user-select: none;
+	-ms-user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+
+.default-header {
+	font-family: "Manrope", "Roboto", "Arial", "Helvetica", sans-serif;
+	font-weight: 900;
+	font-size: 20px;
+	text-align: center;
+
+	line-height: 1em;
+	margin: 0 auto 2em;
+
+	user-select: none;
+	-ms-user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+
+.default-italics {
+	font-family: "Manrope", "Roboto", "Arial", "Helvetica", sans-serif;
+	font-weight: 700;
+	font-style: italic;
+}
+
+.default-bold {
+	font-family: "Manrope", "Roboto", "Arial", "Helvetica", sans-serif;
+	font-weight: 700;
+	font-style: normal;
+}
+
+.default-extra-bold {
+	font-family: "Manrope", "Roboto", "Arial", "Helvetica", sans-serif;
+	font-weight: 900;
+	font-style: normal;
+}
+
+.default-title {
+	font-family: "Manrope", "Roboto", "Arial", "Helvetica", sans-serif;
+	font-weight: 400;
+	font-style: italic;
 }
 
 .global-scroll {
@@ -52,5 +102,5 @@ body {
 }
 
 a, a:visited {
-	color: var(--primary-color);
+	color: var(--link-color);
 }
