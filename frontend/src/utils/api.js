@@ -3,7 +3,7 @@ import CONFIG from "../config/config";
 
 /**
  * @param {String} iMethod
- * @param {import("./types").QueriesForApiType} iQueries
+ * @param {import("../typings").QueriesForApi} iQueries
  * @returns {String}
  */
 const API_URL_CONSTUCTOR = (iMethod, iQueries) => {
@@ -37,7 +37,7 @@ const API_URL_CONSTUCTOR = (iMethod, iQueries) => {
 };
 
 /**
- * @param {{method: String, queries: import("./types").QueriesForApiType}} iURL
+ * @param {{method: String, queries: import("../typings").QueriesForApi}} iURL
  * @param {RequestInit} iOptions
  */
 const FetchMethod = (iURL, iOptions) => {
@@ -54,7 +54,7 @@ const FetchMethod = (iURL, iOptions) => {
 };
 
 /**
- * @returns {Promise<import("./types").TinyGroupType[]>}
+ * @returns {Promise<import("../typings").TinyGroup[]>}
  */
 export const GetAllGroups = () => FetchMethod({
 	method: "groups",
@@ -65,7 +65,7 @@ export const GetAllGroups = () => FetchMethod({
 
 /**
  * @param {String} groupName
- * @returns {Promise<import("./types").RichGroupType[]>}
+ * @returns {Promise<import("../typings").RichGroup[]>}
  */
 export const GetGroupsByName = (groupName) => FetchMethod({
 	method: "groups",
@@ -77,7 +77,7 @@ export const GetGroupsByName = (groupName) => FetchMethod({
 /**
  * @param {String} groupName
  * @param {String} groupSuffix
- * @returns {Promise<import("./types").RichGroupType[]>}
+ * @returns {Promise<import("../typings").RichGroup[]>}
  */
 export const GetGroupsByNameAndSuffix = (groupName, groupSuffix) => FetchMethod({
 	method: "groups",

@@ -1,11 +1,11 @@
-export type QueriesForApiType = {
+export type QueriesForApi = {
     [queryName: string]: string | true | {
         notEncode: true;
         value: string;
     };
 };
 
-export type TinyGroupType = {
+export type TinyGroup = {
 	groupName: string;
 	groupSuffix: string;
 }
@@ -27,7 +27,7 @@ export type GroupSchedule = {
 	even: Lesson[];
 }
 
-export type RichGroupType = {
+export type RichGroup = {
 	groupName: string;
 	groupSuffix: string;
 	remoteFile: string;
