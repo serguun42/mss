@@ -41,18 +41,15 @@ const HTTPS_SERVER_OPTIONS = {
 };
 /**
  * Usual Front-end Pages
- * @type {String[]}
+ * @type {(String | RegExp)[]}
  */
 const PAGES = [
 	"/",
-	"/about"
-];
-/**
- * Back-end Modules
- * @type {String[]}
- */
-const BACKEND_PAGES = [
-	"/about"
+	"/about",
+	"/all",
+	"/app",
+	/^\/group$/,
+	/^\/group\//
 ];
 /**
  * URLs with redirection
@@ -79,7 +76,6 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 
 	
 	let location = join(FRONT_ROOT, UTIL.SafeDecode(pathname)),
-		backendChecker = false,
 		pageChecker = false,
 		pageModule = null;
 
@@ -132,30 +128,22 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 	};
 	
 	
-	if (pathname === "/" | pathname === "") {
-		backendChecker = true;
-		res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".html"));
-		pageModule = require("./pages/index");
-	};
-
-
 	PAGES.forEach((item) => {
-		if (pathname === item | pathname === item + "/") {
-			location = join(location, "index.html");
+		if (
+			(
+				typeof item == "string" && (
+					pathname === item ||
+					pathname === item + "/" ||
+					pathname === item + "/index.html"
+				)
+			) || (
+				item instanceof RegExp && item.test(pathname)
+			)
+		) {
+			location = join(FRONT_ROOT, "index.html");
 			res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".html"));
+			pageModule = require("./pages/index");
 			pageChecker = true;
-		} else if (pathname === item + "/index.html") {
-			res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".html"));
-			pageChecker = true;
-		};
-	});
-
-	BACKEND_PAGES.forEach((item) => {
-		const backendRegexp = new RegExp(`^${item}(\/.*)?$`, "");
-
-		if (backendRegexp.test(pathname)) {
-			backendChecker = true;
-			pageModule = require(`./pages${item}.js`);
 		};
 	});
 
@@ -269,7 +257,7 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 	fsStat(location).then((fileStats) => {
 		const { size } = fileStats;
 
-		if (size > 1e6 & !backendChecker) {
+		if (size > 1e6 & !pageChecker) {
 			try {
 				const rangeHeader = req.headers.range;
 
@@ -297,7 +285,8 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 		} else {
 			return fsReadfile(location).then((data) => {
 				res.statusCode = 200;
-				if (backendChecker) {
+
+				if (pageChecker) {
 					res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".html"));
 
 					pageModule({

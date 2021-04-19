@@ -33,7 +33,10 @@
 	<link rel="manifest" href="/manifest.json">
 	<link rel="manifest" href="/manifest.webmanifest">
 
-	<link rel="preload" as="font" href="/fonts/material-icons-round-v43.woff2" type="font/woff2" crossorigin="anonymous">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Material+Icons+Round" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;900&display=swap" rel="stylesheet">
 
 	<meta property="keywords" content="<%= process.env.VUE_APP_OPENGRAPH_KEYWORDS %>">
 	<meta property="description" content="<%= process.env.VUE_APP_OPENGRAPH_DESCRIPTION %>">
@@ -48,8 +51,6 @@
 	<meta name="twitter:creator" content="@serguun42">
 
 	<link rel="stylesheet" href="<%= BASE_URL %>css/default.css">
-	<link rel="stylesheet" href="<%= BASE_URL %>css/roboto-condensed.css">
-	<link rel="stylesheet" href="<%= BASE_URL %>css/material-icons.css">
 	<title><%= process.env.VUE_APP_NAME %></title>
 </head>
 
