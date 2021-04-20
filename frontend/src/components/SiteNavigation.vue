@@ -249,6 +249,13 @@ export default {
 	text-decoration: none;
 }
 
+.site-navigation__pages-line__block__sub a {
+	border: none;
+	outline: none;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
 .site-navigation__pages-line__block__sub .material-icons {
 	vertical-align: -5px;
 	margin-right: 8px;
@@ -367,6 +374,10 @@ export default {
 	white-space: nowrap;
 
 	text-decoration: none;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
 }
 
 .site-navigation__drawer__link .material-icons {
