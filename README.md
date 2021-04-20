@@ -1,7 +1,7 @@
 # MIREA Schedule System
-#### Project is still under `development`
+### Project is still under `development`
 
-![MSS](https://mirea.xyz/img/logo_wide_transparent.png)
+![MSS](https://mirea.xyz/img/logo_wide_transparent.png?2021-04-20)
 
 ## Complete system for MIREA schedule
 
