@@ -8,5 +8,4 @@ package-lock.json
 *test.js
 tsconfig.json
 tsconfig.create.bat
-*.d.ts
 *.example.json

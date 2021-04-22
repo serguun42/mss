@@ -191,23 +191,6 @@ const SetCompleteMIMEType = iLoc => {
  * @property {(iExtention: String) => String} SetMIMEType
  * @property {(iExtention: String) => String} SetCompleteMIMEType
  */
-
-/**
- * @typedef {Object} ModuleCallingObjectType 
- * @property {import("http").IncomingMessage} req
- * @property {import("http").ServerResponse} res
- * @property {Buffer | String} data
- * @property {Boolean} pageChecker
- * @property {String} pathname
- * @property {String[]} path
- * @property {String} location
- * @property {{[queryName: string]: string | true}} queries
- * @property {{[name: string]: string}} cookies
- * @property {() => void} GlobalError404
- * @property {(iCode: Number) => void} GlobalSend
- * @property {(iCode: Number, iData: any) => void} GlobalSendCustom
- */
-
 /**
  * @type {UTIL}
  */
