@@ -64,7 +64,6 @@ const REDIRECTIONS = [
 ];
 
 
-/** @typedef {import("./utils/urls-and-cookies")} ModuleCallingObjectType */
 const UTIL = require("./utils/urls-and-cookies");
 
 
@@ -228,7 +227,7 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 
 
 
-	/** @type {ModuleCallingObjectType} */
+	/** @type {import("./typings").ModuleCallingObjectType} */
 	const CALLING_PROPS = {
 		req, res,
 		pathname,
