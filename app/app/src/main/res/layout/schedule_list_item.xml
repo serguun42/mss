@@ -25,15 +25,26 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/sch_item_tv_time"
+            android:id="@+id/sch_item_tv_time_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
             android:setStartTimeFromIndex="@{lessonIndex}"
-            android:hint="08:00"
+            android:hint="09:00"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:textSize="24sp" />
+
+<!--        <TextView-->
+<!--            android:id="@+id/sch_item_tv_time_end"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="12dp"-->
+<!--            android:hint="10:30"-->
+<!--            android:setStartTimeFromIndex="@{lessonIndex}"-->
+<!--            android:textSize="24sp"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent" />-->
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
@@ -41,7 +52,7 @@
             android:layout_margin="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/sch_item_tv_time"
+            app:layout_constraintStart_toEndOf="@+id/sch_item_tv_time_start"
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout

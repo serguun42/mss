@@ -3,13 +3,13 @@ package com.rodyapal.mss.ui.fragments.schedule
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.rodyapal.mss.data.model.getone.Schedule
+import com.rodyapal.mss.data.model.getone.ISchedule
 import com.rodyapal.mss.databinding.ScheduleListItemBinding
 import java.util.*
 
 class ScheduleAdapter : RecyclerView.Adapter<ScheduleAdapter.ViewHolder>() {
 
-    private val scheduleList = emptyList<Schedule>()
+    private var scheduleList = emptyList<ISchedule>()
 
     class ViewHolder(
         private val binding: ScheduleListItemBinding
@@ -38,8 +38,15 @@ class ScheduleAdapter : RecyclerView.Adapter<ScheduleAdapter.ViewHolder>() {
         = ViewHolder.from(parent)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        val schedule = scheduleList[position]
+        holder.bind(
+            position, schedule.name, schedule.tutor, schedule.type, schedule.place
+        )
     }
 
     override fun getItemCount(): Int = scheduleList.size
+
+    fun setData(data: List<ISchedule>) {
+        scheduleList = data
+    }
 }

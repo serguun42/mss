@@ -7,13 +7,13 @@ data class EvenWeek(
     @SerializedName("link")
     val link: Any,
     @SerializedName("name")
-    val name: String,
+    override val name: String,
     @SerializedName("place")
-    val place: String,
+    override val place: String,
     @SerializedName("tutor")
-    val tutor: String,
+    override val tutor: String,
     @SerializedName("type")
-    val type: String,
+    override val type: String,
     @SerializedName("weeks")
     val weeks: Any
-)
+) : ISchedule

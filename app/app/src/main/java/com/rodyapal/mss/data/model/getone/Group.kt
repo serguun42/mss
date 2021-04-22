@@ -13,7 +13,7 @@ data class Group(
     @SerializedName("remoteFile")
     val remoteFile: String,
     @SerializedName("schedule")
-    val schedule: List<Schedule>,
+    val schedule: List<DaySchedule>,
     @SerializedName("unitCourse")
     val unitCourse: String,
     @SerializedName("unitName")

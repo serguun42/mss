@@ -2,14 +2,18 @@ package com.rodyapal.mss.viewmodels
 
 import android.app.Application
 import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.findNavController
 import com.rodyapal.mss.R
 import com.rodyapal.mss.data.model.getall.GroupsResponse
 import com.rodyapal.mss.data.remote.NetworkResult
 import com.rodyapal.mss.data.repository.Repository
+import com.rodyapal.mss.ui.fragments.LoginFragmentDirections
 import com.rodyapal.mss.utils.ERROR_NETWORK_TAG
 import com.rodyapal.mss.utils.handleResponse
 import com.rodyapal.mss.utils.hasInternetConnection
@@ -44,5 +48,10 @@ class LoginViewModel @Inject constructor(
                 getApplication<Application>().getString(R.string.error_no_internet_connection)
             )
         }
+    }
+
+    fun navigateToScheduleFragment(view: View, groupName: String) {
+        val action = LoginFragmentDirections.actionLoginFragmentToScheduleFragment(groupName)
+        view.findNavController().navigate(action)
     }
 }
