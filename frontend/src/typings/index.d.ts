@@ -21,7 +21,7 @@ export type Option = {
 
 export type Lesson = Option[];
 
-export type GroupSchedule = {
+export type DaySchedule = {
 	day: string;
 	odd: Lesson[];
 	even: Lesson[];
@@ -35,5 +35,5 @@ export type RichGroup = {
 	unitCourse: string;
 	lessonsTimes: string[][];
 	updatedDate: Date;
-	schedule: GroupSchedule[];
+	schedule: DaySchedule[];
 }
