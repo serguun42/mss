@@ -68,14 +68,6 @@ fs.writeFileSync(path.join("public", "manifest.webmanifest"), JSON.stringify(OUT
 
 
 
-/**
- * OpenAPI sync generation
- */
-const { execSync } = require("child_process");
-execSync("npm exec -- redoc-cli bundle public/docs/api/v1.1.yml -o public/docs/api/redoc.html");
-
-
-
 
 /** @type {"development"|"production"} */
 const MODE = process.env.NODE_ENV;
