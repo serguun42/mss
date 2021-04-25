@@ -32,7 +32,6 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/lf_bt_view_schedule"
-            android:onClick="@{(view) -> viewModel.navigateToScheduleFragment(view, groupName)}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/view_schedule"

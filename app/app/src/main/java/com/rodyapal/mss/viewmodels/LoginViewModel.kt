@@ -51,7 +51,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun navigateToScheduleFragment(view: View, groupName: String) {
-        val action = LoginFragmentDirections.actionLoginFragmentToScheduleFragment(groupName)
+        val action = LoginFragmentDirections.actionLoginFragmentToScheduleFragment(groupName.dropLastWhile { it == ' ' })
         view.findNavController().navigate(action)
     }
 }

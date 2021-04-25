@@ -8,12 +8,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rodyapal.mss.data.remote.NetworkResult
 import com.rodyapal.mss.databinding.ScheduleFragmentBinding
 import com.rodyapal.mss.viewmodels.ScheduleViewModel
+import java.util.*
+import kotlin.math.log
 
 class ScheduleFragment : Fragment() {
 
@@ -29,6 +32,12 @@ class ScheduleFragment : Fragment() {
     private val scheduleAdapter by lazy {
         ScheduleAdapter()
     }
+
+    private var fragmentTitle: String = "Schedule"
+        set(value) {
+            field = value
+            activity?.let { activity -> (activity as AppCompatActivity).supportActionBar?.title = fragmentTitle }!!
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,8 +63,11 @@ class ScheduleFragment : Fragment() {
             scheduleViewModel.group.observe(viewLifecycleOwner) { response ->
                 when (response) {
                     is NetworkResult.Loading -> Log.d(DEBUG_TAG, "Network loading")
-                    is NetworkResult.Error -> Log.e(DEBUG_TAG, response.message ?: "No error message")
+                    is NetworkResult.Error -> {
+                        Log.e(DEBUG_TAG, response.message ?: "No error message")
+                    }
                     is NetworkResult.Success -> {
+                        Log.e(DEBUG_TAG, "Success")
                         response.data?.let {
                             with(scheduleViewModel) {
                                 scheduleAdapter.setData(
@@ -65,6 +77,7 @@ class ScheduleFragment : Fragment() {
                                         )
                                     )
                                 )
+                                fragmentTitle = getDayFromSchedule(it[0].schedule).capitalize(Locale.getDefault())
                             }
                         }
                     }

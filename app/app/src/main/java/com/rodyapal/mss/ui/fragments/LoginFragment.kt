@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListAdapter
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.rodyapal.mss.R
 import com.rodyapal.mss.data.remote.NetworkResult
 import com.rodyapal.mss.databinding.FragmentLoginBinding
@@ -34,6 +35,11 @@ class LoginFragment : Fragment() {
     ): View {
         _binding =  FragmentLoginBinding.inflate(inflater, container, false)
         getAllGroups()
+        binding.lfBtViewSchedule.setOnClickListener {
+            loginViewModel.navigateToScheduleFragment(it, binding.groupName ?: "")
+        }
+//        val action = LoginFragmentDirections.actionLoginFragmentToScheduleFragment("ИКБО-03-20")
+//        findNavController().navigate(action)
         return binding.root
     }
 

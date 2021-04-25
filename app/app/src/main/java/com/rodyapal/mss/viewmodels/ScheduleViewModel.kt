@@ -26,6 +26,8 @@ class ScheduleViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
+    private val DEBUG_TAG = "SCHEDULE_VIEW_MODEL_DEBUG"
+
     val group: MutableLiveData<NetworkResult<SingleGroupResponse>> = MutableLiveData()
 
     fun getDataForGroup(name: String) = viewModelScope.launch {
@@ -50,23 +52,33 @@ class ScheduleViewModel @Inject constructor(
         }
     }
 
+    fun getCurrentWeekFromTermStart(): Int =
+        ((Calendar.getInstance().timeInMillis - Calendar.getInstance().apply {
+        set(2021, 1, 8, 0, 0)
+    }.timeInMillis) / (7 * 24 * 3600000)).toInt() + 1
+
+    fun getCurrentDay(): Int =
+        ((Calendar.getInstance().timeInMillis - Calendar.getInstance().apply {
+        set(2021, 1, 8, 0, 0)
+    }.timeInMillis) / (24 * 3600000) % 7).toInt() - 1
+
     /**
      * @return list of lessons for day based on current week (even or odd)
      **/
     fun getTimetableForDayWeekBased(schedule: DaySchedule): List<ISchedule> {
-        val week = (Calendar.getInstance().timeInMillis - Calendar.getInstance().apply {
-            set(2021, 1, 8, 0, 0)
-        }.timeInMillis) / (7 * 24 * 3600000)
-        return if (week % 2 == 0L) schedule.evenWeek[0] else schedule.oddWeek[0]
+        val week = getCurrentWeekFromTermStart()
+        return if (week % 2 == 0) schedule.evenWeek.filter { it.isNotEmpty() }.map { it[0] } else schedule.oddWeek.filter { it.isNotEmpty() }.map { it[0] }
     }
 
     /**
      * @return DaySchedule object for current day
      **/
     fun getScheduleForCurrentDay(schedules: List<DaySchedule>): DaySchedule {
-        val day = ((Calendar.getInstance().timeInMillis - Calendar.getInstance().apply {
-            set(2021, 1, 8, 0, 0)
-        }.timeInMillis) / (24 * 3600000) % 7).toInt()
+        val day = getCurrentDay()
         return if(day <= 5) schedules[day] else schedules[5]
+    }
+
+    fun getDayFromSchedule(schedules: List<DaySchedule>) : String {
+        return getScheduleForCurrentDay(schedules).day
     }
 }
