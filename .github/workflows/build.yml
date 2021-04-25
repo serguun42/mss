@@ -118,7 +118,6 @@ jobs:
       - scrapper
       - backend
       - telegram
-      - redoc
 
     steps:
       - name: npm install
