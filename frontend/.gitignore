@@ -32,3 +32,4 @@ package-lock.json
 public/manifest.json
 public/manifest.webmanifest
 public/version.txt
+public/docs/api/*.html
