@@ -49,7 +49,8 @@ const PAGES = [
 	"/all",
 	"/app",
 	/^\/group$/,
-	/^\/group\//
+	/^\/group\//,
+	/^\/docs\/api(\/(swagger(\/)?)?)?$/
 ];
 /**
  * URLs with redirection
@@ -59,6 +60,11 @@ const REDIRECTIONS = [
 	{
 		required: /\.psd$/,
 		redirect: "https://mirea.xyz/",
+		savePathname: false
+	},
+	{
+		required: /^\/docs\/api\/redoc(\/)?$/,
+		redirect: "/docs/api/redoc.html",
 		savePathname: false
 	}
 ];
