@@ -266,12 +266,12 @@ const COMMANDS = {
 		/** @type {ButtonCommandCaller} */
 		caller: async (ctx) => {
 			PushIntoSendingImmediateQueue({
-				text: "Карта на botpage.ru/map",
+				text: "Карта МИРЭА по этажам",
 				destination: ctx.chat.id,
 				buttons: Markup.inlineKeyboard([
 					{
 						text: "🗺 Карта",
-						url: "http://botpage.ru/map/"
+						url: "https://vk.com/album-144300510_243095650"
 					}
 				]).reply_markup
 			});
