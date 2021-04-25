@@ -1,5 +1,5 @@
 # MIREA Schedule System
-### Project is still under `development`
+### Project is still under `development`. Check out [open issues](../../issues), [closed ones](../../issues?q=is%3Aissue+is%3Aclosed) and [latest commits](../../commits).
 
 ![MSS](https://mirea.xyz/img/logo_wide_transparent.png?2021-04-20)
 
@@ -12,6 +12,9 @@ This repo represents all the code, structure and pipelines for MSS project, incl
 * [Scrapper](./scrapper) – script for parsing tables for each study group
 * [Notifier](./notifier) – collecting and sending logs and errors
 
+## Project's API
+
+MSS has public API with common methods and actions. You can view and test it with [Redoc](https://mirea.xyz/docs/api/redoc.html) or with [Swagger UI](https://mirea.xyz/docs/api/swagger).
 
 ## Folders
 
