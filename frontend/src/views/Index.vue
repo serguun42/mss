@@ -1,9 +1,7 @@
 <template>
 	<div id="index-page">
 		<h1>Welcome to <a href="https://mirea.xyz" target="_blank" rel="noopener noreferrer">mirea.xyz</a></h1>
-		<h2>Coming soon…</h2>
-		<br>
-		<h2>You can still read <router-link to="/about">/about</router-link></h2>
+		<h2>Coming soon. You can still read <router-link to="/about">/about</router-link> or <router-link to="/docs/api">API docs</router-link></h2>
 	</div>
 </template>
 

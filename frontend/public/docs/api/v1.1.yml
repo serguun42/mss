@@ -1,0 +1,796 @@
+openapi: 3.0.0
+
+info:
+  description: This is API for MIREA Schedule System (MSS), made by @serguun42.
+  version: "1.1.0"
+  contact:
+    name: Issues on Github
+    url: https://github.com/serguun42/mss/issues
+  license:
+    name: 'BSL-1.0'
+    url: 'https://github.com/serguun42/mss/blob/master/LICENSE'
+  title: MSS API
+  x-logo:
+    url: 'https://mirea.xyz/img/logo_wide.png'
+
+servers:
+  - description: MSS Production Server, API version 1.1.0
+    url: https://mirea.xyz/api/v1.1/
+
+tags:
+  - name: groups
+    description: Everything about groups
+  - name: time
+    description: Fetch or sync time (weeks, days, etc.)
+
+paths:
+  /groups/all:
+    get:
+      description: "Get all groups names"
+      operationId: getAllGroups
+      tags:
+        - groups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TinyGroups'
+        default:
+          description: Some (un)expected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SomeError'
+  /groups/certain:
+    get:
+      description: "Get groups by name and optional suffix"
+      operationId: getCertainGroups
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          required: true
+          description: >
+            Corresponds for group name while searching for group(s).
+          example: "ИКБО-03-20"
+        - in: query
+          name: suffix
+          schema:
+            type: string
+          description: >
+            Corresponds for group suffix name while searching for group(s). Used for specifying response with groups.
+          example: "ИППО"
+      tags:
+        - groups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RichGroups'
+        default:
+          description: Some (un)expected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SomeError'
+
+  /time/startTime:
+    get:
+      description: "Get timestamp (in ms) of starting of study term (half-year one)"
+      operationId: getStartTime
+      tags:
+        - time
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: number
+                example: 1612731600000
+        default:
+          description: Some (un)expected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SomeError'
+  /time/week:
+    get:
+      description: "Get current week – starting with 1. Week in study-term"
+      operationId: getCurrentWeek
+      tags:
+        - time
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: number
+                example: 10
+        default:
+          description: Some (un)expected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SomeError'
+
+components:
+  schemas:
+
+    SomeError:
+      type: object
+      properties:
+        error:
+          type: boolean
+        message:
+          type: string
+      example:
+        error: true
+        message: 'No such action. Try another'
+
+    TinyGroup:
+      type: object
+      properties:
+        groupName:
+          type: string
+        groupSuffix:
+          type: string
+      required:
+        - groupName
+        - groupSuffix
+      example:
+        - groupName: ИАБВ-12-99
+          groupSuffix: Кафедра ЫЫЫ
+
+    TinyGroups:
+      type: array
+      items:         
+        $ref: '#/components/schemas/TinyGroup'
+      example:
+        - groupName: ИАБВ-12-99
+          groupSuffix: Кафедра ЫЫЫ
+        - groupName: ИАБВ-34-99
+          groupSuffix: Кафедра АБВ
+
+    Option:
+      type: object
+      properties:
+        weeks:
+          type: array
+          items:
+            type: number
+        name:
+          type: string
+        type:
+          type: string
+        tutor:
+          type: string
+        place:
+          type: string
+        link:
+          type: string
+      required:
+        - name
+        - type
+
+    Lesson:
+      type: array
+      items:
+        $ref: '#/components/schemas/Option'
+
+    DaySchedule:
+      type: object
+      properties:
+        day:
+          type: string
+        odd:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lesson'
+        even:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lesson'
+      required:
+        - day
+        - odd
+        - even
+      example:
+        day: вторник
+        odd:
+          - weeks:
+            - 1
+            - 5
+            - 7
+            - 9
+            - 11
+            - 13
+            - 15
+            name: Физика
+            type: лк
+            tutor: Сафронов А.А.
+            place: Д
+            link: https://online-edu.mirea.ru
+          - weeks:
+            - 1
+            - 5
+            - 7
+            - 9
+            - 11
+            - 13
+            - 15
+            name: Структуры и алгоритмы обработки данных
+            type: лк
+            tutor: Алпатов А.Н.
+            place: Д
+            link: https://online-edu.mirea.ru
+          - weeks:
+            - 9
+            name: Структуры и алгоритмы обработки данных
+            type: лк
+            tutor: Алпатов А.Н.
+            place: Д
+            link: https://online-edu.mirea.ru
+          - []
+          - []
+          - []
+        even:
+          - weeks:
+            name: Физика
+            type: лк
+            tutor: Сафронов А.А.
+            place: Д
+            link: https://online-edu.mirea.ru
+          - weeks:
+            name: Объектно-ориентированное программирование
+            type: лк
+            tutor: Путуридзе З.Ш.
+            place: Д
+            link: https://online-edu.mirea.ru
+          - []
+          - []
+          - weeks:
+            - 10
+            - 12
+            name: Объектно-ориентированное программирование
+            type: пр
+            tutor: Люлява Д.В.
+            place: И-205-б
+            link:
+          - weeks:
+            - 10
+            - 12
+            name: Объектно-ориентированное программирование
+            type: пр
+            tutor: Люлява Д.В.
+            place: И-205-б
+            link:
+
+
+    RichGroup:
+      type: object
+      properties:
+        groupName:
+          type: string
+        groupSuffix:
+          type: string
+        remoteFile:
+          type: string
+        unitName:
+          type: string
+        unitCourse:
+          type: string
+        lessonsTimes:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+        updatedDate:
+          type: string
+          format: date-time
+        schedule:
+          $ref: '#/components/schemas/DaySchedule'
+      required:
+        - groupName
+        - groupSuffix
+        - remoteFile
+        - unitName
+        - unitCourse
+        - lessonsTimes
+        - updatedDate
+        - schedule
+      example:
+        groupName: "ИКБО-03-20"
+        groupSuffix: "ИППО"
+        remoteFile: "https://webservices.mirea.ru/.../file.xlsx"
+        unitName: "Институт информационных технологий"
+        unitCourse: "Бакалавриат/специалитет, 1 курс"
+        lessonsTimes:
+            - 9:00 – 10:30
+            - 10:40 – 12:10
+            - 12:40 – 14:10
+            - 14:20 – 15:50
+            - 16:20 – 17:50
+            - 18:00 – 19:30
+            - 9:00 – 10:30
+            - 10:40 – 12:10
+            - 12:40 – 14:10
+            - 14:20 – 15:50
+            - 16:20 – 17:50
+            - 18:00 – 19:30
+        updatedDate: "2021-04-24T17:01:05.195Z"
+        schedule:
+          - day: понедельник
+            odd:
+            - - weeks:
+                - 1
+                - 3
+                - 7
+                - 9
+                - 11
+                - 13
+                - 15
+                name: Объектно-ориентированное программирование
+                type: пр
+                tutor: Люлява Д.В.
+                place: ивц-104
+                link:
+            - - weeks:
+                - 1
+                - 3
+                - 7
+                - 9
+                - 11
+                - 13
+                - 15
+                name: Объектно-ориентированное программирование
+                type: пр
+                tutor: Люлява Д.В.
+                place: ивц-104
+                link:
+            - - weeks:
+                name: Физическая культура и спорт
+                type: пр
+                tutor:
+                place:
+                link:
+            - - weeks:
+                - 1
+                - 3
+                - 7
+                - 9
+                - 11
+                - 13
+                - 15
+                name: фр яз
+                type: пр
+                tutor: Ослякова И.В.
+                place: И-310
+                link:
+              - weeks:
+                - 1
+                - 7
+                - 9
+                - 11
+                - 13
+                - 15
+                name: англ.яз.
+                type: пр
+                tutor: Чугаева К.М.
+                place: И-325
+                link:
+            - - weeks:
+                - 9
+                name: Ин.яз.
+                type: пр
+                tutor: Чугаева К.М.
+                place: И-325
+                link:
+            - []
+            even:
+            - - weeks:
+                - 2
+                - 4
+                - 6
+                - 8
+                - 10
+                - 12
+                - 16
+                name: Объектно-ориентированное программирование
+                type: пр
+                tutor: Люлява Д.В.
+                place: ивц-104
+                link:
+            - - weeks:
+                - 2
+                - 4
+                - 6
+                - 8
+                - 10
+                - 12
+                - 16
+                name: Объектно-ориентированное программирование
+                type: пр
+                tutor: Люлява Д.В.
+                place: ивц-104
+                link:
+            - - weeks:
+                name: Физическая культура и спорт
+                type: пр
+                tutor:
+                place:
+                link:
+            - - weeks:
+                - 2
+                - 4
+                - 6
+                - 8
+                - 10
+                - 12
+                - 14
+                - 16
+                name: фр яз
+                type: пр
+                tutor: Ослякова И.В.
+                place: И-310
+                link:
+              - weeks:
+                - 6
+                - 8
+                - 10
+                - 12
+                - 16
+                name: англ.яз.
+                type: пр
+                tutor: Чугаева К.М.
+                place: И-325
+                link:
+            - []
+            - []
+          - day: вторник
+            odd:
+            - - weeks:
+                - 1
+                - 5
+                - 7
+                - 9
+                - 11
+                - 13
+                - 15
+                name: Физика
+                type: лк
+                tutor: Сафронов А.А.
+                place: Д
+                link: https://online-edu.mirea.ru
+            - - weeks:
+                - 1
+                - 5
+                - 7
+                - 9
+                - 11
+                - 13
+                - 15
+                name: Структуры и алгоритмы обработки данных
+                type: лк
+                tutor: Алпатов А.Н.
+                place: Д
+                link: https://online-edu.mirea.ru
+            - - weeks:
+                - 9
+                name: Структуры и алгоритмы обработки данных
+                type: лк
+                tutor: Алпатов А.Н.
+                place: Д
+                link: https://online-edu.mirea.ru
+            - []
+            - []
+            - []
+            even:
+            - - weeks:
+                name: Физика
+                type: лк
+                tutor: Сафронов А.А.
+                place: Д
+                link: https://online-edu.mirea.ru
+            - - weeks:
+                name: Объектно-ориентированное программирование
+                type: лк
+                tutor: Путуридзе З.Ш.
+                place: Д
+                link: https://online-edu.mirea.ru
+            - []
+            - []
+            - - weeks:
+                - 10
+                - 12
+                name: Объектно-ориентированное программирование
+                type: пр
+                tutor: Люлява Д.В.
+                place: И-205-б
+                link:
+            - - weeks:
+                - 10
+                - 12
+                name: Объектно-ориентированное программирование
+                type: пр
+                tutor: Люлява Д.В.
+                place: И-205-б
+                link:
+          - day: среда
+            odd:
+            - - weeks:
+                name: Математический анализ
+                type: пр
+                tutor: Булах Е.Э.
+                place: А-222
+                link:
+            - - weeks:
+                name: Линейная алгебра и аналитическая геометрия
+                type: пр
+                tutor: Булах Е.Э.
+                place: А-222
+                link:
+            - - weeks:
+                name: Структуры и алгоритмы обработки данных
+                type: пр
+                tutor: Сорокин А.В.
+                place: ивц-108
+                link:
+            - []
+            - []
+            - []
+            even:
+            - - weeks:
+                name: Математический анализ
+                type: пр
+                tutor: Булах Е.Э.
+                place: А-222
+                link:
+            - - weeks:
+                name: Линейная алгебра и аналитическая геометрия
+                type: пр
+                tutor: Булах Е.Э.
+                place: А-222
+                link:
+            - - weeks:
+                name: Структуры и алгоритмы обработки данных
+                type: пр
+                tutor: Сорокин А.В.
+                place: ивц-108
+                link:
+            - - weeks:
+                name: Математическая логика и теория алгоритмов
+                type: пр
+                tutor: Есипов И. В.
+                place: А-173
+                link:
+            - - weeks:
+                - 2
+                - 6
+                - 10
+                - 14
+                name: Правоведение
+                type: пр
+                tutor: Костина О.В.
+                place: А-206
+                link:
+            - []
+          - day: четверг
+            odd:
+            - []
+            - []
+            - []
+            - - weeks:
+                name: Математическая логика и теория алгоритмов
+                type: лк
+                tutor: Воронцов А.А.
+                place: Д
+                link: https://online-edu.mirea.ru
+            - - weeks:
+                name: Математический анализ
+                type: лк
+                tutor: Шульман И.Л.
+                place: Д
+                link: https://online-edu.mirea.ru
+            - - weeks:
+                name: Линейная алгебра и аналитическая геометрия
+                type: лк
+                tutor: Горшунова Т.А.
+                place: Д
+                link: https://online-edu.mirea.ru
+            even:
+            - []
+            - - weeks:
+                - 10
+                name: Физика
+                type: лк
+                tutor: Сафронов А.А.
+                place: Д
+                link: https://online-edu.mirea.ru
+            - - weeks:
+                - 2
+                - 6
+                - 10
+                - 14
+                name: Правоведение
+                type: лк
+                tutor: Костина О.В.
+                place: Д
+                link: https://online-edu.mirea.ru
+            - - weeks:
+                name: Математическая логика и теория алгоритмов
+                type: лк
+                tutor: Воронцов А.А.
+                place: Д
+                link: https://online-edu.mirea.ru
+            - - weeks:
+                name: Математический анализ
+                type: лк
+                tutor: Шульман И.Л.
+                place: Д
+                link: https://online-edu.mirea.ru
+            - - weeks:
+                name: Линейная алгебра и аналитическая геометрия
+                type: лк
+                tutor: Горшунова Т.А.
+                place: Д
+                link: https://online-edu.mirea.ru
+          - day: пятница
+            odd:
+            - - weeks:
+                - 1
+                - 3
+                name: англ.яз.
+                type: пр
+                tutor: Дятлова Р.И.
+                place: А-107
+                link:
+            - - weeks:
+                - 1
+                - 3
+                name: англ.яз.
+                type: пр
+                tutor: Дятлова Р.И.
+                place: А-107
+                link:
+            - - weeks:
+                - 3
+                - 7
+                - 11
+                - 15
+                name: Физика (1 п/г)
+                type: лаб
+                tutor: Логачев И.И.
+                place: В-328
+                link:
+              - weeks:
+                - 3
+                - 7
+                - 11
+                - 15
+                name: Физика (2 п/г)
+                type: лаб
+                tutor: Козинцева М.В.
+                place: В-328
+                link:
+            - - weeks:
+                - 3
+                - 7
+                - 11
+                - 15
+                name: Физика (1 п/г)
+                type: лаб
+                tutor: Логачев И.И.
+                place: В-328
+                link:
+              - weeks:
+                - 3
+                - 7
+                - 11
+                - 15
+                name: Физика (2 п/г)
+                type: лаб
+                tutor: Козинцева М.В.
+                place: В-328
+                link:
+            - - weeks:
+                name: Физика
+                type: пр
+                tutor: Чайкин А.В.
+                place: В-321
+                link:
+            - - weeks:
+                - 7
+                name: Физика
+                type: пр
+                tutor: Чайкин А.В.
+                place: В-321
+                link:
+            even:
+            - []
+            - []
+            - []
+            - []
+            - - weeks:
+                - 2
+                - 4
+                - 6
+                - 8
+                - 10
+                - 14
+                - 16
+                name: Физика
+                type: пр
+                tutor: Чайкин А.В.
+                place: В-321
+                link:
+            - []
+          - day: суббота
+            odd:
+            - - weeks:
+                name: Ознакомительная практика
+                type: пр
+                tutor:
+                place: каф
+                link:
+            - - weeks:
+                name: Ознакомительная практика
+                type: с/р
+                tutor:
+                place: каф
+                link:
+            - - weeks:
+                name: Ознакомительная практика
+                type: с/р
+                tutor:
+                place: каф
+                link:
+            - []
+            - []
+            - []
+            even:
+            - - weeks:
+                name: Ознакомительная практика
+                type: пр
+                tutor:
+                place: каф
+                link:
+            - - weeks:
+                name: Ознакомительная практика
+                type: с/р
+                tutor:
+                place: каф
+                link:
+            - - weeks:
+                name: Ознакомительная практика
+                type: с/р
+                tutor:
+                place: каф
+                link:
+            - - weeks:
+                - 2
+                - 4
+                - 6
+                - 8
+                - 10
+                - 12
+                name: Ознакомительная практика
+                type: с/р
+                tutor:
+                place: каф
+                link:
+            - []
+            - []
+
+
+    RichGroups:
+      type: array
+      items:         
+        $ref: '#/components/schemas/RichGroup'
