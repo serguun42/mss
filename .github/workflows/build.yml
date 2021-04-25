@@ -118,6 +118,7 @@ jobs:
       - scrapper
       - backend
       - telegram
+      - redoc
 
     steps:
       - name: npm install
@@ -125,10 +126,19 @@ jobs:
       - name: npm run build
         run: cd ~/mss/frontend/ && npm run build
 
+  redoc:
+    name: Generate Redoc
+    runs-on: self-hosted
+    needs: frontend
+
+    steps:
+      - name: Generate file
+        run: cd ~/mss/frontend/ && npm exec -- redoc-cli bundle public/docs/api/v1.1.yml -o dist/docs/api/redoc.html
+
   final:
     name: Showing and sending final logs
     runs-on: self-hosted
-    needs: frontend
+    needs: redoc
 
     steps:
       - name: Show PM2 processes list
