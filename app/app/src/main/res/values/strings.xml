@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Mss</string>
+    <string name="error_no_internet_connection">No internet connection</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="view_schedule">View schedule</string>
+    <string name="your_group">Your group</string>
+</resources>

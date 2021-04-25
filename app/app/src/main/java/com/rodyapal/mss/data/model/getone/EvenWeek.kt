@@ -1,0 +1,19 @@
+package com.rodyapal.mss.data.model.getone
+
+
+import com.google.gson.annotations.SerializedName
+
+data class EvenWeek(
+    @SerializedName("link")
+    val link: Any,
+    @SerializedName("name")
+    override val name: String,
+    @SerializedName("place")
+    override val place: String,
+    @SerializedName("tutor")
+    override val tutor: String,
+    @SerializedName("type")
+    override val type: String,
+    @SerializedName("weeks")
+    val weeks: Any
+) : ISchedule
