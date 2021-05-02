@@ -588,8 +588,13 @@ const MAILING_QUEUE = [];
 const PushIntoSendingMailingQueue = (messageData) => MAILING_QUEUE.push(messageData);
 
 /**
+ * @typedef {import("telegraf/typings/core/types/typegram").Message.PhotoMessage} PhotoMessage
+ * @typedef {import("telegraf/typings/core/types/typegram").Message.TextMessage} TextMessage
+ * @typedef {import("telegraf").TelegramError} TelegramError
+ */
+/**
  * @param {SendingMessageType} messageData
- * @returns {void}
+ * @returns {Promise<PhotoMessage | TextMessage>}
  */
 const TelegramSend = (messageData) => {
 	const replyKeyboard = Markup.keyboard(
@@ -597,25 +602,26 @@ const TelegramSend = (messageData) => {
 	).resize(true).reply_markup;
 
 
-	(
-		messageData.photo
-		?
-			telegram.sendPhoto(messageData.destination, {
-				source: messageData.photo
-			}, {
-				caption: messageData.text,
-				parse_mode: "HTML",
-				disable_web_page_preview: true,
-				reply_markup: messageData.buttons || replyKeyboard
-			})
-		:
-			telegram.sendMessage(messageData.destination, messageData.text, {
-				parse_mode: "HTML",
-				disable_web_page_preview: true,
-				reply_markup: messageData.buttons || replyKeyboard
-			})
-	).catch((e) => {
-		if (e.code === 403) {
+	const sendingPromise = (messageData.photo ?
+		telegram.sendPhoto(messageData.destination, {
+			source: messageData.photo
+		}, {
+			caption: messageData.text,
+			parse_mode: "HTML",
+			disable_web_page_preview: true,
+			reply_markup: messageData.buttons || replyKeyboard
+		})
+	:
+		telegram.sendMessage(messageData.destination, messageData.text, {
+			parse_mode: "HTML",
+			disable_web_page_preview: true,
+			reply_markup: messageData.buttons || replyKeyboard
+		})
+	);
+
+
+	return sendingPromise.catch(/** @param {TelegramError} e */ (e) => {
+		if (e && e.code === 403) {
 			const foundUser = USERS.find((user) => user.id === messageData.destination);
 
 			if (foundUser) {
@@ -628,7 +634,7 @@ const TelegramSend = (messageData) => {
 					.then((DB) => DB.collection("telegram-users").findOneAndDelete({ id: messageData.destination }))
 					.then((deletingResult) => {
 						if (deletingResult.ok)
-							Logging(`Successfully deleted user with id = ${messageData.destination}. They'd had index ${indexOfFoundUser} in users list but gone now.`, JSON.stringify(foundUser, false, "\t"));
+							Logging(`Successfully deleted user with id = ${messageData.destination}. They'd had index ${indexOfFoundUser} in users list but gone now.`, foundUser);
 						else
 							return Promise.reject(deletingResult);
 					})
@@ -639,25 +645,67 @@ const TelegramSend = (messageData) => {
 			} else {
 				Logging(new Error(`Cannot remove user with id ${messageData.destination} because they're not in out users' list!`), e);
 			};
+
+			return Promise.resolve({});
 		} else {
-			Logging(`Unknown error code`, e);
+			return Promise.reject(e);
 		};
 	});
 };
 
-setInterval(() => {
-	const messageData = IMMEDIATE_QUEUE.shift();
+/**
+ * @param {SendingMessageType} iMessageData 
+ * @returns {void}
+ */
+const ImmediateSendingQueueProcedure = (iMessageData) => {
+	const messageData = iMessageData || IMMEDIATE_QUEUE.shift();
 
-	if (messageData && messageData.destination)
-		TelegramSend(messageData);
-}, 50);
+	if (messageData && messageData.destination) {
+		TelegramSend(messageData)
+		.then(() => setTimeout(ImmediateSendingQueueProcedure, 50))
+		.catch(/** @param {TelegramError} e */ (e) => {
+			if (e && e.code === 429) {
+				if (typeof e.parameters?.retry_after == "number")
+					setTimeout(() => ImmediateSendingQueueProcedure(messageData), e.parameters?.retry_after * 1e3);
+				else
+					setTimeout(() => ImmediateSendingQueueProcedure(messageData), 1e3);
+			} else {
+				Logging(`Unknown error code`, e);
+				setTimeout(ImmediateSendingQueueProcedure, 50);
+			}
+		});
+	} else
+		setTimeout(ImmediateSendingQueueProcedure, 50);
+};
 
-setInterval(() => {
-	const messageData = MAILING_QUEUE.shift();
+ImmediateSendingQueueProcedure();
 
-	if (messageData && messageData.destination)
-		TelegramSend(messageData);
-}, 2000);
+/**
+ * @param {SendingMessageType} iMessageData 
+ * @returns {void}
+ */
+const MailingSendingQueueProcedure = (iMessageData) => {
+	const messageData = iMessageData || MAILING_QUEUE.shift();
+
+	if (messageData && messageData.destination) {
+		TelegramSend(messageData)
+		.then(() => setTimeout(MailingSendingQueueProcedure, 5e2))
+		.catch(/** @param {TelegramError} e */ (e) => {
+			if (e && e.code === 429) {
+				if (typeof e.parameters?.retry_after == "number")
+					setTimeout(() => MailingSendingQueueProcedure(messageData), e.parameters?.retry_after * 1e3);
+				else
+					setTimeout(() => MailingSendingQueueProcedure(messageData), 5e3);
+			} else {
+				Logging(`Unknown error code`, e);
+				setTimeout(MailingSendingQueueProcedure, 1e3);
+			}
+		});
+	} else
+		setTimeout(MailingSendingQueueProcedure, 50);
+};
+
+MailingSendingQueueProcedure();
 
 
 
@@ -833,7 +881,7 @@ const GlobalSendToAllUsers = (timeOfDay, layoutFunc) => {
 
 
 		if (timeOfDay === "morning" && user.cats && CATS.ENABLED) {
-			const practices = day.layout.match(/\((пр)\)/i)?.[1],	
+			const practices = day.layout.match(/\((пр)\)/i)?.[1],
 				  labs = day.layout.match(/\((лаб)\)/i)?.[1];
 
 			if (practices || labs) {
