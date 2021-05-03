@@ -20,8 +20,12 @@
 </template>
 
 <script>
+import Dispatcher from "@/utils/dispatcher"
 export default {
-	name: "API"
+	name: "API",
+	created() {
+		Dispatcher.call("preloadingDone");
+	}
 }
 </script>
 

@@ -57,10 +57,7 @@ const FetchMethod = (iURL, iOptions) => {
  * @returns {Promise<import("../typings").TinyGroup[]>}
  */
 export const GetAllGroups = () => FetchMethod({
-	method: "groups",
-	queries: {
-		getAll: true
-	}
+	method: "groups/all"
 });
 
 /**
@@ -68,9 +65,9 @@ export const GetAllGroups = () => FetchMethod({
  * @returns {Promise<import("../typings").RichGroup[]>}
  */
 export const GetGroupsByName = (groupName) => FetchMethod({
-	method: "groups",
+	method: "groups/certain",
 	queries: {
-		get: groupName
+		name: groupName
 	}
 });
 
@@ -80,9 +77,16 @@ export const GetGroupsByName = (groupName) => FetchMethod({
  * @returns {Promise<import("../typings").RichGroup[]>}
  */
 export const GetGroupsByNameAndSuffix = (groupName, groupSuffix) => FetchMethod({
-	method: "groups",
+	method: "groups/certain",
 	queries: {
-		get: groupName,
+		name: groupName,
 		suffix: groupSuffix
 	}
 });
+
+/**
+ * @returns {Promise<Number>}
+ */
+export const GetCurrentWeek = () => fetch(API_URL_CONSTUCTOR("time/week"))
+.then((res) => res.text())
+.then((week) => Promise.resolve(parseInt(week)));

@@ -29,6 +29,16 @@
 	</div>
 </template>
 
+<script>
+import Dispatcher from "@/utils/dispatcher";
+export default {
+	name: "about",
+	created() {
+		Dispatcher.call("preloadingDone");
+	}
+}
+</script>
+
 <style scoped>
 #about-page {
 	display: block;

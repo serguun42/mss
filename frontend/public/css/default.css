@@ -1,14 +1,26 @@
 :root {
 	--accent-color: #00a6e2;
 	--primary-color: #03589C;
-	--primary-color-faded: #00a6e266;
+	--primary-color-faded: rgba(0, 166, 226, 0.3);
+	--primary-color-faded10: rgba(0, 166, 226, 0.1);
+	--primary-color-faded70: rgba(0, 166, 226, 0.7);
 	--link-color: #03589C;
 	--ripple-color: #03589C;
 	--dark-color: #0f5097;
 	--text-color: #252525;
 	--background-color: #F1F1F1;
 	--navigation-color: #FFF;
+
 	--card-color: #FFF;
+	--card-accent-color: #03589C;
+	--card-faded-color: #888;
+
+	--search-background-color: #FFF;
+	--search-text-color: #252525;
+	--search-prompt-color: #0f5097;
+
+	--index-page-faded-title: #888;
+	--group-page-faded-title: #888;
 }
 
 body {
@@ -23,11 +35,24 @@ body {
 	line-height: 1.35em;
 }
 
+*::selection {
+	color: var(--background-color);
+	background-color: var(--accent-color);
+}
+
+.default-no-selection,
 .default-no-select {
 	user-select: none;
 	-ms-user-select: none;
 	-moz-user-select: none;
 	-webkit-user-select: none;
+}
+
+.default-pointer {
+	border: none;
+	outline: none;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
 }
 
 .default-header {

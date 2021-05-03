@@ -4,5 +4,6 @@ declare namespace Dispatcher {
         [eventName: string]: Function[];
     };
     function link(eventName: string, eventHandler: Function): void;
+    function unlink(eventName: string, eventHandler: Function): void;
     function call(eventName: string, ...argsForHandler: any[]): void;
 }
