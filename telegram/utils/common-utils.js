@@ -41,22 +41,44 @@ const Chunkify = (iArray, iChunkSize) => {
 	return outArray;
 };
 
+let catImages = [];
+/**
+ * @returns {Promise<String[]>}
+ */
+const GetAllCatsImages = () => {
+	if (catImages.length) return Promise.resolve(catImages);
+
+	return fsReadDir(CATS.FOLDER)
+		.then((allPhotos) => {
+			catImages = allPhotos;
+			return Promise.resolve(catImages);
+		});
+};			
+
 /**
  * @param {String} lastCatPhoto
  * @returns {Promise<String>}
  */
-const GetCatImage = (lastCatPhoto) => fsReadDir(CATS.FOLDER).then((catImages) => {
-	const LocalGetRandom = () => {
-		const randomPicked = catImages[Math.floor(Math.random() * catImages.length)];
+const GetCatImage = (lastCatPhoto) => {
+	/**
+	 * @param {String[]} allPhotos
+	 */
+	const LocalGetRandom = (allPhotos) => {
+		const randomPicked = allPhotos[Math.floor(Math.random() * allPhotos.length)];
 
 		if (randomPicked === lastCatPhoto)
-			return LocalGetRandom();
+			return LocalGetRandom(allPhotos);
 		else
 			return randomPicked;
 	};
 
-	return Promise.resolve(LocalGetRandom());
-});
+	return GetAllCatsImages()
+		.then((allPhotos) => {
+			const picked = LocalGetRandom(allPhotos);
+
+			return Promise.resolve(picked);
+		});
+};
 
 /**
  * Telegram Escape
@@ -79,6 +101,7 @@ const TGE = iStringToEscape => {
 module.exports = exports =  {
 	Capitalize,
 	Chunkify,
+	GetAllCatsImages,
 	GetCatImage,
 	TGE
 };

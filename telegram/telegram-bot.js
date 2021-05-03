@@ -898,7 +898,12 @@ const GlobalSendToAllUsers = (timeOfDay, layoutFunc) => {
 						destination: user.id,
 						photo: path.join(CATS.FOLDER, catImageToSend)
 					});
-				}).catch(() => LocalSendDefault());
+				}).catch((e) => {
+					console.warn(`Cats sending explicit fail at ${new Date().toISOString()}:`);
+					console.warn(e);
+
+					LocalSendDefault();
+				});
 			} else
 				LocalSendDefault();
 		} else
