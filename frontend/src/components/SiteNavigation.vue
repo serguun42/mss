@@ -160,6 +160,7 @@ export default {
 	box-sizing: border-box;
 
 	border-radius: 30px;
+	overflow: hidden;
 }
 
 .site-navigation__menu-button {

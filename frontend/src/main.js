@@ -30,6 +30,11 @@ Object.keys(ANIMATIONS_CONFIG).forEach((animationName) => {
 	document.documentElement.style.setProperty(`--${animationName}`, animationValue)
 });
 
+if (process.env.NODE_ENV !== "development") {
+	if ("serviceWorker" in navigator)
+		navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
+}
+
 new Vue({
 	router,
 	store,

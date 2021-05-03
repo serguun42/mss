@@ -1,5 +1,5 @@
 <template>
-	<div id="single-group-page">
+	<div id="single-group-page" :key="myGroupRequested">
 		<div id="single-group-page__title" class="default-no-selection">
 			<div id="single-group-page__title__name">{{ myGroupRequested ? $store.getters.userGroup && $store.getters.userGroup.name : name }}</div>
 			<div id="single-group-page__title__suffix" v-if="myGroupRequested ? $store.getters.userGroup && $store.getters.userGroup.suffix : suffix">{{ myGroupRequested ? $store.getters.userGroup && $store.getters.userGroup.suffix : suffix }}</div>
@@ -40,6 +40,8 @@ import { GetCurrentWeek, GetGroupsByNameAndSuffix } from "@/utils/api";
 import Day from "@/components/Day.vue";
 import router from "@/router";
 
+let ComponentOnViewLoad;
+
 export default {
   components: { Day },
 	name: "single-group-page",
@@ -49,7 +51,7 @@ export default {
 	},
 	data() {
 		return {
-			myGroupRequested: !!store.getters.userGroup?.name && (!this.name || store.getters.userGroup?.name === this.name),
+			myGroupRequested: store.getters.userGroup?.name && (!this.name || store.getters.userGroup?.name === this.name),
 			apiData: {},
 			currentWeek: 0
 		}
@@ -65,7 +67,7 @@ export default {
 
 		const LocalOnViewLoad = () => {
 			if (!this.name && !store.getters.userGroup?.name) {
-				Dispatcher.unlink("groupViewPropsChanged", LocalOnViewLoad);
+				Dispatcher.unlink("groupViewPropsChanged", ComponentOnViewLoad);
 				return router.push({ path: "/" });
 			};
 
@@ -81,11 +83,22 @@ export default {
 		}
 
 		LocalOnViewLoad();
-		Dispatcher.link("groupViewPropsChanged", LocalOnViewLoad);
+		ComponentOnViewLoad = LocalOnViewLoad;
+		Dispatcher.link("groupViewPropsChanged", ComponentOnViewLoad);
+
+
+		Dispatcher.link("userGroupUpdated", () => {
+			this.myGroupRequested = !!store.getters.userGroup?.name && (!this.name || store.getters.userGroup?.name === this.name);
+		});
 	},
+
+	beforeDestroy() {
+		Dispatcher.unlink("groupViewPropsChanged", ComponentOnViewLoad);
+	},
+
 	methods: {
 		saveGroup() {
-			store.dispatch("saveGroup", { name: this.name || store.getters.userGroup?.name, suffix: this.suffix || store.getters.userGroup?.suffix || "" });
+			store.dispatch("saveGroup", { name: this.name || store.getters.userGroup?.name, suffix: this.suffix || store.getters.userGroup?.suffix || "", noReload: true });
 		}
 	}
 }

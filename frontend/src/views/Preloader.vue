@@ -41,7 +41,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .preloader {
 	display: block;
 	position: fixed;
