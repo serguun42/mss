@@ -1,9 +1,10 @@
 <template>
 	<div id="mss-app-base">
+		<preloader id="mss-app__preloader" v-if="preloading || documentLoading"></preloader>
 		<div id="router-wrapper">
-			<router-view></router-view>
+			<router-view :key="$route.fullPath"></router-view>
 		</div>
-		<site-navigation :customTitle="$route.meta.title"></site-navigation>
+		<site-navigation :customTitle="pageTitle"></site-navigation>
 		<site-footer></site-footer>
 	</div>
 </template>
@@ -12,21 +13,60 @@
 import SiteNavigation from "./components/SiteNavigation.vue";
 import SiteFooter from "./components/SiteFooter.vue";
 import store from "./store";
+import router from "./router";
+import Preloader from "./views/Preloader.vue";
+import Dispatcher from "./utils/dispatcher";
 
 
 export default {
 	components: {
 		SiteNavigation,
-		SiteFooter
+		SiteFooter,
+		Preloader
+	},
+	data() {
+		return {
+			preloading: true,
+			documentLoading: true,
+			pageTitle: router.currentRoute.meta?.title ?
+						router.currentRoute.meta?.title
+						:
+						router.currentRoute.meta?.dynamicTitle && typeof router.currentRoute.meta?.dynamicTitle === "function" ?
+							router.currentRoute.meta?.dynamicTitle(router.currentRoute) || process.env.VUE_APP_NAME
+							:
+							process.env.VUE_APP_NAME
+		}
 	},
 	watch: {
 		$route: {
 			immediate: true,
+			/**
+			 * @param {import("vue-router/types").RouteConfig} to
+			 */
 			handler(to) {
-				document.title = to.meta?.title ? `${to.meta?.title} | ${process.env.VUE_APP_NAME}` : process.env.VUE_APP_NAME;
+				const newTitle = to.meta?.title ?
+									to.meta?.title
+									:
+									to.meta?.dynamicTitle && typeof to.meta?.dynamicTitle === "function" ?
+										to.meta?.dynamicTitle(to) || process.env.VUE_APP_NAME
+										:
+										process.env.VUE_APP_NAME;
+
+				this.pageTitle = newTitle;
+				document.title = newTitle === process.env.VUE_APP_NAME ? newTitle : `${newTitle} | ${process.env.VUE_APP_NAME}`;
+
 				store.dispatch("closeDrawer");
 			}
 		}
+	},
+	created() {
+		Dispatcher.link("preload", () => this.preloading = true);
+		Dispatcher.link("preloadingDone", () => this.preloading = false);
+
+		window.addEventListener("load", () => this.documentLoading = false);
+
+		if (document.readyState === "complete")
+			this.documentLoading = false;
 	}
 }
 </script>
@@ -41,6 +81,10 @@ export default {
 	box-sizing: border-box;
 
 	color: var(--text-color);
+}
+
+#mss-app__preloader {
+	z-index: 20;
 }
 
 #router-wrapper {

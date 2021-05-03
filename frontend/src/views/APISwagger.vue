@@ -5,6 +5,7 @@
 <script>
 import SwaggerUI from "swagger-ui";
 import "swagger-ui/dist/swagger-ui.css";
+import Dispatcher from "@/utils/dispatcher";
 
 export default {
 	name: "APISwagger",
@@ -13,6 +14,9 @@ export default {
 			url: "/docs/api/v1.1.yml",
 			dom_id: "#api-page-swagger"
 		})
+	},
+	created() {
+		Dispatcher.call("preloadingDone");
 	}
 }
 </script>

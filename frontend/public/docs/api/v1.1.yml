@@ -4,8 +4,8 @@ info:
   description: This is API for MIREA Schedule System (MSS), made by @serguun42.
   version: "1.1.0"
   contact:
-    name: Issues on Github
-    url: https://github.com/serguun42/mss/issues
+    name: MSS API
+    url: https://mirea.xyz/docs/api
   license:
     name: 'BSL-1.0'
     url: 'https://github.com/serguun42/mss/blob/master/LICENSE'
