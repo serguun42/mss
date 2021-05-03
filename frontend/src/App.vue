@@ -1,6 +1,7 @@
 <template>
 	<div id="mss-app-base">
 		<preloader id="mss-app__preloader" v-if="preloading || documentLoading"></preloader>
+		<message></message>
 		<div id="router-wrapper">
 			<router-view :key="$route.fullPath"></router-view>
 		</div>
@@ -16,13 +17,15 @@ import store from "./store";
 import router from "./router";
 import Preloader from "./views/Preloader.vue";
 import Dispatcher from "./utils/dispatcher";
+import Message from "./components/Message.vue";
 
 
 export default {
 	components: {
 		SiteNavigation,
 		SiteFooter,
-		Preloader
+		Preloader,
+		Message
 	},
 	data() {
 		return {

@@ -1,6 +1,7 @@
 <template>
 	<div :class="{
 		'search-container': true,
+		'search-container--bigger': bigger,
 		'search-container--expanded': showingPrompts && showingPrompts.length
 	}">
 		<div class="search-container__textfield">
@@ -21,7 +22,7 @@
 				'is-hidden': !(showingPrompts && showingPrompts.length)
 			}"
 			:style="{
-				'height': showingPrompts && showingPrompts.length ? (showingPrompts.slice(0, 6).length * 32 + 8) + 'px' : '0px'
+				'height': showingPrompts && showingPrompts.length ? (showingPrompts.slice(0, 6).length * (bigger ? 48 : 32) + 8) + 'px' : '0px'
 			}"
 		>
 			<div
@@ -81,6 +82,10 @@ export default {
 		placeholder: {
 			type: String,
 			default: "Найти…"
+		},
+		bigger: {
+			type: Boolean,
+			default: false
 		}
 	},
 	watch: {
@@ -128,9 +133,17 @@ export default {
 	transition: border-radius 150ms ease-in-out 0s;
 }
 
+.search-container--bigger {
+	border-radius: 32px;
+}
+
 .search-container--expanded {
 	border-radius: 20px 20px 0 0;
 	transition: border-radius 150ms ease-in-out 0s;
+}
+
+.search-container--bigger.search-container--expanded {
+	border-radius: 32px 32px 0 0;
 }
 
 .search-container__textfield {
@@ -145,6 +158,12 @@ export default {
 	background-color: var(--search-background-color);
 
 	z-index: 2;
+}
+
+.search-container--bigger .search-container__textfield {
+	height: 64px;
+
+	border-radius: 32px;
 }
 
 .search-container__textfield__input {
@@ -167,6 +186,15 @@ export default {
 
 	border: none;
 	outline: none;
+}
+
+.search-container--bigger .search-container__textfield__input {
+	height: 64px;
+
+	padding: 20px 0;
+	
+	font-size: 24px;
+	line-height: 1em;
 }
 
 .search-container__textfield__input:focus,
@@ -192,6 +220,17 @@ export default {
 
 	color: var(--search-text-color);
 	transition: color 150ms ease-in-out;
+}
+
+.search-container--bigger .search-container__textfield__clear-button {
+	width: 56px;
+	height: 56px;
+
+	top: 4px;
+	right: 8px;
+	padding: 16px;
+
+	border-radius: 28px;
 }
 
 .search-container__textfield__clear-button:hover {
@@ -252,5 +291,14 @@ export default {
 	line-height: 16px;
 	text-align: left;
 	color: var(--search-prompt-color);
+}
+
+.search-container--bigger .search-container__prompts-list__item {
+	height: 48px;
+
+	padding: 12px 16px;
+
+	font-size: 20px;
+	line-height: 24px;
 }
 </style>

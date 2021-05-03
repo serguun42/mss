@@ -38,11 +38,14 @@
 			</div>
 		</section>
 
-		<section class="site-footer__section" v-if="false">
-			<div class="site-footer__section__item" id="footer-clear-cache">
+		<section class="site-footer__section">
+			<div class="site-footer__section__item" id="footer-clear-cache" @click="clearGroup">
+				<i class="material-icons">restart_alt</i> Сбросить группу
+			</div>
+			<div class="site-footer__section__item" id="footer-clear-cache" @click="clearCache">
 				<i class="material-icons">cached</i> Очистить кэш
 			</div>
-			<div class="site-footer__section__item" id="footer-unregister-sw">
+			<div class="site-footer__section__item" id="footer-unregister-sw" @click="removeServiceWorker">
 				<i class="material-icons">delete_outline</i> Удалить Service Worker
 			</div>
 		</section>
@@ -50,8 +53,31 @@
 </template>
 
 <script>
+import store from "@/store"
+
 export default {
-	name: "site-footer"
+	name: "site-footer",
+	methods: {
+		clearGroup() {
+			store.dispatch("saveGroup", { name: null, suffix: null });
+		},
+		clearCache() {
+			caches.delete("cache_static").then(() =>
+				store.dispatch("showMessage", "Кеш успешно очищен")
+			).catch(() => 
+				store.dispatch("showMessage", "Произошла ошибка во время очистки кеша")
+			)
+		},
+		removeServiceWorker() {
+			if (navigator.serviceWorker) {
+				navigator.serviceWorker.getRegistrations().then((registered) => {
+					for (const sw of registered) sw.unregister();
+				});
+
+				store.dispatch("showMessage", "Service Worker успешно удалён");
+			}
+		}
+	}
 }
 </script>
 

@@ -15,7 +15,10 @@
 			)
 		"
 	>
-		<div class="day__title">{{ customTitle ? `${customTitle} – ${day.day}` : day.day }}</div>
+		<div class="day__title">
+			<span class="day__title--uppercase">{{ customTitle || day.day }}</span>
+			<span class="day__title--italic" v-if="customTitle">{{ day.day }}</span>
+		</div>
 
 		<div
 			:class="{
@@ -43,14 +46,23 @@
 				:class="{
 					'lesson': true,
 					'lesson--with-border': lesson.length &&
-												dayForCertrainWeek[oddity].slice(lessonIndex + 1)
-												.reduce((accum, value) => accum + value.length, 0) > 0
+											dayForCertrainWeek[oddity].slice(lessonIndex + 1)
+											.reduce((accum, value) => accum + value.length, 0) > 0
 				}"
 			>
 				<div class="option" v-for="(option, optionIndex) in lesson" :key="`day-${dayIndex}-${oddity}-${lessonIndex}-${optionIndex}`">
-					<div class="option__title">{{ option.name }}</div>
+					<div class="option__title">{{ lessonName(option.name) }}</div>
 					<div class="option__info">
-						<div class="option__info__item"><i class="material-icons material-icons-round default-no-selection">schedule</i>{{ lessonsTimes[dayIndex][lessonIndex] }}</div>
+						<div :class="{
+								'option__info__item': true,
+								'option__info__item-time': true,
+								'option__info__item-time--ongoing': showOngoingAndPlannedLesson && lessonStarted(lessonsTimes[dayIndex][lessonIndex]),
+								'option__info__item-time--planned': showOngoingAndPlannedLesson && lessonPlanned(lessonsTimes[dayIndex][lessonIndex])
+							}">
+							<i class="material-icons material-icons-round default-no-selection">schedule</i>
+							<span>{{ lessonsTimes[dayIndex][lessonIndex] }}</span>
+							<i v-if="showOngoingAndPlannedLesson && lessonStarted(lessonsTimes[dayIndex][lessonIndex])">(сейчас)</i>
+						</div>
 
 						<div class="option__info__item" v-if="option.place === 'Д' || option.place === 'д'"><i class="material-icons material-icons-round default-no-selection">alternate_email</i>
 							<a v-if="option.link" :href="option.link" target="_blank" rel="noopener noreferrer">Дистанционно</a>
@@ -60,7 +72,7 @@
 
 						<div class="option__info__item" v-if="option.tutor"><i class="material-icons material-icons-round default-no-selection">person</i>{{ option.tutor }}</div>
 
-						<div class="option__info__item" v-if="option.type"><i class="material-icons material-icons-round default-no-selection">info</i>{{ option.type }}</div>
+						<div class="option__info__item" v-if="option.type"><i class="material-icons material-icons-round default-no-selection">info</i>{{ lessonType(option.type) }}</div>
 
 						<div class="option__info__item" v-if="certainWeek < 0 && option.weeks && option.weeks.length"><i class="material-icons material-icons-round default-no-selection">date_range</i>
 							<span>Недели: </span>
@@ -101,6 +113,10 @@ export default {
 		oneLine: {
 			type: Boolean,
 			default: false
+		},
+		showOngoingAndPlannedLesson: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data() {
@@ -116,6 +132,89 @@ export default {
 				)
 			}
 		}
+	},
+	methods: {
+		/**
+		 * @param {String} iLessonTime
+		 * @returns {Boolean}
+		 */
+		lessonStarted: function (iLessonTime) {
+			if (typeof iLessonTime !== "string") return false;
+
+			const splitted = iLessonTime.split(/\s*[\-–—]\s*/)
+			if (splitted.length < 2) return false;
+
+			const splittedToTimeParts = splitted.map((time) => time.split(":").map((part) => parseInt(part)));
+			if (splittedToTimeParts.filter((time) => time.some((part) => isNaN(part))).length) return false;
+
+			const [ [startHours, startMinutes], [finishHours, finishMinutes] ] = splittedToTimeParts;
+
+			const startTime = new Date();
+				  startTime.setHours(startHours);
+				  startTime.setMinutes(startMinutes);
+				  startTime.setSeconds(0);
+				  startTime.setMilliseconds(0);
+
+			const finishTime = new Date();
+				  finishTime.setHours(finishHours);
+				  finishTime.setMinutes(finishMinutes);
+				  finishTime.setSeconds(0);
+				  finishTime.setMilliseconds(0);
+
+			return startTime.getTime() <= Date.now() && finishTime.getTime() >= Date.now();
+		},
+		/**
+		 * @param {String} iLessonTime
+		 * @returns {Boolean}
+		 */
+		lessonPlanned: function (iLessonTime) {
+			if (typeof iLessonTime !== "string") return false;
+
+			const splitted = iLessonTime.split(/\s*[\-–—]\s*/)
+			if (splitted.length < 2) return false;
+
+			const splittedToTimeParts = splitted.map((time) => time.split(":").map((part) => parseInt(part)));
+			if (splittedToTimeParts.filter((time) => time.some((part) => isNaN(part))).length) return false;
+
+			const [ [startHours, startMinutes] ] = splittedToTimeParts;
+
+			const startTime = new Date();
+				  startTime.setHours(startHours);
+				  startTime.setMinutes(startMinutes);
+				  startTime.setSeconds(0);
+				  startTime.setMilliseconds(0);
+
+			return startTime.getTime() > Date.now();
+		},
+		/**
+		 * @param {String} iType
+		 * @returns {String}
+		 */
+		lessonType(iType) {
+			if (typeof iType !== "string") return iType;
+
+			switch (iType.trim().toLowerCase()) {
+				case "пр": return "Семинар"; break;
+				case "лк": return "Лекция"; break;
+				case "лаб": return "Лабораторная"; break;
+				case "ср":
+				case "с/р": return "Сам. раб."; break;
+				default: return iType; break;
+			}
+		},
+		/**
+		 * @param {String} iName
+		 * @returns {String}
+		 */
+		lessonName(iName) {
+			if (typeof iName !== "string") return iName;
+
+			if (/^англ(ийский)?(\.)?\s*яз(ык)?(\.)?$/i.test(iName.trim())) return "Английский язык";
+			if (/^фр(ан(ц(узский)?)?)?(\.)?\s*яз(ык)?(\.)?$/i.test(iName.trim())) return "Французский язык";
+			if (/^ин(остранный)?(\.)?\s*яз(ык)?(\.)?$/i.test(iName.trim())) return "Иностранный язык";
+
+			return iName;
+		}
 	}
 }
 </script>
@@ -130,19 +229,25 @@ export default {
 	flex-wrap: wrap;
 	position: relative;
 
-	width: 100%;
+	width: calc(50% - 12px);
 	margin: 0 0 20px;
 	padding: 16px;
 	box-sizing: border-box;
 
 	background-color: var(--card-color);
-	border-radius: 8px;
+	border-radius: 20px;
 	box-shadow: 0 1px 4px 1px rgba(100, 100, 100, 0.05);
 }
 
-@media (min-width: 900px) {
+@media (max-width: 432px) {
 	.day {
-		width: calc(50% - 12px);
+		border-radius: 8px;
+	}
+}
+
+@media (max-width: 800px) {
+	.day {
+		width: 100%;
 	}
 }
 
@@ -171,9 +276,17 @@ export default {
 	line-height: 1em;
 	white-space: nowrap;
 
-	text-transform: uppercase;
-
 	color: var(--card-accent-color);
+}
+
+.day__title--italic {
+	display: inline;
+	font-style: italic;
+	float: right;
+}
+
+.day__title--uppercase {
+	text-transform: uppercase;
 }
 
 .oddity {
@@ -263,8 +376,6 @@ export default {
 	font-weight: 500;
 
 	color: var(--text-color);
-
-	white-space: nowrap;
 }
 
 .option__info__item:last-of-type {
@@ -278,6 +389,39 @@ export default {
 	vertical-align: -2.5px;
 
 	color: var(--primary-color);
+}
+
+.option__info__item-time--planned {
+	display: inline-block;
+	position: relative;
+
+	margin: 0 4px 4px 0;
+	padding: 2px 4px;
+	box-sizing: border-box;
+
+	border-radius: 4px;
+
+	background-color: var(--primary-color);
+	color: #FFF;
+}
+
+.option__info__item-time--ongoing {
+	display: inline-block;
+	position: relative;
+
+	margin: 0 4px 4px 0;
+	padding: 2px 4px;
+	box-sizing: border-box;
+
+	border-radius: 4px;
+
+	background-color: var(--accent-color);
+	color: #FFF;
+}
+
+.option__info__item-time--planned .material-icons,
+.option__info__item-time--ongoing .material-icons {
+	color: inherit;
 }
 
 .option__info__item__weeks {
