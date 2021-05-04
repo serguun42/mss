@@ -13,7 +13,8 @@ self.addEventListener("install", (e) => {
 				"/",
 				"/all",
 				"/group",
-				"/app"
+				"/app",
+				"/favicon.ico"
 			]));
 	};
 
@@ -49,10 +50,11 @@ function fromNetwork(request) {
 	let putToCacheChecker = false;
 
 	[
-		/^\/manifest.json/g,
-		/^\/manifest.webmanifest/g,
-		/\.(woff2|woff|ttf|js|css)$/g,
-		/^\/img\/icons\/(round|maskable)\/(round|maskable)_(\d+x\d+)\.png$/g
+		/^\/api\//i,
+		/^\/manifest.json/gi,
+		/^\/manifest.webmanifest/gi,
+		/\.(woff2|woff|ttf|js|css)$/gi,
+		/^\/img\/icons\/(round|maskable)\/(round|maskable)_(\d+x\d+)\.png$/gi
 	].forEach((iRegExp) => {
 		if (iRegExp.test(requestedURL.pathname)) {
 			putToCacheChecker = true;
@@ -60,15 +62,15 @@ function fromNetwork(request) {
 	});
 
 	if (putToCacheChecker)
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve, reject) =>
 			caches.open(CACHE).then((cache) =>
 				fetch(request).then((response) =>
 					cache.put(request, response).then(() =>
 						fromCache(request).then((matching) => resolve(matching))
-					)
-				)
-			)
-		});
+					).catch(reject)
+				).catch(reject)
+			).catch(reject)
+		);
 	else
 		return fetch(request);
 };
@@ -92,8 +94,26 @@ function fromCache(request) {
 self.addEventListener("fetch", /** @param {FetchEvent|Event} fetchEvent */ (fetchEvent) => {
 	const { request } = fetchEvent;
 
-	fetchEvent.respondWith(
-		fromCache(request)
-			.catch(() => fromNetwork(request))
-	);
+
+	let apiCalledFlag = false;
+
+	try {
+		const parsedURL = new URL(request.url || "", "https://mirea.xyz");
+
+		if (/^\/api\//i.test(parsedURL.pathname))
+			apiCalledFlag = true;
+	} catch (e) { };
+
+
+	if (apiCalledFlag) {
+		fetchEvent.respondWith(
+			fromNetwork(request)
+				.catch(fromCache(request))
+		);
+	}
+	else
+		fetchEvent.respondWith(
+			fromCache(request)
+				.catch(() => fromNetwork(request))
+		);
 });

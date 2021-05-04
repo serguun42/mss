@@ -124,7 +124,7 @@ export default {
 	padding: 0;
 	box-sizing: border-box;
 
-	box-shadow: 0 0 3px 1px rgba(50, 50, 50, 0.2);
+	box-shadow: 0 0 3px 1px var(--navigation-shadow-color);
 	border-radius: 20px;
 
 	background-color: var(--search-background-color);
@@ -184,6 +184,7 @@ export default {
 	text-align: center;
 	color: var(--search-text-color);
 
+	background-color: transparent;
 	border: none;
 	outline: none;
 }
@@ -252,7 +253,7 @@ export default {
 	padding: 0 0 8px;
 	box-sizing: border-box;
 
-	box-shadow: 0 3px 3px 1px rgba(50, 50, 50, 0.2);
+	box-shadow: 0 3px 3px 1px var(--navigation-shadow-color);
 	border-radius: 0 0 20px 20px;
 
 	background-color: var(--search-background-color);

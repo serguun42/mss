@@ -70,6 +70,17 @@ export default {
 
 		if (document.readyState === "complete")
 			this.documentLoading = false;
+
+
+		const LocalSetThemeToDocument = () => {
+			if (store.getters.theme.dark)
+				document.body.classList.add("is-dark");
+			else
+				document.body.classList.remove("is-dark");
+		};
+
+		LocalSetThemeToDocument();
+		Dispatcher.link("themeChanged", LocalSetThemeToDocument);
 	}
 }
 </script>

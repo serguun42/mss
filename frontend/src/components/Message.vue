@@ -39,15 +39,15 @@ export default {
 	line-height: 24px;
 
 	box-shadow: 0 1px 4px 1px rgb(100, 100, 100, 0.1);
-	background-color: var(--navigation-color);
-	color: var(--primary-color);
+	background-color: var(--navigation-background-color);
+	color: var(--navigation-text-color);
 	text-align: center;
 
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 
-	z-index: 5;
+	z-index: 10;
 
 	transition: top 400ms ease-in-out 0s;
 }
