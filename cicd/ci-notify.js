@@ -11,16 +11,14 @@ const
  * @param {(Error | String)[]} args
  * @returns {void}
  */
-const Logging = (...args) => {
-	const payload = {
-		error: args.findIndex((message) => message instanceof Error) > -1,
-		args: args.map((arg) => arg instanceof Error ? { ERROR_name: arg.name, ERROR_message: arg.message } : arg),
-		tag: LOGGING_TAG
-	};
-
+const LoggingCIStuffToNotifier = (...args) => {
 	NodeFetch(`http://127.0.0.1:${LOGGING_PORT}`, {
 		method: "POST",
-		body: JSON.stringify(payload)
+		body: JSON.stringify({
+			error: false,
+			args: args instanceof Array ? [args.join(", ")] : args,
+			tag: LOGGING_TAG
+		})
 	}).then((res) => {
 		if (res.status !== 200)
 			return res.text().then((text) => {
@@ -35,5 +33,5 @@ const Logging = (...args) => {
 };
 
 if (process.argv && process.argv.length > 2) {
-	Logging(process.argv.slice(2));
+	LoggingCIStuffToNotifier(process.argv.slice(2));
 }
