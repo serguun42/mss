@@ -17,7 +17,11 @@
 					:showOngoingAndPlannedLesson="dayIndex === 0"
 				></day>
 			</div>
-			<pre v-else>no days</pre>
+			<h2 class="index-page__subtitle default-no-selection" v-else>
+				<span>Нет расписания на следующих два дня</span>
+				<br>
+				<router-link to="/group">Всё расписание</router-link>
+			</h2>
 		</div>
 
 		<div v-else-if="loadedOnce">
@@ -144,17 +148,26 @@ export default {
 
 					/** @type {CustomDay} */
 					const today = this.savedUserGroup.schedule[new Date().getDay() - 1 < 0 ? 7 + (new Date().getDay() - 1) : new Date().getDay() - 1];
-					today.customTitle = "Сегодня";
-					today.certainWeek = this.currentWeek;
+					if (today) today.customTitle = "Сегодня";
+					if (today) today.certainWeek = this.currentWeek;
 
 					/** @type {CustomDay} */
 					const tomorrow = this.savedUserGroup.schedule[new Date().getDay() % 7];
-					tomorrow.customTitle = "Завтра";
-					tomorrow.certainWeek = this.currentWeek + (new Date().getDay() === 0);
+					if (tomorrow) tomorrow.customTitle = "Завтра";
+					if (tomorrow) tomorrow.certainWeek = this.currentWeek + (new Date().getDay() === 0);
 
-					this.savedUserGroupDays = [
-						today, tomorrow
-					].filter((day) => !!day);
+					/** @type {CustomDay} */
+					const dayAfterTomorrow = this.savedUserGroup.schedule[(new Date().getDay() + 1) % 7];
+					if (dayAfterTomorrow) dayAfterTomorrow.customTitle = "Послезавтра";
+					if (dayAfterTomorrow) dayAfterTomorrow.certainWeek = this.currentWeek + (new Date().getDay() === 6);
+
+
+					this.savedUserGroupDays = (
+						(new Date().getHours() > 19 || (new Date().getHours() === 19 && new Date().getMinutes() >= 30)) ?
+							[ tomorrow, dayAfterTomorrow ]
+							:
+							[ today, tomorrow ]
+					).filter((day) => !!day);
 				})
 				.catch(console.warn)
 			} else {

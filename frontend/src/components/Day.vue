@@ -251,7 +251,7 @@ export default {
 	}
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1550px) {
 	.day {
 		width: calc(100% / 3 - 12px);
 	}

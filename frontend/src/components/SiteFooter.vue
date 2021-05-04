@@ -113,13 +113,14 @@ export default {
 
 @media (min-width: 500.01px) and (max-width: 1200px) {
 	.site-footer__section {
+		/* calc(100% / 3) would suit too, but… */
 		--min-footer-section-width: 30%;
 	}
 }
 
 @media (min-width: 1200.01px) {
 	.site-footer__section {
-		--min-footer-section-width: 20%;
+		--min-footer-section-width: 25%;
 	}
 }
 
