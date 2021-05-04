@@ -251,7 +251,7 @@ export default {
 	}
 }
 
-@media (min-width: 1550px) {
+@media (min-width: 1500px) {
 	.day {
 		width: calc(100% / 3 - 12px);
 	}
@@ -388,7 +388,7 @@ export default {
 	font-size: 16px;
 	vertical-align: -2.5px;
 
-	color: var(--primary-color);
+	color: var(--dark-color);
 }
 
 .option__info__item-time--planned {
@@ -434,6 +434,6 @@ export default {
 .option__info__item__weeks--passed {
 	font-weight: 900;
 
-	color: var(--primary-color);
+	color: var(--dark-color);
 }
 </style>

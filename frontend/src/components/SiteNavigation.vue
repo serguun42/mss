@@ -128,10 +128,10 @@ export default {
 	display: block;
 	position: fixed;
 
-	background-color: var(--navigation-color);
-	color: var(--primary-color);
+	background-color: var(--navigation-background-color);
+	color: var(--navigation-text-color);
 
-	box-shadow: 0 0 3px 1px rgba(50, 50, 50, 0.2);
+	box-shadow: 0 0 3px 1px var(--navigation-shadow-color);
 
 	z-index: 9;
 }
@@ -275,7 +275,7 @@ export default {
 	padding: 0;
 	box-sizing: border-box;
 
-	background-color: #fff;
+	background-color: var(--drawer-background-color);
 	color: var(--text-color);
 
 	z-index: 11;

@@ -241,8 +241,8 @@ export default {
 	box-shadow: 0 1px 4px 1px rgba(100, 100, 100, 0.05);
 	border-radius: 20px;
 
-	background-color: var(--navigation-color);
-	color: var(--primary-color);
+	background-color: var(--navigation-background-color);
+	color: var(--navigation-text-color);
 
 	font-weight: 700;
 	font-size: 20px;

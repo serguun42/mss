@@ -4,23 +4,50 @@
 	--primary-color-faded: rgba(0, 166, 226, 0.3);
 	--primary-color-faded10: rgba(0, 166, 226, 0.1);
 	--primary-color-faded70: rgba(0, 166, 226, 0.7);
-	--link-color: #03589C;
-	--ripple-color: #03589C;
-	--dark-color: #0f5097;
+	--dark-color: #0F5097;
+
+	--link-color: var(--primary-color);
+	--ripple-color: var(--primary-color);
 	--text-color: #252525;
+
 	--background-color: #F1F1F1;
-	--navigation-color: #FFF;
+	--navigation-background-color: #FFF;
+	--navigation-text-color: var(--primary-color);
+	--navigation-shadow-color: rgba(50, 50, 50, 0.2);
+	--drawer-background-color: #FFF;
 
 	--card-color: #FFF;
-	--card-accent-color: #03589C;
+	--card-accent-color: var(--primary-color);
 	--card-faded-color: #888;
 
 	--search-background-color: #FFF;
 	--search-text-color: #252525;
-	--search-prompt-color: #0f5097;
+	--search-prompt-color: var(--dark-color);
 
 	--index-page-faded-title: #888;
 	--group-page-faded-title: #888;
+}
+
+:root .is-dark {
+	--primary-color: #006FCA;
+	--primary-color-faded: rgba(0, 111, 202, 0.3);
+	--primary-color-faded10: rgba(0, 111, 202, 0.1);
+	--primary-color-faded70: rgba(0, 111, 202, 0.7);
+
+	--text-color: #E1E1E1;
+	--link-color: #0083EE;
+
+	--background-color: #121212;
+	--navigation-background-color: #333;
+	--navigation-text-color: #E1E1E1;
+	--navigation-shadow-color: rgba(0, 0, 0, 0.3);
+	--drawer-background-color: #333;
+
+	--card-color: #333;
+
+	--search-background-color: #333;
+	--search-text-color: #E1E1E1;
+	--search-prompt-color: var(--primary-color);
 }
 
 body {

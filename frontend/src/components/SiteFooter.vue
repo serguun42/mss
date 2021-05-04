@@ -11,16 +11,16 @@
 
 		<section class="site-footer__section">
 			<div class="site-footer__section__item">
-				<i class="material-icons">info</i> <router-link to="/about">О проекте</router-link>
+				<i class="material-icons material-icons-round">info</i> <router-link to="/about">О проекте</router-link>
 			</div>
 			<div class="site-footer__section__item">
-				<i class="material-icons">contact_mail</i> <a href="https://github.com/serguun42/mss/issues" target="_blank" rel="noopener noreferrer">Баги и пожелания</a>
+				<i class="material-icons material-icons-round">contact_mail</i> <a href="https://github.com/serguun42/mss/issues" target="_blank" rel="noopener noreferrer">Баги и пожелания</a>
 			</div>
 		</section>
 
 		<section class="site-footer__section">
 			<div class="site-footer__section__item">
-				<i class="material-icons">api</i> <router-link to="/docs/api">Наше API</router-link>
+				<i class="material-icons material-icons-round">api</i> <router-link to="/docs/api">Наше API</router-link>
 			</div>
 			<div class="site-footer__section__item">
 				<svg class="octicon" height="32" viewBox="0 0 16 16" version="1.1" width="32" aria-hidden="true">
@@ -31,22 +31,28 @@
 
 		<section class="site-footer__section">
 			<div class="site-footer__section__item">
-				<i class="material-icons">android</i> <router-link to="/app">Android-приложение</router-link>
+				<i class="material-icons material-icons-round">android</i> <router-link to="/app">Android-приложение</router-link>
 			</div>
 			<div class="site-footer__section__item">
-				<i class="material-icons">smart_toy</i> <a href="https://t.me/mirea_table_bot" target="_blank" rel="noopener noreferrer">Telegram-бот</a>
+				<i class="material-icons material-icons-round">smart_toy</i> <a href="https://t.me/mirea_table_bot" target="_blank" rel="noopener noreferrer">Telegram-бот</a>
 			</div>
 		</section>
 
 		<section class="site-footer__section">
-			<div class="site-footer__section__item" id="footer-clear-cache" @click="clearGroup">
-				<i class="material-icons">restart_alt</i> Сбросить группу
+			<div class="site-footer__section__item default-no-selection default-pointer" @click="changeTheme">
+				<i class="material-icons material-icons-round" ref="theme-icon" :key="`theme-icon-${$store.getters.theme.icon}`">{{ $store.getters.theme.icon }}</i> Выбрана <span ref="theme-name" :key="`theme-name-${$store.getters.theme.name}`">{{ $store.getters.theme.name }}</span>
 			</div>
-			<div class="site-footer__section__item" id="footer-clear-cache" @click="clearCache">
-				<i class="material-icons">cached</i> Очистить кэш
+		</section>
+
+		<section class="site-footer__section">
+			<div class="site-footer__section__item default-no-selection default-pointer" @click="clearGroup">
+				<i class="material-icons material-icons-round">restart_alt</i> Сбросить группу
 			</div>
-			<div class="site-footer__section__item" id="footer-unregister-sw" @click="removeServiceWorker">
-				<i class="material-icons">delete_outline</i> Удалить Service Worker
+			<div class="site-footer__section__item default-no-selection default-pointer" @click="clearCache">
+				<i class="material-icons material-icons-round">cached</i> Очистить кэш
+			</div>
+			<div class="site-footer__section__item default-no-selection default-pointer" @click="removeServiceWorker">
+				<i class="material-icons material-icons-round">delete_outline</i> Удалить Service Worker
 			</div>
 		</section>
 	</footer>
@@ -58,6 +64,9 @@ import store from "@/store"
 export default {
 	name: "site-footer",
 	methods: {
+		changeTheme() {
+			store.dispatch("changeTheme");
+		},
 		clearGroup() {
 			store.dispatch("saveGroup", { name: null, suffix: null });
 		},
@@ -99,6 +108,10 @@ export default {
 	color: #E1E1E1;
 
 	z-index: 8;
+}
+
+.is-dark #site-footer {
+	background-color: #242424;
 }
 
 @media (max-width: 800px) {
@@ -233,15 +246,5 @@ export default {
 	position: relative;
 	height: 16px;
 	vertical-align: -2px;
-}
-
-#footer-clear-cache, #footer-unregister-sw {
-	outline: none;
-	cursor: pointer;
-	-webkit-tap-highlight-color: transparent;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
 }
 </style>

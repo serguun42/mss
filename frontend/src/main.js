@@ -7,7 +7,7 @@ import VWave from "v-wave";
 Vue.config.productionTip = false;
 
 Vue.use(VWave, {
-	color: store.getters.rippleColor,
+	color: store.getters.theme.dark ? "#FFFFFF" : getComputedStyle(document.documentElement).getPropertyValue("--ripple-color") || store.getters.rippleColor,
 	startingOpacity: 0.4,
 	finialOpacity: 0.6,
 	duration: 0.3,
