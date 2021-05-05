@@ -1,9 +1,9 @@
-package com.rodyapal.mss.data.model.getone
+package com.rodyapal.mss.data.model.one
 
 
 import com.google.gson.annotations.SerializedName
 
-data class EvenWeek(
+data class OddWeek (
     @SerializedName("link")
     val link: Any,
     @SerializedName("name")

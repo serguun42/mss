@@ -1,12 +1,10 @@
 package com.rodyapal.mss.data.local.converters
 
-import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
-import androidx.room.TypeConverters
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rodyapal.mss.data.model.getone.DaySchedule
-import com.rodyapal.mss.data.model.getone.Group
+import com.rodyapal.mss.data.model.one.DaySchedule
+import com.rodyapal.mss.data.model.one.Group
 
 class DatabaseTypeConverter {
 

@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_mss_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Mss">
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.MainActivity"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,13 +1,11 @@
 package com.rodyapal.mss.ui.fragments.schedule
 
-import android.util.Log
-import android.view.GestureDetector
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.rodyapal.mss.data.model.getone.ISchedule
+import com.rodyapal.mss.R
+import com.rodyapal.mss.data.model.one.ISchedule
 import com.rodyapal.mss.databinding.ScheduleListItemBinding
 import com.rodyapal.mss.utils.ScheduleDiffUtils
 import java.util.*
@@ -45,13 +43,15 @@ class ScheduleAdapter : RecyclerView.Adapter<ScheduleAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val schedule = scheduleList[position]
-        holder.bind(
-            position,
-            schedule.name ?: "Unknown name",
-            schedule.tutor ?: "Unknown tutor",
-            schedule.type ?: "Unknown type",
-            schedule.place ?: "Unknown place"
-        )
+        with(holder.itemView.context) {
+            holder.bind(
+                position,
+                schedule.name ?: getString(R.string.unknown_name),
+                schedule.tutor ?: getString(R.string.unknown_tutor),
+                schedule.type ?: getString(R.string.unknown_type),
+                schedule.place ?: getString(R.string.unknown_place)
+            )
+        }
     }
 
     override fun getItemCount(): Int = scheduleList.size

@@ -2,7 +2,6 @@ package com.rodyapal.mss.di
 
 import android.content.Context
 import androidx.room.Room
-import com.rodyapal.mss.data.local.converters.DatabaseTypeConverter
 import com.rodyapal.mss.data.local.dao.MssDao
 import com.rodyapal.mss.data.local.database.MssDatabase
 import com.rodyapal.mss.utils.DB_NAME

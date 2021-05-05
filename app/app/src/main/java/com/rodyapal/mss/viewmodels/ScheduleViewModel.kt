@@ -1,20 +1,14 @@
 package com.rodyapal.mss.viewmodels
 
 import android.app.Application
-import android.util.Log
-import android.view.GestureDetector
-import android.view.MotionEvent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.rodyapal.mss.data.model.getone.DaySchedule
-import com.rodyapal.mss.data.model.getone.Group
-import com.rodyapal.mss.data.model.getone.ISchedule
-import com.rodyapal.mss.data.model.getone.SingleGroupResponse
-import com.rodyapal.mss.data.remote.NetworkResult
+import com.rodyapal.mss.data.model.one.DaySchedule
+import com.rodyapal.mss.data.model.one.Group
+import com.rodyapal.mss.data.model.one.ISchedule
 import com.rodyapal.mss.data.repository.Repository
-import com.rodyapal.mss.utils.hasInternetConnection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.*

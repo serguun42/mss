@@ -1,12 +1,11 @@
 package com.rodyapal.mss.ui.fragments.login
 
 import android.os.Bundle
+import android.view.*
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.rodyapal.mss.R
 import com.rodyapal.mss.databinding.FragmentLoginBinding
 import com.rodyapal.mss.viewmodels.LoginViewModel
@@ -18,6 +17,8 @@ class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
+    private val loginAdapter by lazy { LoginAdapter(loginViewModel.onItemClickListener) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loginViewModel = ViewModelProvider(requireActivity()).get(LoginViewModel::class.java)
@@ -28,22 +29,39 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding =  FragmentLoginBinding.inflate(inflater, container, false)
+        setHasOptionsMenu(true)
         getAllGroups()
-        binding.lfBtViewSchedule.setOnClickListener {
-            loginViewModel.navigateToScheduleFragment(it, binding.groupName ?: "")
-        }
-//        val action = LoginFragmentDirections.actionLoginFragmentToScheduleFragment("ИКБО-03-20")
-//        findNavController().navigate(action)
+        setUpRecyclerView()
         return binding.root
+    }
+
+    private fun setUpRecyclerView() {
+        with(binding.lfRvGroups) {
+            adapter = loginAdapter
+            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        }
     }
 
     private fun getAllGroups() {
         loginViewModel.getAllGroups()
         loginViewModel.groups.observe(viewLifecycleOwner) { names ->
-            val adapter = ArrayAdapter(requireContext(), R.layout.group_hint_list_item, R.id.gh_autocomplete_list_item, names)
-            binding.lfTvGroupName.setAdapter(adapter)
-            binding.lfTvGroupName.threshold = 1
+            loginAdapter.setData(names)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.login_fragment_menu, menu)
+        val searchView = menu.findItem(R.id.lf_menu_search).actionView as SearchView
+        searchView.isSubmitButtonEnabled = true
+        searchView.setOnQueryTextListener(loginViewModel.onQueryTextListener)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.lf_menu_order_by_suffix -> loginViewModel.sortBySuffix()
+            R.id.lf_menu_order_by_year -> loginViewModel.getAllGroups() //TODO: fix sortByYear()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroyView() {
