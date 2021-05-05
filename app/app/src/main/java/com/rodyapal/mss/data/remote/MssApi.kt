@@ -8,11 +8,11 @@ import retrofit2.http.Query
 
 interface MssApi {
 
-    @GET("/api/v1/groups?getAll")
+    @GET("/api/v1.1/groups/all")
     suspend fun getAllGroups() : Response<GroupsResponse>
 
-    @GET("/api/v1/groups")
+    @GET("/api/v1.1/groups/certain")
     suspend fun getScheduleForGroup(
-        @Query("get") name: String
+        @Query("name") name: String
     ) : Response<SingleGroupResponse>
 }

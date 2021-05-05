@@ -10,7 +10,7 @@ fun setSubjectType(textView: TextView, type: String) {
         "лк" -> textView.text = "Лекция"
         "лаб" -> textView.text = "Лабораторная"
         "с/р" -> textView.text = "Самоподготовка"
-        else -> textView.text = ""
+        else -> textView.text = type
     }
 }
 
