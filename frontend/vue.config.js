@@ -15,10 +15,8 @@ const dotenvPlugin = new DotenvWebpackPlugin({
 	safe: false,
 	systemvars: true
 });
-const dotenvPluginForBuildHash = new DotenvWebpackPlugin({
-	path: "./public/version.txt",
-	safe: false,
-	systemvars: true
+const buildHashEnvPlugin = new webpack.DefinePlugin({
+	"process.env.BUILD_HASH": JSON.stringify(BUILD_HASH)
 });
 
 
@@ -72,6 +70,7 @@ fs.writeFileSync(path.join("public", "manifest.webmanifest"), JSON.stringify(OUT
 /** @type {"development"|"production"} */
 const MODE = process.env.NODE_ENV;
 
+/** @type {{ configureWebpack: webpack.Configuration }} */
 module.exports = MODE === "development" ? {
 	configureWebpack: {
 		mode: "development",
@@ -80,7 +79,7 @@ module.exports = MODE === "development" ? {
 		},
 		plugins: [
 			dotenvPlugin,
-			dotenvPluginForBuildHash
+			buildHashEnvPlugin
 		],
 		devServer: WIN ? {
 			host: "localhost",
@@ -100,7 +99,7 @@ module.exports = MODE === "development" ? {
 		},
 		plugins: [
 			dotenvPlugin,
-			dotenvPluginForBuildHash
+			buildHashEnvPlugin
 		],
 	},
 

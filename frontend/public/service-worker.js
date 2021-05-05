@@ -1,14 +1,8 @@
-const
-	CACHE = "cache_static",
-	Highlight = iString => `\u001b[33m ${iString} \u001b[0m`,
-	Accent = iString => `\u001b[35m ${iString} \u001b[0m`;
-
+const CACHE_STORAGE_NAME = "cache_static";
 
 self.addEventListener("install", (e) => {
-	console.log(Accent("<install> event"));
-
 	function onInstall() {
-		return caches.open(CACHE)
+		return caches.open(CACHE_STORAGE_NAME)
 			.then(cache => cache.addAll([
 				"/",
 				"/all",
@@ -21,13 +15,9 @@ self.addEventListener("install", (e) => {
 	e.waitUntil(onInstall(e));
 });
 
-self.addEventListener("activate", (e) => {
-	console.log(Accent("<activate> event"));
-});
+self.addEventListener("activate", (e) => { });
 
-self.addEventListener("beforeinstallprompt", () => {
-	console.log(Accent("<beforeinstallprompt> event"));
-});
+self.addEventListener("beforeinstallprompt", () => { });
 
 
 
@@ -63,7 +53,7 @@ function fromNetwork(request) {
 
 	if (putToCacheChecker)
 		return new Promise((resolve, reject) =>
-			caches.open(CACHE).then((cache) =>
+			caches.open(CACHE_STORAGE_NAME).then((cache) =>
 				fetch(request).then((response) =>
 					cache.put(request, response).then(() =>
 						fromCache(request).then((matching) => resolve(matching))
@@ -81,7 +71,7 @@ function fromNetwork(request) {
  * @param {Request} request
  */
 function fromCache(request) {
-	return caches.open(CACHE)
+	return caches.open(CACHE_STORAGE_NAME)
 		.then((cache) => cache.match(request))
 		.then((matching) => {
 			if (matching)

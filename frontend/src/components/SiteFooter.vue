@@ -49,10 +49,7 @@
 				<i class="material-icons material-icons-round">restart_alt</i> Сбросить группу
 			</div>
 			<div class="site-footer__section__item default-no-selection default-pointer" @click="clearCache">
-				<i class="material-icons material-icons-round">cached</i> Очистить кэш
-			</div>
-			<div class="site-footer__section__item default-no-selection default-pointer" @click="removeServiceWorker">
-				<i class="material-icons material-icons-round">delete_outline</i> Удалить Service Worker
+				<i class="material-icons material-icons-round">delete_outline</i> Очистить кэш
 			</div>
 		</section>
 	</footer>
@@ -71,20 +68,7 @@ export default {
 			store.dispatch("saveGroup", { name: null, suffix: null });
 		},
 		clearCache() {
-			caches.delete("cache_static").then(() =>
-				store.dispatch("showMessage", "Кеш успешно очищен")
-			).catch(() => 
-				store.dispatch("showMessage", "Произошла ошибка во время очистки кеша")
-			)
-		},
-		removeServiceWorker() {
-			if (navigator.serviceWorker) {
-				navigator.serviceWorker.getRegistrations().then((registered) => {
-					for (const sw of registered) sw.unregister();
-				});
-
-				store.dispatch("showMessage", "Service Worker успешно удалён");
-			}
+			store.dispatch("clearCache", true);
 		}
 	}
 }
