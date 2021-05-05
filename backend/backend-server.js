@@ -1,12 +1,15 @@
 const
+	{ join } = require("path"),
 	fs = require("fs"),
-	{ createReadStream } = fs,
 	util = require("util"),
+	{ createReadStream: fsCreateReadStream, ReadStream: fsReadStream } = fs,
 	fsStat = util.promisify(fs.stat),
-	fsReadfile = util.promisify(fs.readFile),
-	{ join } = require("path");
+	zlib = require("zlib"),
+	{ createGzip } = zlib,
+	gzip = util.promisify(zlib.gzip);
 
 const
+	LOG_CONNECTIONS = false,
 	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
 	{
 		DATABASE_NAME,
@@ -77,7 +80,8 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 	const pathname = UTIL.SafeDecode(new URL(req.url, `https://${HOSTNAME}`).pathname),
 		  path = UTIL.ParsePath(pathname),
 		  queries = UTIL.ParseQuery(new URL(req.url, `https://${HOSTNAME}`).search),
-		  cookies = UTIL.ParseCookie(req.headers);
+		  cookies = UTIL.ParseCookie(req.headers),
+		  acceptGzip = /\bgzip\b/i.test(req.headers["accept-encoding"] || "");
 
 	
 	let location = join(FRONT_ROOT, UTIL.SafeDecode(pathname)),
@@ -90,25 +94,81 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 	const GlobalError404 = () => {
 		res.statusCode = 404;
 		res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".html"));
-		res.end(
-			`<html><head><meta charset="UTF-8"><meta name="theme-color" content="#FFFFFF"><meta name="viewport" content="user-scalable=no, width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0"><link rel="shortcut icon" href="/favicon.ico"><title>404</title><style>body{background-color:#FAFAFA;color:#333;margin:0;padding:0;}*{text-align:center;}h1{font-family:'Roboto','Noto',Arial,Helvetica,sans-serif;font-weight:400;font-size:56px;padding:0;margin:24px 0;letter-spacing:-.02em;line-height:1.35em;color:inherit;}a{color:#00695C;text-decoration:underline;font-family:'Roboto','Noto',Arial,Helvetica,sans-serif;font-size:24px;font-weight:500;line-height:32px;margin:24px 0 16px;}::selection{background:#B3D4FC;}.is-dark{background-color:#333;color:#DDD;}.is-dark a{color:#4DB6AC}</style></head><body><h1 id="t1">Ошибка 404!</h1><h1 id="t2">Страница не найдена</h1><a id="alink" href="https://${HOSTNAME}">На главную</a><script>if(new Date().getHours()>=19||new Date().getHours()<=6)document.body.classList.add("is-dark");document.getElementById("alink").setAttribute("href",window.location.origin);if(!/ru/gi.test(navigator.language)){document.getElementById("t1").innerText="Error 404!";document.getElementById("t2").innerText="Page not found";document.getElementById("alink").innerText="Home page";};</script></body></html>`
-		);
+		res.end(`<html><head><meta charset="UTF-8"><meta name="theme-color" content="#FFFFFF"><meta name="viewport" content="user-scalable=no, width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0"><link rel="shortcut icon" href="/favicon.ico"><title>404</title><style>body{background-color:#FAFAFA;color:#333;margin:0;padding:0;}*{text-align:center;}h1{font-family:'Roboto','Noto',Arial,Helvetica,sans-serif;font-weight:400;font-size:56px;padding:0;margin:24px 0;letter-spacing:-.02em;line-height:1.35em;color:inherit;}a{color:#03589C;text-decoration:underline;font-family:'Roboto','Noto',Arial,Helvetica,sans-serif;font-size:24px;font-weight:500;line-height:32px;margin:24px 0 16px;}::selection{background:#B3D4FC;}.is-dark{background-color:#333;color:#DDD;}.is-dark a{color:#4DB6AC}</style></head><body><h1 id="t1">Ошибка 404!</h1><h1 id="t2">Страница не найдена</h1><a id="alink" href="https://${HOSTNAME}">На главную</a><script>if(new Date().getHours()>=19||new Date().getHours()<=6)document.body.classList.add("is-dark");document.getElementById("alink").setAttribute("href",window.location.origin);if(!/ru/gi.test(navigator.language)){document.getElementById("t1").innerText="Error 404!";document.getElementById("t2").innerText="Page not found";document.getElementById("alink").innerText="Home page";};</script></body></html>`);
 	};
+
+
+	/**
+	 * @param {String} [iWhen]
+	 */
+	const LogConnection = (iWhen = "REQ") => {
+		if (!LOG_CONNECTIONS) return;
+
+		console.log(`${(iWhen + ":").padEnd(15, " ")}${decodeURIComponent(req.url).padEnd(50, " ")} ${new Date().toISOString()}`);
+	}
+
+	LogConnection("REG");
 
 	/**
 	 * @param {Number} iCode
-	 * @param {String | Buffer | Object} iData 
+	 * @param {String | Buffer | ReadStream | Object} iData 
 	 * @returns {false}
 	 */
 	const GlobalSendCustom = (iCode, iData) => {
+		LogConnection("RES START");
+
 		res.statusCode = iCode;
 
-		if (typeof iData === "object") {
-			res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".json"));
-			res.end(JSON.stringify(iData))
+		if (iData instanceof fsReadStream) {
+			if (acceptGzip) {
+				res.setHeader("Content-Encoding", "gzip");
+				iData.pipe(createGzip()).pipe(res);
+			} else {
+				res.removeHeader("Content-Encoding");
+				iData.pipe(res);
+			}
+		} else if (iData instanceof Buffer || typeof iData == "string") {
+			const dataToSend = iData.toString();
+			
+			if (acceptGzip) {
+				gzip(dataToSend)
+				.then((compressed) => {
+					res.setHeader("Content-Encoding", "gzip");
+					res.setHeader("Content-Length", compressed.length);
+					res.end(compressed, () => LogConnection("RES END"));
+				})
+				.catch(() => {
+					res.removeHeader("Content-Encoding");
+					res.setHeader("Content-Length", dataToSend.length);
+					res.end(dataToSend, () => LogConnection("RES END"));
+				});
+			} else {
+				res.removeHeader("Content-Encoding");
+				res.setHeader("Content-Length", dataToSend.length);
+				res.end(dataToSend, () => LogConnection("RES END"));
+			}
 		} else {
-			res.end(iData.toString());
-		};
+			const dataToSend = JSON.stringify(iData);
+			res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".json"));
+
+			if (acceptGzip) {
+				gzip(dataToSend)
+				.then((compressed) => {
+					res.setHeader("Content-Encoding", "gzip");
+					res.setHeader("Content-Length", compressed.length);
+					res.end(compressed, () => LogConnection("RES END"));
+				})
+				.catch(() => {
+					res.removeHeader("Content-Encoding");
+					res.setHeader("Content-Length", dataToSend.length);
+					res.end(dataToSend, () => LogConnection("RES END"));
+				});
+			} else {
+				res.removeHeader("Content-Encoding");
+				res.setHeader("Content-Length", dataToSend.length);
+				res.end(dataToSend, () => LogConnection("RES END"));
+			}
+		}
 
 		return false;
 	};
@@ -118,8 +178,10 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 	 * @returns {false}
 	 */
 	const GlobalSend = iCode => {
+		LogConnection("RES START");
+
 		res.statusCode = iCode || 200;
-		res.end(STATUSES[iCode || 200]);
+		res.end(STATUSES[iCode || 200], () => LogConnection("RES END"));
 		return false;
 	};
 
@@ -242,6 +304,7 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 		pageChecker,
 		queries,
 		cookies,
+		acceptGzip,
 		GlobalError404,
 		GlobalSend,
 		GlobalSendCustom,
@@ -262,46 +325,45 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 	fsStat(location).then((fileStats) => {
 		const { size } = fileStats;
 
-		if (size > 1e6 & !pageChecker) {
+		if (!pageChecker) {
 			try {
 				const rangeHeader = req.headers.range;
 
-				if (rangeHeader) {
+				if (rangeHeader && !acceptGzip) {
 					const parts = rangeHeader.replace(/bytes=/i, "").split("-"),
 						  start = parseInt(parts[0]) || 0,
 						  end = parseInt(parts[1]) || size - 1,
 						  chunkSize = end - start + 1;
-						
+
 					res.statusCode = 206;
 					res.setHeader("Content-Range", "bytes " + start + "-" + end + "/" + size);
 					res.setHeader("Accept-Ranges", "bytes");
 					res.setHeader("Content-Length", chunkSize);
 					res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(location));
-					createReadStream(location, { start, end }).pipe(res);
+					fsCreateReadStream(location, { start, end }).pipe(res);
 				} else {
 					res.statusCode = 200;
-					res.setHeader("Content-Length", size);
 					res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(location));
-					createReadStream(location).pipe(res);
-				};
+
+					if (acceptGzip && size < 5e3) {
+						res.removeHeader("Content-Length");
+						res.setHeader("Content-Encoding", "gzip");
+						fsCreateReadStream(location).pipe(createGzip()).pipe(res);
+					} else {
+						res.setHeader("Content-Length", size);
+						res.removeHeader("Content-Encoding");
+						fsCreateReadStream(location).pipe(res);
+					}
+				}
 			} catch (e) {
 				return Promise.reject(e);
-			};
+			}
 		} else {
-			return fsReadfile(location).then((data) => {
-				res.statusCode = 200;
+			res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".html"));
 
-				if (pageChecker) {
-					res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".html"));
-
-					pageModule({
-						...CALLING_PROPS,
-						data
-					});
-				} else {
-					res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(location));
-					res.end(data);
-				};
+			pageModule({
+				...CALLING_PROPS,
+				fileStream: fsCreateReadStream(location)
 			});
 		};
 	}).catch(GlobalError404);
@@ -312,6 +374,6 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 http.createServer((req, res) => {
 	res.statusCode = 301;
 	res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".html"));
-	res.setHeader("Location", `https://${HOSTNAME}${req.url}`);
+	res.setHeader("Location", `https://${HOSTNAME}${decodeURIComponent(req.url)}`);
 	res.end(`<html><head><script>window.location.protocol="https:"</script></head></html>`);
 }).listen(80, "::");

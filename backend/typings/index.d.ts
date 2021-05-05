@@ -1,7 +1,7 @@
 export type ModuleCallingObjectType = {
     req: import("http").IncomingMessage;
     res: import("http").ServerResponse;
-    data: Buffer | string;
+    fileStream: import("fs").ReadStream;
     pageChecker: boolean;
     pathname: string;
     path: string[];
@@ -12,6 +12,7 @@ export type ModuleCallingObjectType = {
     cookies: {
         [name: string]: string;
     };
+	acceptGzip: boolean,
     GlobalError404: () => void;
     GlobalSend: (iCode: number) => void;
     GlobalSendCustom: (iCode: number, iData: any) => void;
