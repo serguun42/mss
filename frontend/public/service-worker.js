@@ -81,8 +81,10 @@ function fromCache(request) {
 		});
 };
 
-self.addEventListener("fetch", /** @param {FetchEvent|Event} fetchEvent */ (fetchEvent) => {
-	const { request } = fetchEvent;
+self.addEventListener("fetch", /** @param {{ request: Request, preloadResponse: Response }} event */ (event) => {
+	const { request } = event;
+
+	if (request.method !== "GET") return fetch(request);
 
 
 	let apiCalledFlag = false;
@@ -96,13 +98,13 @@ self.addEventListener("fetch", /** @param {FetchEvent|Event} fetchEvent */ (fetc
 
 
 	if (apiCalledFlag) {
-		fetchEvent.respondWith(
+		event.respondWith(
 			fromNetwork(request)
 				.catch(fromCache(request))
 		);
 	}
 	else
-		fetchEvent.respondWith(
+		event.respondWith(
 			fromCache(request)
 				.catch(() => fromNetwork(request))
 		);
