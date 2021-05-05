@@ -16,7 +16,7 @@ const LoggingCIStuffToNotifier = (...args) => {
 		method: "POST",
 		body: JSON.stringify({
 			error: false,
-			args: args instanceof Array ? [args.join(", ")] : args,
+			args: args instanceof Array ? [args.join("\n")] : args,
 			tag: LOGGING_TAG
 		})
 	}).then((res) => {
@@ -33,5 +33,5 @@ const LoggingCIStuffToNotifier = (...args) => {
 };
 
 if (process.argv && process.argv.length > 2) {
-	LoggingCIStuffToNotifier(process.argv.slice(2));
+	LoggingCIStuffToNotifier(...process.argv.slice(2));
 }

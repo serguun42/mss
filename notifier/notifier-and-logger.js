@@ -164,11 +164,12 @@ const LogViaTelegram = (payload) => {
 			resolve(`${stringifiedPayload}\n\n${[payload.tag].concat(payload.error ? "error" : "logs").filter(tag => !!tag).map(tag => `#${tag}`).join(" ")}`);
 		};
 	})
-	.then(/** @param {String} messageToSend */ (messageToSend) => telegram.sendMessage(TELEGRAM_SYSTEM_CHANNEL, messageToSend, {
-		disable_notification: true,
-		disable_web_page_preview: true,
-		parse_mode: "HTML"
-	}))
+	.then(/** @param {String} messageToSend */ (messageToSend) => {
+		PushIntoSendingQueue({
+			destination: TELEGRAM_SYSTEM_CHANNEL,
+			text: messageToSend
+		});
+	})
 	.catch((e) => {
 		LogViaConsole({
 			error: true,
@@ -177,6 +178,67 @@ const LogViaTelegram = (payload) => {
 		});
 	});
 };
+
+/**
+ * @typedef {Object} SendingMessageType
+ * @property {Number} destination
+ * @property {String} text
+ */
+/** @type {SendingMessageType[]} */
+const SENDING_QUEUE = [];
+
+/**
+ * @param {SendingMessageType} messageData
+ * @returns {Number}
+ */
+const PushIntoSendingQueue = (messageData) => SENDING_QUEUE.push(messageData);
+
+/**
+ * @typedef {import("telegraf/typings/core/types/typegram").Message.TextMessage} TextMessage
+ * @typedef {import("telegraf").TelegramError} TelegramError
+ */
+/**
+ * @param {SendingMessageType} messageData
+ * @returns {Promise<TextMessage>}
+ */
+const TelegramSend = (messageData) => {
+	return telegram.sendMessage(messageData.destination, messageData.text, {
+		parse_mode: "HTML",
+		disable_web_page_preview: true
+	});
+};
+
+/**
+ * @param {SendingMessageType} iMessageData 
+ * @returns {void}
+ */
+const SendingQueueProcedure = (iMessageData) => {
+	const messageData = iMessageData || SENDING_QUEUE.shift();
+
+	if (messageData && messageData.destination) {
+		TelegramSend(messageData)
+		.then(() => setTimeout(SendingQueueProcedure, 50))
+		.catch(/** @param {TelegramError} e */ (e) => {
+			if (e && e.code === 429) {
+				if (typeof e.parameters?.retry_after == "number")
+					setTimeout(() => SendingQueueProcedure(messageData), e.parameters?.retry_after * 1e3);
+				else
+					setTimeout(() => SendingQueueProcedure(messageData), 1e3);
+			} else {
+				LogViaConsole({
+					error: true,
+					args: ["On TelegramSend @ SendingQueueProcedure promise catch handler.", "Reason", e],
+					tag: "notifieritself"
+				});
+
+				setTimeout(SendingQueueProcedure, 50);
+			}
+		});
+	} else
+		setTimeout(SendingQueueProcedure, 50);
+};
+
+SendingQueueProcedure();
 
 /**
  * @param {NotifierPayloadType} payload

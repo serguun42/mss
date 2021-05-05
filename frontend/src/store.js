@@ -187,6 +187,25 @@ export default new Store({
 				  indexOfCurrentTheme = themesToChoose.indexOf(raw);
 
 			commit("theme", themesToChoose[indexOfCurrentTheme + 1]);
+		},
+		/**
+		 * @param {import("vuex").ActionContext} state
+		 * @param {Boolean} [showMessage=false]
+		 */
+		clearCache({ dispatch }, showMessage = false) {
+			caches.delete("cache_static").then(() => {
+				if (showMessage)
+					dispatch("showMessage", "Кеш успешно очищен")
+			}).catch(() => {
+				if (showMessage)
+					dispatch("showMessage", "Произошла ошибка во время очистки кеша")
+			});
+
+			if (navigator.serviceWorker) {
+				navigator.serviceWorker.getRegistrations().then((registered) => {
+					for (const sw of registered) sw.unregister();
+				});
+			}
 		}
 	},
 	getters: {
