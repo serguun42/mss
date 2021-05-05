@@ -1,7 +1,7 @@
 package com.rodyapal.mss.data.model.getall
 
 
-class GroupsResponse : ArrayList<GroupData>() {
+class GroupsResponse : ArrayList<GroupName>() {
 
-    fun toStringArray() : List<String> = this.toList().map { it.name }
+    fun toStringList() : List<String> = this.toList().map { it.name }
 }
