@@ -131,7 +131,7 @@ jobs:
 
     steps:
       - name: Generate file
-        run: cd ~/mss/frontend/ && npm exec -- redoc-cli bundle public/docs/api/v1.1.yml -o dist/docs/api/redoc.html
+        run: cd ~/mss/frontend/ && npm exec -- redoc-cli bundle public/docs/api/latest.yml -o dist/docs/api/redoc.html
 
   final:
     name: Showing and sending final logs

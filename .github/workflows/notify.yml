@@ -8,6 +8,12 @@ on:
       - '**'
       - '!master'
 
+  pull_request:
+    branches:
+      - '*'
+      - '*/*'
+      - '**'
+
   workflow_dispatch:
 
 jobs:
@@ -17,5 +23,5 @@ jobs:
       - name: Actual notify step
         run: |
           [ -f ~/mss/cicd/ci-notify.js ] &&
-          node ~/mss/cicd/ci-notify.js "Actor: $GITHUB_ACTOR | Branch: ${GITHUB_REF#refs/heads/} | Event: $GITHUB_EVENT_NAME" ||
-          echo "No CI notifier (Actor: $GITHUB_ACTOR | Branch: ${GITHUB_REF#refs/heads/} | Event: $GITHUB_EVENT_NAME)"
+          node ~/mss/cicd/ci-notify.js "Actor: $GITHUB_ACTOR" "Branch: ${GITHUB_REF#refs/heads/}" "Head ref: $GITHUB_HEAD_REF" "Base ref: $GITHUB_BASE_REF" "Event: $GITHUB_EVENT_NAME" ||
+          printf "No CI notifier\n\tActor: $GITHUB_ACTOR\n\tBranch: ${GITHUB_REF#refs/heads/}\n\tHead ref: $GITHUB_HEAD_REF\n\tBase ref: $GITHUB_BASE_REF\n\tEvent: $GITHUB_EVENT_NAME\n"
