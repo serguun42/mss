@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.rodyapal.mss.ui.fragments.login.LoginFragment"
-        android:label="fragment_login"
+        android:label="@string/login_fragment_label"
         tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/action_loginFragment_to_scheduleFragment"
@@ -16,7 +16,7 @@
     <fragment
         android:id="@+id/scheduleFragment"
         android:name="com.rodyapal.mss.ui.fragments.schedule.ScheduleFragment"
-        android:label="schedule_fragment"
+        android:label="@string/schedule_fragment_lable"
         tools:layout="@layout/schedule_fragment" >
         <argument
             android:name="groupName"

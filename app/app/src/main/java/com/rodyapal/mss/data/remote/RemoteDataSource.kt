@@ -1,7 +1,7 @@
 package com.rodyapal.mss.data.remote
 
-import com.rodyapal.mss.data.model.getall.GroupsResponse
-import com.rodyapal.mss.data.model.getone.SingleGroupResponse
+import com.rodyapal.mss.data.model.all.GroupsResponse
+import com.rodyapal.mss.data.model.one.SingleGroupResponse
 import retrofit2.Response
 import javax.inject.Inject
 

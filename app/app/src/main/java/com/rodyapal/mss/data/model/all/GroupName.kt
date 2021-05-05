@@ -1,4 +1,4 @@
-package com.rodyapal.mss.data.model.getall
+package com.rodyapal.mss.data.model.all
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

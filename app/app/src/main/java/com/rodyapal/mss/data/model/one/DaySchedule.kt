@@ -1,4 +1,4 @@
-package com.rodyapal.mss.data.model.getone
+package com.rodyapal.mss.data.model.one
 
 
 import com.google.gson.annotations.SerializedName

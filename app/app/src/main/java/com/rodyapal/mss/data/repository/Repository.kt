@@ -2,8 +2,8 @@ package com.rodyapal.mss.data.repository
 
 import android.util.Log
 import com.rodyapal.mss.data.local.LocalDataSource
-import com.rodyapal.mss.data.model.getall.GroupName
-import com.rodyapal.mss.data.model.getone.Group
+import com.rodyapal.mss.data.model.all.GroupName
+import com.rodyapal.mss.data.model.one.Group
 import com.rodyapal.mss.data.remote.NetworkResult
 import com.rodyapal.mss.data.remote.RemoteDataSource
 import com.rodyapal.mss.utils.*
@@ -19,10 +19,22 @@ class Repository @Inject constructor(
 		private val local: LocalDataSource
 ) {
 
-	suspend fun getGroupNames(internetConnection: Boolean) : List<String> {
+	suspend fun getGroupNamesAsStrings(internetConnection: Boolean) : List<String> {
+		return if (internetConnection) {
+			val names = local.getGroupNamesAsStrings()
+			if (names.isEmpty()) {
+				fetchGroupNames()
+				local.getGroupNamesAsStrings()
+			} else names
+		} else {
+			local.getSavedGroupNamesAsStrings()
+		}
+	}
+
+	suspend fun getGroupNames(internetConnection: Boolean) : List<GroupName> {
 		return if (internetConnection) {
 			val names = local.getGroupNames()
-			if (names.isEmpty() || names.size < 100) {
+			if (names.isEmpty()) {
 				fetchGroupNames()
 				local.getGroupNames()
 			} else names
@@ -42,6 +54,10 @@ class Repository @Inject constructor(
 			}
 		}
 	}
+
+	suspend fun searchGroupName(query: String): List<GroupName> = local.searchGroupName("%$query%")
+	suspend fun sortBySuffix(): List<GroupName> = local.sortBySuffix()
+//	suspend fun sortByYear(): List<GroupName> = local.sortByYear()
 
 	suspend fun getGroup(name: String) : Group {
 		if (!local.groupIsSaved(name) || !upToDate(name)) {

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/lf_menu_search"
+        android:title="@string/search"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="ifRoom"
+        app:actionViewClass="android.widget.SearchView" />
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/lf_menu_sortBy"
+            android:title="@string/sort_by">
+            <menu>
+                <item
+                    android:id="@+id/lf_menu_order_by_suffix"
+                    android:title="@string/order_by_suffix"/>
+
+                <item
+                    android:id="@+id/lf_menu_order_by_year"
+                    android:title="@string/order_by_year"/>
+            </menu>
+        </item>
+    </group>
+
+</menu>

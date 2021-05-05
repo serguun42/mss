@@ -5,4 +5,25 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="view_schedule">View schedule</string>
     <string name="your_group">Your group</string>
+    <string name="login_fragment_label">Your group</string>
+    <string name="schedule_fragment_lable">Schedule</string>
+    <string name="unknown_name">Unknown name</string>
+    <string name="unknown_tutor">Unknown tutor</string>
+    <string name="unknown_type">Unknown type</string>
+    <string name="unknown_place">Unknown place</string>
+    <string name="lesson_type_practice">Practice</string>
+    <string name="lesson_type_lection">Lection</string>
+    <string name="lesson_type_lab">Laboratory</string>
+    <string name="lesson_type_self_training">Self-trainning</string>
+    <string name="lesson_start_time_first">09:00</string>
+    <string name="lesson_start_time_second">10:40</string>
+    <string name="lesson_start_time_third">12:40</string>
+    <string name="lesson_start_time_fouth">16:20</string>
+    <string name="lesson_start_time_fifth">16:20</string>
+    <string name="lesson_start_time_sixth">18:00</string>
+    <string name="lesson_start_time_seventh">20:00</string>
+    <string name="search">Search</string>
+    <string name="sort_by">Sort by</string>
+    <string name="order_by_suffix">Suffix</string>
+    <string name="order_by_year">Year</string>
 </resources>
