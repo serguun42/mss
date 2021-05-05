@@ -11,7 +11,7 @@ export default {
 	name: "APISwagger",
 	mounted() {
 		SwaggerUI({
-			url: "/docs/api/v1.1.yml",
+			url: "/docs/api/latest.yml",
 			dom_id: "#api-page-swagger"
 		})
 	},

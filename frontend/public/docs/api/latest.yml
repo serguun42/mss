@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   description: This is API for MIREA Schedule System (MSS), made by @serguun42.
-  version: "1.1.0"
+  version: "1.2.0"
   contact:
     name: MSS API
     url: https://mirea.xyz/docs/api
@@ -14,14 +14,16 @@ info:
     url: 'https://mirea.xyz/img/logo_wide.png'
 
 servers:
-  - description: MSS Production Server, API version 1.1.0
-    url: https://mirea.xyz/api/v1.1/
+  - description: MSS Production Server, API version 1.2.0
+    url: https://mirea.xyz/api/v1.2/
 
 tags:
   - name: groups
     description: Everything about groups
   - name: time
     description: Fetch or sync time (weeks, days, etc.)
+  - name: logs
+    description: Getting logs from some sources (e.g. app)
 
 paths:
   /groups/all:
@@ -113,6 +115,44 @@ paths:
               schema:
                 type: number
                 example: 10
+        default:
+          description: Some (un)expected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SomeError'
+
+  /logs/post:
+    post:
+      description: "Post logs from app, front, etc."
+      operationId: postLogs
+      tags:
+        - logs
+      parameters:
+        - in: query
+          name: source
+          schema:
+            type: string
+          required: true
+          description: >
+            Corresponds for source of logs
+          example: "app"
+      requestBody:
+        description: Actual logs body
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: 'Error NullEx in "app/src/module.kt:42:1337"'
+      responses:
+        '202':
+          description: Accepted
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "202 Accepted"
         default:
           description: Some (un)expected error
           content:
