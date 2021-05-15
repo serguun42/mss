@@ -31,8 +31,10 @@ Object.keys(ANIMATIONS_CONFIG).forEach((animationName) => {
 });
 
 if (process.env.NODE_ENV !== "development") {
-	if ("serviceWorker" in navigator)
-		navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
+	window.addEventListener("load", () => {
+		if ("serviceWorker" in navigator)
+			navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
+	});
 }
 
 new Vue({
