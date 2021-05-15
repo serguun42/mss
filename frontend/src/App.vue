@@ -3,7 +3,9 @@
 		<preloader id="mss-app__preloader" v-if="preloading || documentLoading"></preloader>
 		<message></message>
 		<div id="router-wrapper">
-			<router-view :key="$route.fullPath"></router-view>
+			<transition name="fade-transition" mode="out-in">
+				<router-view :key="$route.fullPath"></router-view>
+			</transition>
 		</div>
 		<site-navigation :customTitle="pageTitle"></site-navigation>
 		<site-footer></site-footer>
@@ -114,5 +116,14 @@ export default {
 	box-sizing: border-box;
 
 	color: var(--text-color);
+}
+
+.fade-transition-enter-active,
+.fade-transition-leave-active {
+	transition: opacity 200ms ease-in-out 0s;
+}
+.fade-transition-enter,
+.fade-transition-leave-active {
+	opacity: 0;
 }
 </style>
