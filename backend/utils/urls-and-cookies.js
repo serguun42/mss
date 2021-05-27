@@ -1,3 +1,7 @@
+const
+	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
+	{ HOSTNAME } = DEV ? require("../../../DEV_CONFIGS/backend.config.json") : require("../backend.config.json");
+
 /**
  * MIME-Type accordance for different file formats
  * @type {{format: String, type: String, noCharset?: Boolean}[]}
@@ -144,6 +148,16 @@ const CombineQueries = iQueries => {
 };
 
 /**
+ * @param {String} iPathname
+ * @returns {URL}
+ */
+const SafeURL = iPathname => {
+	if (typeof iPathname !== "string") return new URL("/", `https://${HOSTNAME}`);
+
+	return new URL(iPathname.replace(/\/+/g, "/"), `https://${HOSTNAME}`);
+};
+
+/**
  * @param {String} iLoc
  * @returns {String}
  */
@@ -182,11 +196,12 @@ const SetCompleteMIMEType = iLoc => {
 
 /**
  * @typedef {Object} UTIL
- * @property {(iString: String) => String} SafeDecode - Example `UTIL.SafeDecode(new URL(req.url, "https://serguun42.ru").pathname)`
+ * @property {(iString: String) => String} SafeDecode - Example `UTIL.SafeDecode(UTIL.SafeURL(req.url).pathname)`
  * @property {(iString: String) => String} SafeEscape - Example `UTIL.SafeEscape(pathname)`
+ * @property {(iPathname: String) => URL} SafeURL - Example `UTIL.SafeURL(req.url)`
  * @property {{iHeaders: {[headerName: string]: string}} => {[name: string]: string}} ParseCookie - Example `UTIL.ParseCookie(req.headers)`
  * @property {(iPath: String) => String[]} ParsePath - Example `UTIL.ParsePath(pathname)`
- * @property {(iQuery: String) => {[queryName: string]: string | true}} ParseQuery - Example `UTIL.ParseQuery(new URL(req.url, "https://serguun42.ru").search)`
+ * @property {(iQuery: String) => {[queryName: string]: string | true}} ParseQuery - Example `UTIL.ParseQuery(UTIL.SafeURL(req.url).search)`
  * @property {(iQueries: {[queryName: string]: string | true}) => String} CombineQueries - Example `UTIL.CombineQueries({ pass: true, search: "Seeking group" })`
  * @property {(iExtention: String) => String} SetMIMEType
  * @property {(iExtention: String) => String} SetCompleteMIMEType
@@ -197,6 +212,7 @@ const SetCompleteMIMEType = iLoc => {
 module.exports = {
 	SafeDecode,
 	SafeEscape,
+	SafeURL,
 	ParseCookie,
 	ParsePath,
 	ParseQuery,

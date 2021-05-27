@@ -14,4 +14,4 @@ Front-end. Vue, 🚴🏻‍♀️, 🦽
 
 ## Some files
 * `.env` – donenv with some frontend variables
-* `src/config/frontend.config.json` – Config file
+* `src/config/config.js` – Some other configuration variables
