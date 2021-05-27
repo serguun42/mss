@@ -8,10 +8,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavArgs
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rodyapal.mss.databinding.ScheduleFragmentBinding
+import com.rodyapal.mss.utils.capital
 import com.rodyapal.mss.viewmodels.ScheduleViewModel
 import java.util.*
 
@@ -22,10 +24,10 @@ class ScheduleFragment : Fragment() {
 	private var _binding: ScheduleFragmentBinding? = null
 	private val binding get() = _binding!!
 
-	private val args by navArgs<ScheduleFragmentArgs>()
+	private val args: ScheduleFragmentArgs by navArgs()
 
-	private val scheduleAdapter by lazy {
-		ScheduleAdapter()
+	private val scheduleListController: ScheduleListController by lazy {
+		ScheduleListController()
 	}
 
 	private var fragmentTitle: String = "Schedule"
@@ -57,15 +59,15 @@ class ScheduleFragment : Fragment() {
 			scheduleViewModel.getDataForGroup(name)
 			scheduleViewModel.group.observe(viewLifecycleOwner) { group ->
 				with(scheduleViewModel) {
-					scheduleAdapter.setData(getTimetableForDayWeekBased(getScheduleForCurrentDay(group.schedule)))
-					fragmentTitle = getDayFromSchedule(group.schedule).capitalize(Locale.getDefault())
+					scheduleListController.data = getTimetableForDayWeekBased(getScheduleForCurrentDay(group.schedule))
+					fragmentTitle = getDayFromSchedule(group.schedule).capital()
 				}
 			}
 		}
 	}
 
 	private fun setUpRecyclerView() {
-		binding.schRvSchedule.adapter = scheduleAdapter
+		binding.schRvSchedule.setController(scheduleListController)
 		binding.schRvSchedule.layoutManager =
 				LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 	}

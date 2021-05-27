@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.rodyapal.mss.data.model.one.DaySchedule
 import com.rodyapal.mss.data.model.one.Group
-import com.rodyapal.mss.data.model.one.ISchedule
+import com.rodyapal.mss.data.model.one.Lesson
 import com.rodyapal.mss.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -42,7 +42,7 @@ class ScheduleViewModel @Inject constructor(
     /**
      * @return list of lessons for day based on current week (even or odd)
      **/
-    fun getTimetableForDayWeekBased(schedule: DaySchedule): List<ISchedule> {
+    fun getTimetableForDayWeekBased(schedule: DaySchedule): List<Lesson> {
         val week = getCurrentWeekFromTermStart()
         return if (week % 2 == 0) schedule.evenWeek.filter { it.isNotEmpty() }.map { it[0] } else schedule.oddWeek.filter { it.isNotEmpty() }.map { it[0] }
     }

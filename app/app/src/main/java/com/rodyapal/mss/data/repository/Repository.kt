@@ -4,6 +4,7 @@ import android.util.Log
 import com.rodyapal.mss.data.local.LocalDataSource
 import com.rodyapal.mss.data.model.all.GroupName
 import com.rodyapal.mss.data.model.one.Group
+import com.rodyapal.mss.data.model.one.normalizeLessonsData
 import com.rodyapal.mss.data.remote.NetworkResult
 import com.rodyapal.mss.data.remote.RemoteDataSource
 import com.rodyapal.mss.utils.*
@@ -79,6 +80,7 @@ class Repository @Inject constructor(
 					local.insertGroup(
 							result.data[0].apply {
 								lastTimeSaved = getCurrentTime()
+								normalizeLessonsData()
 							}
 					)
 				} else {
