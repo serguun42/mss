@@ -43,19 +43,6 @@ fun setEndTimeFromIndex(textView: TextView, index: Int) = with(textView.context)
     }
 }
 
-//@BindingAdapter("android:setDayNameFromIndex")
-//fun setDayNameFromIndex(textView: TextView, index: Int) = with(textView.context) {
-//    when (index) {
-//        1 -> textView.text = getString(R.string.day_monday)
-//        2 -> textView.text = getString(R.string.day_tuesday)
-//        3 -> textView.text = getString(R.string.day_wednesday)
-//        4 -> textView.text = getString(R.string.day_thursday)
-//        5 -> textView.text = getString(R.string.day_friday)
-//        6 -> textView.text = getString(R.string.day_saturday)
-//        else -> textView.text = getString(R.string.day_sunday)
-//    }
-//}
-
 @BindingAdapter("android:setTextWithDate")
 fun setTextWithDate(textView: TextView, dayIndex: Int) = with(textView.context) {
     val dateFormat = SimpleDateFormat("E, d.M.y", Locale.getDefault())

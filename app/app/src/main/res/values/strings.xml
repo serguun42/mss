@@ -49,4 +49,5 @@
     <string name="sort_by">Sort by</string>
     <string name="order_by_suffix">Suffix</string>
     <string name="order_by_year">Year</string>
+    <string name="refresh_data">Refresh data</string>
 </resources>

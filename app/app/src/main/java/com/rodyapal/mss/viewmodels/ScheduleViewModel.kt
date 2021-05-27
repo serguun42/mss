@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.rodyapal.mss.data.model.one.DaySchedule
 import com.rodyapal.mss.data.model.one.Group
 import com.rodyapal.mss.data.model.one.Lesson
+import com.rodyapal.mss.data.model.one.getWeekSchedule
 import com.rodyapal.mss.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -57,5 +58,10 @@ class ScheduleViewModel @Inject constructor(
 
     fun getDayFromSchedule(schedules: List<DaySchedule>) : String {
         return getScheduleForCurrentDay(schedules).day
+    }
+
+    fun getTimetableForWeek(group: Group) : List<Lesson> {
+        val week = getCurrentWeekFromTermStart()
+        return group.getWeekSchedule(week % 2 == 0)
     }
 }

@@ -2,6 +2,7 @@ package com.rodyapal.mss.ui.fragments.schedule
 
 import com.airbnb.epoxy.EpoxyController
 import com.rodyapal.mss.data.model.one.Lesson
+import com.rodyapal.mss.header
 import com.rodyapal.mss.item
 import kotlin.random.Random
 
@@ -14,12 +15,21 @@ class ScheduleListController : EpoxyController() {
 		}
 
 	override fun buildModels() {
+		var previousDay = -1
 		data.forEach { lesson ->
-			item {
-				id(lesson.day * 10 + lesson.lessonIndex)
-				name(lesson.name)
-				data("${lesson.place}, ${lesson.tutor}, ${lesson.type}")
-			}
+			if (lesson.day != previousDay)
+				header {
+					id("header${lesson.day}${lesson.lessonIndex}".hashCode())
+					dayIndex(lesson.day)
+				}
+			else
+				item {
+					id("item${lesson.day}${lesson.lessonIndex}".hashCode())
+					name(lesson.name)
+					data("${lesson.place}, ${lesson.tutor}, ${lesson.type}")
+					lessonIndex(lesson.lessonIndex)
+				}
+			previousDay = lesson.day
 		}
 	}
 }

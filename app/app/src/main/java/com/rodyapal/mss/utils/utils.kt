@@ -20,13 +20,14 @@ fun hideKeyboard(activity: Activity) {
 
 //TODO: remove hardcode strings
 fun getDayIndex(dayName: String) : Int = when (dayName) {
-    "понедельник" -> 0
-    "вторник" -> 1
-    "среда" -> 2
-    "четверг" -> 3
-    "пятница" -> 4
-    "суббота" -> 5
-    else -> 6
+    //According to Calendar.DAY_OF_WEEK
+    "понедельник" -> 2
+    "вторник" -> 3
+    "среда" -> 4
+    "четверг" -> 5
+    "пятница" -> 6
+    "суббота" -> 7
+    else -> 1
 }
 
 fun String.capital() : String = replaceFirstChar {

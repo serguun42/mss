@@ -27,6 +27,7 @@
             android:id="@+id/sch_item_tv_time_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="6dp"
             android:layout_margin="12dp"
             android:hint="09:00"
             android:setStartTimeFromIndex="@{lessonIndex}"
@@ -34,6 +35,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
+            android:padding="12dp"
             android:layout_width="4dp"
             android:layout_height="0dp"
             android:background="@color/teal_200"
@@ -46,6 +48,7 @@
             android:id="@+id/sch_item_tv_time_end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="6dp"
             android:layout_margin="12dp"
             android:hint="10:30"
             android:setEndTimeFromIndex="@{lessonIndex}"
@@ -65,7 +68,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="6dp">
 
                 <TextView
                     android:id="@+id/sch_item_tv_subject_name"

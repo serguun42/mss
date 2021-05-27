@@ -45,3 +45,14 @@ fun Group.normalizeLessonsData() {
 		}
 	}
 }
+
+fun Group.getWeekSchedule(evenWeek: Boolean): List<Lesson> = with(schedule) {
+	val result = mutableListOf<Lesson>()
+	forEach { daySchedule ->
+		if (evenWeek)
+			result.addAll(daySchedule.evenWeek.filter { it.isNotEmpty() }.map { it[0] })
+		else
+			result.addAll(daySchedule.oddWeek.filter { it.isNotEmpty() }.map { it[0] })
+	}
+	return result
+}
