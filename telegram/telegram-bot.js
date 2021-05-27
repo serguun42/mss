@@ -660,25 +660,22 @@ const TelegramSend = (messageData) => {
 const ImmediateSendingQueueProcedure = (iMessageData) => {
 	const messageData = iMessageData || IMMEDIATE_QUEUE.shift();
 
-	if (messageData && messageData.destination) {
-		TelegramSend(messageData)
-		.then(() => setTimeout(ImmediateSendingQueueProcedure, 50))
-		.catch(/** @param {TelegramError} e */ (e) => {
-			if (e && e.code === 429) {
-				if (typeof e.parameters?.retry_after == "number")
-					setTimeout(() => ImmediateSendingQueueProcedure(messageData), e.parameters?.retry_after * 1e3);
-				else
-					setTimeout(() => ImmediateSendingQueueProcedure(messageData), 1e3);
-			} else {
-				Logging(`Unknown error code`, e);
-				setTimeout(ImmediateSendingQueueProcedure, 50);
-			}
-		});
-	} else
-		setTimeout(ImmediateSendingQueueProcedure, 50);
+	if (!(messageData && messageData.destination)) return;
+
+	TelegramSend(messageData)
+	.catch(/** @param {TelegramError} e */ (e) => {
+		if (e && e.code === 429) {
+			if (typeof e.parameters?.retry_after == "number")
+				setTimeout(() => ImmediateSendingQueueProcedure(messageData), e.parameters?.retry_after * 1e3 + Math.random() * 2e3);
+			else
+				setTimeout(() => ImmediateSendingQueueProcedure(messageData), 2e3);
+		} else {
+			Logging(`Unknown error code`, e);
+		}
+	});
 };
 
-ImmediateSendingQueueProcedure();
+setInterval(ImmediateSendingQueueProcedure, 50);
 
 /**
  * @param {SendingMessageType} iMessageData 
@@ -687,25 +684,22 @@ ImmediateSendingQueueProcedure();
 const MailingSendingQueueProcedure = (iMessageData) => {
 	const messageData = iMessageData || MAILING_QUEUE.shift();
 
-	if (messageData && messageData.destination) {
-		TelegramSend(messageData)
-		.then(() => setTimeout(MailingSendingQueueProcedure, 5e2))
-		.catch(/** @param {TelegramError} e */ (e) => {
-			if (e && e.code === 429) {
-				if (typeof e.parameters?.retry_after == "number")
-					setTimeout(() => MailingSendingQueueProcedure(messageData), e.parameters?.retry_after * 1e3);
-				else
-					setTimeout(() => MailingSendingQueueProcedure(messageData), 5e3);
-			} else {
-				Logging(`Unknown error code`, e);
-				setTimeout(MailingSendingQueueProcedure, 1e3);
-			}
-		});
-	} else
-		setTimeout(MailingSendingQueueProcedure, 50);
+	if (!(messageData && messageData.destination)) return;
+
+	TelegramSend(messageData)
+	.catch(/** @param {TelegramError} e */ (e) => {
+		if (e && e.code === 429) {
+			if (typeof e.parameters?.retry_after == "number")
+				setTimeout(() => MailingSendingQueueProcedure(messageData), e.parameters?.retry_after * 1e3 + Math.random() * 5e3);
+			else
+				setTimeout(() => MailingSendingQueueProcedure(messageData), 5e3);
+		} else {
+			Logging(`Unknown error code`, e);
+		}
+	});
 };
 
-MailingSendingQueueProcedure();
+setInterval(MailingSendingQueueProcedure, 2e3);
 
 
 
@@ -899,8 +893,7 @@ const GlobalSendToAllUsers = (timeOfDay, layoutFunc) => {
 						photo: path.join(CATS.FOLDER, catImageToSend)
 					});
 				}).catch((e) => {
-					console.warn(`Cats sending explicit fail at ${new Date().toISOString()}:`);
-					console.warn(e);
+					Logging(`Cats sending failed`, e);
 
 					LocalSendDefault();
 				});
