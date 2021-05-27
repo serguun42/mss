@@ -12,7 +12,6 @@ const
 	LOG_CONNECTIONS = false,
 	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
 	{
-		DATABASE_NAME,
 		CERTS,
 		FRONT_ROOT,
 		HOSTNAME
@@ -77,9 +76,9 @@ const UTIL = require("./utils/urls-and-cookies");
 
 
 https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
-	const pathname = UTIL.SafeDecode(new URL(req.url, `https://${HOSTNAME}`).pathname),
+	const pathname = UTIL.SafeDecode(UTIL.SafeURL(req.url).pathname),
 		  path = UTIL.ParsePath(pathname),
-		  queries = UTIL.ParseQuery(new URL(req.url, `https://${HOSTNAME}`).search),
+		  queries = UTIL.ParseQuery(UTIL.SafeURL(req.url).search),
 		  cookies = UTIL.ParseCookie(req.headers),
 		  acceptGzip = /\bgzip\b/i.test(req.headers["accept-encoding"] || "");
 
