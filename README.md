@@ -23,8 +23,8 @@ Each folder contains its own README with. Here's the list of them with responsib
 | Folder						| Dev											| What is used and how it works
 | ----------------------------- | :-------------------------------------------: | -----------------------------
 | [Backend](./backend)			| [@serguun42](https://github.com/serguun42)	| Handles back for front, back for API, back for user accounts. All the stuff.
-| [Frontend](./frontend)		| [@serguun42](https://github.com/serguun42)	| Front done with Vue.js
-| [Android app](./app)			| [@rodyapal](https://github.com/rodyapal)		| *no desc yet, stay tuned*
+| [Frontend](./frontend)		| [@serguun42](https://github.com/serguun42)	| Front done with Vue.js. View and save groups' schedule.
+| [Android app](./app)			| [@rodyapal](https://github.com/rodyapal)		| Android app with light/dark/auto theme. View and save groups' schedule
 | [Telegram bot](./telegram)	| [@serguun42](https://github.com/serguun42)	| Sends schedule on demand, stores users, does mailing on morning, evening and late evening. Notifies via [notifier](./notifier), uses local Telegram API server (if specified), uses local MongoDB [mirea-table-bot](https://github.com/serguun42/mirea-table-bot) was the base for it.
 | [Scrapper](./scrapper)		| [@serguun42](https://github.com/serguun42)	| Parses schedule page, gets links to `.xlsx`-files, parses them then, builds table models for each and every possible study group, updates DB schedule for each group of those ones.
 | [Notifier](./notifier)		| [@serguun42](https://github.com/serguun42)	| Runs local HTTP server, notifies into *System Telegram*, logs into *stdout*, *stderr*. Use tags (inner and passed), determines which output(s) will be used to log/notify.
