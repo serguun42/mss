@@ -57,6 +57,7 @@ class ScheduleFragment : Fragment() {
 			Toast.makeText(requireContext(), "Something gone wrong...", Toast.LENGTH_SHORT).show()
 			findNavController().navigateUp()
 		} else args.groupName?.let { name ->
+			scheduleListController.isLoading = true
 			scheduleViewModel.getDataForGroup(name)
 			scheduleViewModel.group.observe(viewLifecycleOwner) { group ->
 				with(scheduleViewModel) {
@@ -81,6 +82,7 @@ class ScheduleFragment : Fragment() {
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
 			R.id.sch_menu_refresh_data -> args.groupName?.let { name ->
+				scheduleListController.isLoading = true
 				scheduleViewModel.refreshDataForGroup(name)
 			}
 		}
