@@ -10,12 +10,15 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.rodyapal.mss.data.model.all.GroupName
 import com.rodyapal.mss.data.repository.Repository
-import com.rodyapal.mss.ui.fragments.login.LoginAdapter
 import com.rodyapal.mss.ui.fragments.login.LoginFragmentDirections
 import com.rodyapal.mss.utils.hasInternetConnection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+interface IItemClickHandler {
+    fun onClickCallback(view: View, groupName: GroupName)
+}
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -35,8 +38,8 @@ class LoginViewModel @Inject constructor(
         view.findNavController().navigate(action)
     }
 
-    val onItemClickListener = object : LoginAdapter.OnItemClickListener {
-        override fun onClick(view: View, groupName: GroupName) {
+    val onItemClickListener = object : IItemClickHandler {
+        override fun onClickCallback(view: View, groupName: GroupName) {
             navigateToScheduleFragment(view, groupName.name)
         }
     }

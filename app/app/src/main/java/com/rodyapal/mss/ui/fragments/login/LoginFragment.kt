@@ -17,7 +17,7 @@ class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-    private val loginAdapter by lazy { LoginAdapter(loginViewModel.onItemClickListener) }
+    private val loginListController by lazy { LoginListController(loginViewModel.onItemClickListener) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,15 +37,16 @@ class LoginFragment : Fragment() {
 
     private fun setUpRecyclerView() {
         with(binding.lfRvGroups) {
-            adapter = loginAdapter
+            setController(loginListController)
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         }
     }
 
     private fun getAllGroups() {
+        loginListController.isLoading = true
         loginViewModel.getAllGroups()
         loginViewModel.groups.observe(viewLifecycleOwner) { names ->
-            loginAdapter.setData(names)
+            loginListController.data = names
         }
     }
 

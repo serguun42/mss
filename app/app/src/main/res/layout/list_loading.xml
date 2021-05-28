@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -9,14 +8,14 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.fragments.schedule.ScheduleFragment">
+        android:layout_height="match_parent">
 
-        <com.airbnb.epoxy.EpoxyRecyclerView
-            android:id="@+id/sch_rv_schedule"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="6dp"
+        <androidx.core.widget.ContentLoadingProgressBar
+            style="?android:progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateOnly="true"
+            android:indeterminateTint="@color/teal_200"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

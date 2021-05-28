@@ -3,17 +3,20 @@ package com.rodyapal.mss.data.model.one
 
 import com.google.gson.annotations.SerializedName
 
-data class OddWeek (
-    @SerializedName("link")
-    val link: Any,
+data class Lesson(
+
     @SerializedName("name")
-    override val name: String,
+    val name: String,
     @SerializedName("place")
-    override val place: String,
+    val place: String,
     @SerializedName("tutor")
-    override val tutor: String,
+    val tutor: String,
     @SerializedName("type")
-    override val type: String,
+    val type: String,
+
     @SerializedName("weeks")
-    val weeks: Any
-) : ISchedule
+    val weeks: List<Int>?,
+
+    var day: Int = -1,
+    var lessonIndex: Int = -1
+)
