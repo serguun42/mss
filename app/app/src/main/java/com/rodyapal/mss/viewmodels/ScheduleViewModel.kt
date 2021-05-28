@@ -30,6 +30,10 @@ class ScheduleViewModel @Inject constructor(
         _group.value = repository.getGroup(name)
     }
 
+    fun refreshDataForGroup(name: String) = viewModelScope.launch {
+        _group.value = repository.refreshGroup(name)
+    }
+
     fun getCurrentWeekFromTermStart(): Int =
         ((Calendar.getInstance().timeInMillis - Calendar.getInstance().apply {
         set(2021, 1, 8, 0, 0)
@@ -45,7 +49,7 @@ class ScheduleViewModel @Inject constructor(
      **/
     fun getTimetableForDayWeekBased(schedule: DaySchedule): List<Lesson> {
         val week = getCurrentWeekFromTermStart()
-        return if (week % 2 == 0) schedule.evenWeek.filter { it.isNotEmpty() }.map { it[0] } else schedule.oddWeek.filter { it.isNotEmpty() }.map { it[0] }
+        return if (week % 2 == 0) schedule.evenWeek.filter { it.isNotEmpty() }.flatten() else schedule.oddWeek.filter { it.isNotEmpty() }.map { it[0] }
     }
 
     /**
@@ -62,6 +66,6 @@ class ScheduleViewModel @Inject constructor(
 
     fun getTimetableForWeek(group: Group) : List<Lesson> {
         val week = getCurrentWeekFromTermStart()
-        return group.getWeekSchedule(week % 2 == 0)
+        return group.getWeekSchedule(week)
     }
 }

@@ -39,20 +39,28 @@ data class Group(
 
 fun Group.normalizeLessonsData() {
 	schedule.forEach { schedule ->
-		for ((index, lesson) in schedule.evenWeek.filter { it.isNotEmpty() }.withIndex()) {
-			lesson[0].day = getDayIndex(schedule.day)
-			lesson[0].lessonIndex = index
+		for ((index, lesson) in schedule.evenWeek.withIndex()) {
+			lesson.forEach {
+				it.day = getDayIndex(schedule.day)
+				it.lessonIndex = index
+			}
+		}
+		for ((index, lesson) in schedule.oddWeek.withIndex()) {
+			lesson.forEach {
+				it.day = getDayIndex(schedule.day)
+				it.lessonIndex = index
+			}
 		}
 	}
 }
 
-fun Group.getWeekSchedule(evenWeek: Boolean): List<Lesson> = with(schedule) {
+fun Group.getWeekSchedule(weekIndex: Int): List<Lesson> = with(schedule) {
 	val result = mutableListOf<Lesson>()
 	forEach { daySchedule ->
-		if (evenWeek)
-			result.addAll(daySchedule.evenWeek.filter { it.isNotEmpty() }.map { it[0] })
+		if (weekIndex % 2 == 0)
+			result.addAll(daySchedule.evenWeek.flatten().filter { it.weeks == null || it.weeks.contains(weekIndex) })
 		else
-			result.addAll(daySchedule.oddWeek.filter { it.isNotEmpty() }.map { it[0] })
+			result.addAll(daySchedule.oddWeek.flatten().filter { it.weeks == null || it.weeks.contains(weekIndex) })
 	}
 	return result
 }

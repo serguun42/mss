@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rodyapal.mss.R
+import com.rodyapal.mss.data.model.one.Lesson
 import com.rodyapal.mss.databinding.ScheduleFragmentBinding
 import com.rodyapal.mss.utils.capital
 import com.rodyapal.mss.viewmodels.ScheduleViewModel
@@ -59,7 +60,8 @@ class ScheduleFragment : Fragment() {
 			scheduleViewModel.getDataForGroup(name)
 			scheduleViewModel.group.observe(viewLifecycleOwner) { group ->
 				with(scheduleViewModel) {
-					scheduleListController.data = getTimetableForWeek(group)
+					val data: List<Lesson> = getTimetableForWeek(group)
+					scheduleListController.data = data
 					fragmentTitle = getDayFromSchedule(group.schedule).capital()
 				}
 			}
@@ -78,7 +80,9 @@ class ScheduleFragment : Fragment() {
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
-			R.id.sch_menu_refresh_data -> getSchedule()
+			R.id.sch_menu_refresh_data -> args.groupName?.let { name ->
+				scheduleViewModel.refreshDataForGroup(name)
+			}
 		}
 		return true
 	}

@@ -67,6 +67,11 @@ class Repository @Inject constructor(
 		return local.getGroup(name)!!
 	}
 
+	suspend fun refreshGroup(name: String) : Group {
+		fetchGroup(name)
+		return local.getGroup(name)!!
+	}
+
 	private suspend fun upToDate(name: String): Boolean = abs(getCurrentTime() - local.getSaveTime(name)) < FRESH_DATA_TIMEOUT
 
 	private suspend fun fetchGroup(name: String) {

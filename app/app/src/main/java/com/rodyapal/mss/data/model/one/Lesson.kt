@@ -14,6 +14,9 @@ data class Lesson(
     @SerializedName("type")
     val type: String,
 
+    @SerializedName("weeks")
+    val weeks: List<Int>?,
+
     var day: Int = -1,
     var lessonIndex: Int = -1
 )

@@ -16,19 +16,21 @@ class ScheduleListController : EpoxyController() {
 
 	override fun buildModels() {
 		var previousDay = -1
+		var headerId = 0
+		var itemId = 0
 		data.forEach { lesson ->
 			if (lesson.day != previousDay)
 				header {
-					id("header${lesson.day}${lesson.lessonIndex}".hashCode())
+					id(headerId++)
 					dayIndex(lesson.day)
 				}
-			else
-				item {
-					id("item${lesson.day}${lesson.lessonIndex}".hashCode())
-					name(lesson.name)
-					data("${lesson.place}, ${lesson.tutor}, ${lesson.type}")
-					lessonIndex(lesson.lessonIndex)
-				}
+
+			item {
+				id(itemId++)
+				name(lesson.name)
+				data("${lesson.place}, ${lesson.tutor}, ${lesson.type}")
+				lessonIndex(lesson.lessonIndex)
+			}
 			previousDay = lesson.day
 		}
 	}
