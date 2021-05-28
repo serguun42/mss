@@ -1,11 +1,13 @@
 package com.rodyapal.mss.ui.fragments.schedule
 
+import android.view.View
 import com.airbnb.epoxy.EpoxyController
+import com.rodyapal.mss.data.model.all.GroupName
 import com.rodyapal.mss.data.model.epoxy.DataBindingModels
 import com.rodyapal.mss.data.model.one.Lesson
-import com.rodyapal.mss.header
-import com.rodyapal.mss.item
 import com.rodyapal.mss.loading
+import com.rodyapal.mss.scheduleHeader
+import com.rodyapal.mss.scheduleItem
 import kotlin.random.Random
 
 class ScheduleListController : EpoxyController() {
@@ -36,12 +38,12 @@ class ScheduleListController : EpoxyController() {
 		var itemId = 0
 		data.forEach { lesson ->
 			if (lesson.day != previousDay)
-				header {
+				scheduleHeader {
 					id(headerId++)
 					dayIndex(lesson.day)
 				}
 
-			item {
+			scheduleItem {
 				id(itemId++)
 				name(lesson.name)
 				data("${lesson.place}, ${lesson.tutor}, ${lesson.type}")

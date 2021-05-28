@@ -8,13 +8,18 @@
         <variable
             name="groupName"
             type="com.rodyapal.mss.data.model.all.GroupName" />
+
+        <variable
+            name="onItemClickHandler"
+            type="com.rodyapal.mss.viewmodels.IItemClickHandler"/>
     </data>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/li_gn_card_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="6dp">
+        android:layout_margin="6dp"
+        android:onClick="@{(view) -> onItemClickHandler.onClickCallback(view, groupName)}">
 
         <LinearLayout
             android:layout_width="match_parent"
