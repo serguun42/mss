@@ -1,16 +1,21 @@
 package com.rodyapal.mss.viewmodels
 
 import android.app.Application
+import android.content.Context
 import android.view.View
 import android.widget.SearchView
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import com.rodyapal.mss.MssApplication
 import com.rodyapal.mss.data.model.all.GroupName
 import com.rodyapal.mss.data.repository.Repository
 import com.rodyapal.mss.ui.fragments.login.LoginFragmentDirections
+import com.rodyapal.mss.utils.CURRENT_GROUP_PREFERENCE
+import com.rodyapal.mss.utils.CURRENT_GROUP_PREFERENCE_NAME
 import com.rodyapal.mss.utils.hasInternetConnection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -29,17 +34,26 @@ class LoginViewModel @Inject constructor(
     private val _groups: MutableLiveData<List<GroupName>> = MutableLiveData()
     val groups: LiveData<List<GroupName>> get() = _groups
 
+    private val sharedPreferences by lazy {
+        getApplication<MssApplication>().applicationContext.getSharedPreferences(CURRENT_GROUP_PREFERENCE, Context.MODE_PRIVATE)
+    }
+
     fun getAllGroups() = viewModelScope.launch {
         _groups.value = repository.getGroupNames(hasInternetConnection(getApplication()))
     }
 
     private fun navigateToScheduleFragment(view: View, groupName: String) {
+        navigateToScheduleFragment(view.findNavController(), groupName)
+    }
+
+    fun navigateToScheduleFragment(navController: NavController, groupName: String) {
         val action = LoginFragmentDirections.actionLoginFragmentToScheduleFragment(groupName.dropLastWhile { it == ' ' })
-        view.findNavController().navigate(action)
+        navController.navigate(action)
     }
 
     val onItemClickListener = object : IItemClickHandler {
         override fun onClickCallback(view: View, groupName: GroupName) {
+            sharedPreferences.edit().putString(CURRENT_GROUP_PREFERENCE_NAME, groupName.name).apply()
             navigateToScheduleFragment(view, groupName.name)
         }
     }

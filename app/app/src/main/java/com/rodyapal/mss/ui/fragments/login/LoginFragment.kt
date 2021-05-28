@@ -1,13 +1,18 @@
 package com.rodyapal.mss.ui.fragments.login
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.rodyapal.mss.MssApplication
 import com.rodyapal.mss.R
 import com.rodyapal.mss.databinding.FragmentLoginBinding
+import com.rodyapal.mss.utils.CURRENT_GROUP_PREFERENCE
+import com.rodyapal.mss.utils.CURRENT_GROUP_PREFERENCE_NAME
 import com.rodyapal.mss.viewmodels.LoginViewModel
 
 class LoginFragment : Fragment() {
@@ -19,6 +24,11 @@ class LoginFragment : Fragment() {
 
     private val loginListController by lazy { LoginListController(loginViewModel.onItemClickListener) }
 
+    private val sharedPreferences by lazy {
+        requireContext().applicationContext.getSharedPreferences(
+            CURRENT_GROUP_PREFERENCE, Context.MODE_PRIVATE)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loginViewModel = ViewModelProvider(requireActivity()).get(LoginViewModel::class.java)
@@ -29,6 +39,10 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding =  FragmentLoginBinding.inflate(inflater, container, false)
+        if (sharedPreferences.contains(CURRENT_GROUP_PREFERENCE_NAME))
+            sharedPreferences.getString(CURRENT_GROUP_PREFERENCE_NAME, null)?.let {
+                loginViewModel.navigateToScheduleFragment(findNavController(), it)
+            }
         setHasOptionsMenu(true)
         getAllGroups()
         setUpRecyclerView()

@@ -1,5 +1,6 @@
 package com.rodyapal.mss.ui.fragments.schedule
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -13,6 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.rodyapal.mss.R
 import com.rodyapal.mss.data.model.one.Lesson
 import com.rodyapal.mss.databinding.ScheduleFragmentBinding
+import com.rodyapal.mss.utils.CURRENT_GROUP_PREFERENCE
+import com.rodyapal.mss.utils.CURRENT_GROUP_PREFERENCE_NAME
 import com.rodyapal.mss.utils.capital
 import com.rodyapal.mss.viewmodels.ScheduleViewModel
 import java.util.*
@@ -25,6 +28,11 @@ class ScheduleFragment : Fragment() {
 	private val binding get() = _binding!!
 
 	private val args: ScheduleFragmentArgs by navArgs()
+
+	private val sharedPreferences by lazy {
+		requireContext().applicationContext.getSharedPreferences(
+			CURRENT_GROUP_PREFERENCE, Context.MODE_PRIVATE)
+	}
 
 	private val scheduleListController: ScheduleListController by lazy {
 		ScheduleListController()
@@ -84,6 +92,10 @@ class ScheduleFragment : Fragment() {
 			R.id.sch_menu_refresh_data -> args.groupName?.let { name ->
 				scheduleListController.isLoading = true
 				scheduleViewModel.refreshDataForGroup(name)
+			}
+			R.id.sch_menu_logout -> {
+				sharedPreferences.edit().remove(CURRENT_GROUP_PREFERENCE_NAME).apply()
+				findNavController().navigateUp()
 			}
 		}
 		return true
