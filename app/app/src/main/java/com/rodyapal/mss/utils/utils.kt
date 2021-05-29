@@ -3,6 +3,7 @@ package com.rodyapal.mss.utils
 import android.app.Activity
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
+import com.rodyapal.mss.R
 import java.util.*
 
 /**
@@ -34,4 +35,14 @@ fun String.capital() : String = replaceFirstChar {
     if (it.isLowerCase()) it.titlecase(
         Locale.getDefault()
     ) else it.toString()
+}
+
+fun getSubjectType(context: Context, type: String) : String = with(context) {
+    return when (type) {
+        "пр" -> getString(R.string.lesson_type_practice)
+        "лк" -> getString(R.string.lesson_type_lecture)
+        "лаб" -> getString(R.string.lesson_type_lab)
+        "с/р" -> getString(R.string.lesson_type_self_training)
+        else -> type
+    }
 }
