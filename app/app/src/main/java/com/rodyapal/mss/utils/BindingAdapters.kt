@@ -34,7 +34,7 @@ fun setEndTimeFromIndex(textView: TextView, index: Int) = with(textView.context)
 
 @BindingAdapter("android:setTextWithDate")
 fun setTextWithDate(textView: TextView, dayIndex: Int) = with(textView.context) {
-    val dateFormat = SimpleDateFormat("E, d.M.y", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("EEEE, d.M.y", Locale.getDefault())
     val dayShiftFromCurrent = dayIndex - Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
     val time = Calendar.getInstance().apply { add(Calendar.DAY_OF_WEEK, dayShiftFromCurrent) }.time
     textView.text = dateFormat.format(time)

@@ -35,7 +35,7 @@ class ScheduleFragment : Fragment() {
 	}
 
 	private val scheduleListController: ScheduleListController by lazy {
-		ScheduleListController()
+		ScheduleListController(requireContext())
 	}
 
 	private var fragmentTitle: String = "Schedule"
@@ -71,7 +71,12 @@ class ScheduleFragment : Fragment() {
 				with(scheduleViewModel) {
 					val data: List<Lesson> = getTimetableForWeek(group)
 					scheduleListController.data = data
-					fragmentTitle = getDayFromSchedule(group.schedule).capital()
+					fragmentTitle = getDayFromSchedule(group.schedule)?.capital() ?: requireContext().getString(R.string.day_sunday)
+					scheduleListController.headerPositions[fragmentTitle]?.let {
+						binding.schRvSchedule.smoothScrollToPosition(
+							it
+						)
+					}
 				}
 			}
 		}
