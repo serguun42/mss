@@ -1,8 +1,5 @@
 const
 	path = require("path"),
-	SECOND = 1e3,
-	MINUTE = SECOND * 60,
-	HOUR = MINUTE * 60,
 	cron = require("node-cron"),
 	Telegraf = require("telegraf").Telegraf,
 	Markup = require("telegraf").Markup;
@@ -16,7 +13,6 @@ const
 	{
 		TELEGRAM_BOT_TOKEN,
 		TELEGRAM_API_SERVER_PORT,
-		ADMIN_TELEGRAM_DATA,
 		DAYS_OF_WEEK,
 		LABELS_FOR_TIMES_OF_DAY,
 		CATS,
@@ -66,6 +62,7 @@ mongoDispatcher.callDB() // Reading users
 })
 .catch((e) => Logging("Error on getting users", e));
 
+const SESSION = ((new Date().getMonth() > 4 && new Date().getMonth() < 7) || (new Date().getMonth() === 7 && new Date().getDate() < 20));
 
 
 
@@ -904,7 +901,7 @@ const GlobalSendToAllUsers = (timeOfDay, layoutFunc) => {
 	});
 };
 
-if (!DEV) {
+if (!DEV & !SESSION) {
 	cron.schedule("0 4 * * *", () => GlobalSendToAllUsers("morning", GetToday));
 	cron.schedule("0 16 * * *", () => GlobalSendToAllUsers("evening", GetTomorrow));
 	cron.schedule("0 19 * * *", () => GlobalSendToAllUsers("late_evening", GetTomorrow));
