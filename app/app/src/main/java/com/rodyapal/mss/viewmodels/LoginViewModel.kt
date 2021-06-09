@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.rodyapal.mss.MssApplication
+import com.rodyapal.mss.data.model.IItemClickHandler
 import com.rodyapal.mss.data.model.all.GroupName
 import com.rodyapal.mss.data.repository.Repository
 import com.rodyapal.mss.ui.fragments.login.LoginFragmentDirections
@@ -20,10 +21,6 @@ import com.rodyapal.mss.utils.hasInternetConnection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-interface IItemClickHandler {
-    fun onClickCallback(view: View, groupName: GroupName)
-}
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(

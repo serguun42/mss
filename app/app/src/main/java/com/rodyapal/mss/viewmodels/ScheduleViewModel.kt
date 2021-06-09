@@ -1,10 +1,12 @@
 package com.rodyapal.mss.viewmodels
 
 import android.app.Application
+import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.rodyapal.mss.data.model.all.GroupName
 import com.rodyapal.mss.data.model.one.DaySchedule
 import com.rodyapal.mss.data.model.one.Group
 import com.rodyapal.mss.data.model.one.Lesson
@@ -62,10 +64,5 @@ class ScheduleViewModel @Inject constructor(
 
     fun getDayFromSchedule(schedules: List<DaySchedule>) : String? {
         return getScheduleForCurrentDay(schedules)?.day
-    }
-
-    fun getTimetableForWeek(group: Group) : List<Lesson> {
-        val week = getCurrentWeekFromTermStart()
-        return group.getWeekSchedule(week)
     }
 }

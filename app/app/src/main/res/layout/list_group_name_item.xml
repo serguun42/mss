@@ -11,7 +11,7 @@
 
         <variable
             name="onItemClickHandler"
-            type="com.rodyapal.mss.viewmodels.IItemClickHandler"/>
+            type="com.rodyapal.mss.data.model.IItemClickHandler"/>
     </data>
 
     <com.google.android.material.card.MaterialCardView

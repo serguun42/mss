@@ -40,21 +40,21 @@ class ScheduleListController(
 			}
 			return
 		}
-
+		_headerPositions.clear()
 		var previousDay = -1
 		var headerId = 0
 		var itemId = 0
 		data.forEach { lesson ->
 			if (lesson.day != previousDay) {
 				scheduleHeader {
-					id(headerId++)
+					id("header_id_${headerId++}")
 					dayIndex(lesson.day)
 				}
 				_headerPositions[getDayName(context, lesson.day)] = itemId + headerId
 			}
 
 			scheduleItem {
-				id(itemId++)
+				id("item_id_${itemId++}")
 				name(lesson.name)
 				data(lesson.getSupportText())
 				lessonIndex(lesson.lessonIndex)
