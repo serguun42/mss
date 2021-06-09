@@ -47,4 +47,6 @@
     <string name="refresh_data">Refresh data</string>
     <string name="log_out">Log out</string>
     <string name="schedule_bottom_sheet_title">Weeks</string>
+
+    <string name="week_index">Week №%1$d</string>
 </resources>

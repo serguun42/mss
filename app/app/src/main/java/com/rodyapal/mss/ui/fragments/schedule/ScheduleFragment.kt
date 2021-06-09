@@ -1,6 +1,7 @@
 package com.rodyapal.mss.ui.fragments.schedule
 
 import android.content.Context
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -82,12 +83,12 @@ class ScheduleFragment : Fragment(), IWeekSelector {
 			scheduleViewModel.group.observe(viewLifecycleOwner) { group ->
 				with(scheduleViewModel) {
 					scheduleListController.data = group.getWeekSchedule(getCurrentWeekFromTermStart())
-					fragmentTitle = getDayFromSchedule(group.schedule)?.capital() ?: requireContext().getString(R.string.day_sunday)
 					scheduleListController.headerPositions[fragmentTitle]?.let {
 						binding.schRvSchedule.smoothScrollToPosition(
 							it
 						)
 					}
+					fragmentTitle = getString(R.string.week_index, getCurrentWeekFromTermStart())
 				}
 			}
 		}
@@ -139,6 +140,7 @@ class ScheduleFragment : Fragment(), IWeekSelector {
 					it
 				)
 			}
+			fragmentTitle = getString(R.string.week_index, weekIndex.toInt())
 		}
 	}
 }
