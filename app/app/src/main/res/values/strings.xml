@@ -1,41 +1,36 @@
 <resources>
     <string name="app_name">Mss</string>
     <string name="error_no_internet_connection">No internet connection</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <string name="view_schedule">View schedule</string>
     <string name="your_group">Your group</string>
     <string name="login_fragment_label">Your group</string>
-    <string name="schedule_fragment_lable">Schedule</string>
-    <string name="unknown_name">Unknown name</string>
-    <string name="unknown_tutor">Unknown tutor</string>
-    <string name="unknown_type">Unknown type</string>
-    <string name="unknown_place">Unknown place</string>
+    <string name="schedule_fragment_label">Schedule</string>
     <string name="lesson_type_practice">Practice</string>
-    <string name="lesson_type_lection">Lection</string>
+    <string name="lesson_type_lecture">Lecture</string>
     <string name="lesson_type_lab">Laboratory</string>
-    <string name="lesson_type_self_training">Self-trainning</string>
+    <string name="lesson_type_self_training">Self-training</string>
 
-    <string name="lesson_start_time_first">09:00</string>
-    <string name="lesson_end_time_first">10:30</string>
+    <string name="lesson_start_time_first" translatable="false">09:00</string>
+    <string name="lesson_end_time_first" translatable="false">10:30</string>
 
-    <string name="lesson_start_time_second">10:40</string>
-    <string name="lesson_end_time_second">12:10</string>
+    <string name="lesson_start_time_second" translatable="false">10:40</string>
+    <string name="lesson_end_time_second" translatable="false">12:10</string>
 
-    <string name="lesson_start_time_third">12:40</string>
-    <string name="lesson_end_time_third">14:10</string>
+    <string name="lesson_start_time_third" translatable="false">12:40</string>
+    <string name="lesson_end_time_third" translatable="false">14:10</string>
 
-    <string name="lesson_start_time_fourth">14:20</string>
-    <string name="lesson_end_time_fourth">15:50</string>
+    <string name="lesson_start_time_fourth" translatable="false">14:20</string>
+    <string name="lesson_end_time_fourth" translatable="false">15:50</string>
 
-    <string name="lesson_start_time_fifth">16:20</string>
-    <string name="lesson_end_time_fifth">17:50</string>
+    <string name="lesson_start_time_fifth" translatable="false">16:20</string>
+    <string name="lesson_end_time_fifth" translatable="false">17:50</string>
 
-    <string name="lesson_start_time_sixth">18:00</string>
-    <string name="lesson_end_time_sixth">19:30</string>
+    <string name="lesson_start_time_sixth" translatable="false">18:00</string>
+    <string name="lesson_end_time_sixth" translatable="false">19:30</string>
 
-    <string name="lesson_start_time_seventh">20:00</string>
-    <string name="lesson_end_time_seventh">21:00</string>
+    <string name="lesson_start_time_seventh" translatable="false">20:00</string>
+    <string name="lesson_end_time_seventh" translatable="false">21:00</string>
 
     <string name="day_monday">Monday</string>
     <string name="day_tuesday">Tuesday</string>
@@ -50,4 +45,8 @@
     <string name="order_by_suffix">Suffix</string>
     <string name="order_by_year">Year</string>
     <string name="refresh_data">Refresh data</string>
+    <string name="log_out">Log out</string>
+    <string name="schedule_bottom_sheet_title">Weeks</string>
+
+    <string name="week_index">Week №%1$d</string>
 </resources>

@@ -13,3 +13,6 @@ const val DB_UPDATE_TIME_TABLE_NAME = "database_last_update_time"
 const val DB_NAME = "mss_database"
 
 val FRESH_DATA_TIMEOUT = TimeUnit.DAYS.toMillis(1)
+
+const val CURRENT_GROUP_PREFERENCE = "current_group_shared_preference"
+const val CURRENT_GROUP_PREFERENCE_NAME = "current_group_shared_preference_name"

@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/sch_menu_logout"
+        android:title="@string/log_out"
+        android:icon="@drawable/ic_logout"
+        app:showAsAction="ifRoom"/>
+
     <item
         android:id="@+id/sch_menu_refresh_data"
         android:title="@string/refresh_data"

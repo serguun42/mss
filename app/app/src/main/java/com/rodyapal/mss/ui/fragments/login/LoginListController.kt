@@ -2,10 +2,10 @@ package com.rodyapal.mss.ui.fragments.login
 
 import android.view.View
 import com.airbnb.epoxy.EpoxyController
+import com.rodyapal.mss.data.model.IItemClickHandler
 import com.rodyapal.mss.data.model.all.GroupName
 import com.rodyapal.mss.groupNameItem
 import com.rodyapal.mss.loading
-import com.rodyapal.mss.viewmodels.IItemClickHandler
 
 class LoginListController(
 	private val onItemClickListener: IItemClickHandler

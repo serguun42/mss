@@ -38,7 +38,7 @@
             android:padding="12dp"
             android:layout_width="4dp"
             android:layout_height="0dp"
-            android:background="@color/teal_200"
+            android:background="@color/primaryColor"
             app:layout_constraintBottom_toBottomOf="@+id/materialCardView"
             app:layout_constraintEnd_toStartOf="@+id/materialCardView"
             app:layout_constraintStart_toEndOf="@+id/sch_item_tv_time_start"

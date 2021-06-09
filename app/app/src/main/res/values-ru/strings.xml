@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mss</string>
+    <string name="error_no_internet_connection">Нет подключения к интернету</string>
+    <string name="view_schedule">Расписание</string>
+    <string name="your_group">Ваша группа</string>
+    <string name="login_fragment_label">Группы</string>
+    <string name="schedule_fragment_label">Расписание</string>
+    <string name="lesson_type_practice">Практическая</string>
+    <string name="lesson_type_lecture">Лекция</string>
+    <string name="lesson_type_lab">Лабораторная</string>
+    <string name="lesson_type_self_training">Самоподготовка</string>
+    <string name="day_monday">Понедельник</string>
+    <string name="day_tuesday">Вторник</string>
+    <string name="day_wednesday">Среда</string>
+    <string name="day_thursday">Четверг</string>
+    <string name="day_friday">Пятница</string>
+    <string name="day_saturday">Суббота</string>
+    <string name="day_sunday">Воскресенье</string>
+    <string name="search">Поиск</string>
+    <string name="sort_by">Сортировать по</string>
+    <string name="order_by_suffix">Кафедра</string>
+    <string name="order_by_year">Год</string>
+    <string name="refresh_data">Обновить данные</string>
+    <string name="log_out">Выйти</string>
+    <string name="schedule_bottom_sheet_title">Недели</string>
+    <string name="week_index">Неделя №%1$d</string>
+</resources>
