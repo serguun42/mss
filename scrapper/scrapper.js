@@ -267,7 +267,7 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 
 
 			const lineWithGroups = tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES];
-			if (!(lineWithGroups instanceof Array)) return reject(`No groups in the sheet`);
+			if (!(lineWithGroups instanceof Array)) return Promise.reject(`No groups in the sheet`);
 
 
 			const indexesOfCellsWithGroupNames = lineWithGroups.map((cell, index) => {
