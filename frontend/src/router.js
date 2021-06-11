@@ -6,6 +6,7 @@ import API from "./views/API.vue";
 import APISwagger from "./views/APISwagger.vue";
 import AllGroups from "./views/AllGroups.vue";
 import SingleGroup from "./views/SingleGroup.vue";
+import AndroidApp from "./views/AndroidApp.vue";
 import NotFound404 from "./views/404.vue";
 
 Vue.use(VueRouter);
@@ -47,6 +48,14 @@ const routes = [
 		component: AllGroups,
 		meta: {
 			title: "Все группы"
+		}
+	},
+	{
+		path: "/app",
+		name: "AndroidApp",
+		component: AndroidApp,
+		meta: {
+			title: "Android-приложение"
 		}
 	},
 	{
