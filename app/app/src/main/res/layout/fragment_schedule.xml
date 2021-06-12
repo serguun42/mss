@@ -12,16 +12,31 @@
         android:layout_height="match_parent"
         tools:context=".ui.fragments.schedule.ScheduleFragment">
 
-        <com.airbnb.epoxy.EpoxyRecyclerView
-            android:id="@+id/sch_rv_schedule"
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/sch_shimmer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="6dp"
+            android:layout_marginBottom="32dp"
             app:layout_constraintBottom_toTopOf="@id/sch_coord_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/sch_refresh_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.airbnb.epoxy.EpoxyRecyclerView
+                    android:id="@+id/sch_rv_schedule"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="6dp" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/sch_coord_layout"
@@ -45,7 +60,8 @@
                     android:src="@drawable/ic_arrow_up"
                     app:layout_constraintBottom_toTopOf="@id/sch_btm_title"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:id="@+id/sch_btm_title"

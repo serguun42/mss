@@ -1,36 +1,32 @@
 package com.rodyapal.mss.ui.fragments.schedule
 
 import android.content.Context
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavArgs
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.rodyapal.mss.R
 import com.rodyapal.mss.data.model.IWeekSelector
-import com.rodyapal.mss.data.model.one.Lesson
+import com.rodyapal.mss.data.model.one.Group
 import com.rodyapal.mss.data.model.one.getWeekSchedule
-import com.rodyapal.mss.databinding.ScheduleFragmentBinding
+import com.rodyapal.mss.databinding.FragmentScheduleBinding
 import com.rodyapal.mss.utils.CURRENT_GROUP_PREFERENCE
 import com.rodyapal.mss.utils.CURRENT_GROUP_PREFERENCE_NAME
-import com.rodyapal.mss.utils.capital
 import com.rodyapal.mss.viewmodels.ScheduleViewModel
-import java.util.*
 
 class ScheduleFragment : Fragment(), IWeekSelector {
 
 	private lateinit var scheduleViewModel: ScheduleViewModel
 
-	private var _binding: ScheduleFragmentBinding? = null
+	private var _binding: FragmentScheduleBinding? = null
 	private val binding get() = _binding!!
 
 	private val args: ScheduleFragmentArgs by navArgs()
@@ -62,12 +58,13 @@ class ScheduleFragment : Fragment(), IWeekSelector {
 			inflater: LayoutInflater, container: ViewGroup?,
 			savedInstanceState: Bundle?
 	): View {
-		_binding = ScheduleFragmentBinding.inflate(inflater, container, false)
+		_binding = FragmentScheduleBinding.inflate(inflater, container, false)
 		setHasOptionsMenu(true)
 		BottomSheetBehavior.from(binding.schBtmSheet).apply {
 			peekHeight = 96
 			state = BottomSheetBehavior.STATE_COLLAPSED
 		}
+		binding.schRefreshLayout.setOnRefreshListener { refreshSchedule() }
 		setUpRecyclerView()
 		getSchedule()
 		return binding.root
@@ -75,24 +72,29 @@ class ScheduleFragment : Fragment(), IWeekSelector {
 
 	private fun getSchedule() {
 		if (args.groupName == null) {
-			Toast.makeText(requireContext(), "Something gone wrong...", Toast.LENGTH_SHORT).show()
+			Toast.makeText(requireContext(), "No group name", Toast.LENGTH_SHORT).show()
 			findNavController().navigateUp()
 		} else args.groupName?.let { name ->
 			scheduleListController.isLoading = true
-			scheduleViewModel.getDataForGroup(name)
-			scheduleViewModel.group.observe(viewLifecycleOwner) { group ->
-				with(scheduleViewModel) {
-					scheduleListController.data = group.getWeekSchedule(getCurrentWeekFromTermStart())
-					scheduleListController.headerPositions[fragmentTitle]?.let {
-						binding.schRvSchedule.smoothScrollToPosition(
-							it
-						)
-					}
-					fragmentTitle = getString(R.string.week_index, getCurrentWeekFromTermStart())
-				}
-			}
+			scheduleViewModel.groupName = name
+			scheduleViewModel.group.observe(viewLifecycleOwner, onGroupChangeObserver)
 		}
 	}
+
+	private val onGroupChangeObserver =
+		Observer<Group> { group ->
+			with(scheduleViewModel) {
+				scheduleListController.data = group.getWeekSchedule(getCurrentWeekFromTermStart())
+				binding.schShimmerLayout.stopShimmer()
+				binding.schShimmerLayout.hideShimmer()
+				scheduleListController.headerPositions[fragmentTitle]?.let {
+					binding.schRvSchedule.smoothScrollToPosition(
+						it
+					)
+				}
+				fragmentTitle = getString(R.string.week_index, getCurrentWeekFromTermStart())
+			}
+		}
 
 	private fun setUpRecyclerView() {
 		with(binding.schRvSchedule) {
@@ -114,9 +116,8 @@ class ScheduleFragment : Fragment(), IWeekSelector {
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
-			R.id.sch_menu_refresh_data -> args.groupName?.let { name ->
-				scheduleListController.isLoading = true
-				scheduleViewModel.refreshDataForGroup(name)
+			R.id.sch_menu_refresh_data -> {
+				refreshSchedule()
 			}
 			R.id.sch_menu_logout -> {
 				sharedPreferences.edit().remove(CURRENT_GROUP_PREFERENCE_NAME).apply()
@@ -124,6 +125,12 @@ class ScheduleFragment : Fragment(), IWeekSelector {
 			}
 		}
 		return true
+	}
+
+	private fun refreshSchedule() {
+		scheduleListController.isLoading = true
+		scheduleViewModel.refreshDataForGroup(scheduleViewModel.groupName)
+		binding.schRefreshLayout.isRefreshing = false
 	}
 
 	override fun onDestroyView() {

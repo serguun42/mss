@@ -1,22 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:ignore="HardcodedText" >
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
-        <variable
-            name="lessonIndex"
-            type="Integer" />
-
-        <variable
-            name="name"
-            type="String" />
-
-        <variable
-            name="data"
-            type="String" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -29,8 +16,7 @@
             android:layout_height="wrap_content"
             android:padding="6dp"
             android:layout_margin="12dp"
-            android:hint="09:00"
-            android:setStartTimeFromIndex="@{lessonIndex}"
+            android:alpha="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -38,6 +24,7 @@
             android:padding="12dp"
             android:layout_width="4dp"
             android:layout_height="0dp"
+            android:visibility="invisible"
             android:background="@color/primaryColor"
             app:layout_constraintBottom_toBottomOf="@+id/sch_shimmer_item_card"
             app:layout_constraintEnd_toStartOf="@+id/sch_shimmer_item_card"
@@ -50,8 +37,7 @@
             android:layout_height="wrap_content"
             android:padding="6dp"
             android:layout_margin="12dp"
-            android:hint="10:30"
-            android:setEndTimeFromIndex="@{lessonIndex}"
+            android:alpha="0"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -78,8 +64,7 @@
                     android:layout_marginStart="6dp"
                     android:layout_marginEnd="6dp"
                     android:layout_marginBottom="12dp"
-                    android:hint="Математический анализ"
-                    android:text="@{name}"
+                    android:alpha="0"
                     android:textSize="24sp" />
 
                 <TextView
@@ -87,8 +72,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="6dp"
-                    android:hint="А-220, Практическая, Булах Е. Э."
-                    android:text="@{data}" />
+                    android:alpha="0" />
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
