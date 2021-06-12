@@ -1,11 +1,10 @@
 package com.rodyapal.mss.ui.fragments.login
 
-import android.view.View
 import com.airbnb.epoxy.EpoxyController
 import com.rodyapal.mss.data.model.IItemClickHandler
 import com.rodyapal.mss.data.model.all.GroupName
 import com.rodyapal.mss.groupNameItem
-import com.rodyapal.mss.loading
+import com.rodyapal.mss.shimmerGroupNameItem
 
 class LoginListController(
 	private val onItemClickListener: IItemClickHandler
@@ -26,8 +25,8 @@ class LoginListController(
 
 	override fun buildModels() {
 		if (isLoading) {
-			loading {
-				id("loading_state")
+			for (id in 0..12) shimmerGroupNameItem {
+				id(id)
 			}
 			return
 		}

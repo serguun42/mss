@@ -25,4 +25,5 @@
     <string name="log_out">Выйти</string>
     <string name="schedule_bottom_sheet_title">Недели</string>
     <string name="week_index">Неделя №%1$d</string>
+    <string name="no_lessons">Нет пар</string>
 </resources>

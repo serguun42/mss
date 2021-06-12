@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.rodyapal.mss.MssApplication
 import com.rodyapal.mss.R
 import com.rodyapal.mss.databinding.FragmentLoginBinding
 import com.rodyapal.mss.utils.CURRENT_GROUP_PREFERENCE
@@ -43,6 +42,9 @@ class LoginFragment : Fragment() {
             sharedPreferences.getString(CURRENT_GROUP_PREFERENCE_NAME, null)?.let {
                 loginViewModel.navigateToScheduleFragment(findNavController(), it)
             }
+        binding.lfRefreshLayout.setOnRefreshListener {
+            getAllGroups()
+        }
         setHasOptionsMenu(true)
         getAllGroups()
         setUpRecyclerView()
@@ -61,7 +63,10 @@ class LoginFragment : Fragment() {
         loginViewModel.getAllGroups()
         loginViewModel.groups.observe(viewLifecycleOwner) { names ->
             loginListController.data = names
+            binding.lfShimmerLayout.stopShimmer()
+            binding.lfShimmerLayout.hideShimmer()
         }
+        binding.lfRefreshLayout.isRefreshing = false
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

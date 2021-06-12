@@ -1,17 +1,14 @@
 package com.rodyapal.mss.ui.fragments.schedule
 
 import android.content.Context
-import android.view.View
 import com.airbnb.epoxy.EpoxyController
-import com.rodyapal.mss.data.model.all.GroupName
-import com.rodyapal.mss.data.model.epoxy.DataBindingModels
 import com.rodyapal.mss.data.model.one.Lesson
 import com.rodyapal.mss.data.model.one.getSupportText
-import com.rodyapal.mss.loading
+import com.rodyapal.mss.noData
 import com.rodyapal.mss.scheduleHeader
 import com.rodyapal.mss.scheduleItem
+import com.rodyapal.mss.shimmerScheduleItem
 import com.rodyapal.mss.utils.getDayName
-import kotlin.random.Random
 
 class ScheduleListController(
 	private val context: Context
@@ -35,8 +32,14 @@ class ScheduleListController(
 
 	override fun buildModels() {
 		if (isLoading) {
-			loading {
-				id("loading_state")
+			for (id in 0..12) shimmerScheduleItem {
+				id(id)
+			}
+			return
+		}
+		if (data.isEmpty()) {
+			noData {
+				id("no_data")
 			}
 			return
 		}

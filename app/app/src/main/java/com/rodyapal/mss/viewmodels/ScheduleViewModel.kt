@@ -1,16 +1,13 @@
 package com.rodyapal.mss.viewmodels
 
 import android.app.Application
-import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.rodyapal.mss.data.model.all.GroupName
 import com.rodyapal.mss.data.model.one.DaySchedule
 import com.rodyapal.mss.data.model.one.Group
 import com.rodyapal.mss.data.model.one.Lesson
-import com.rodyapal.mss.data.model.one.getWeekSchedule
 import com.rodyapal.mss.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -27,6 +24,12 @@ class ScheduleViewModel @Inject constructor(
 
     private val _group: MutableLiveData<Group> = MutableLiveData()
     val group: LiveData<Group> get() = _group
+
+    var groupName: String = ""
+        set(value) {
+            field = value
+            getDataForGroup(value)
+        }
 
     fun getDataForGroup(name: String) = viewModelScope.launch {
         _group.value = repository.getGroup(name)

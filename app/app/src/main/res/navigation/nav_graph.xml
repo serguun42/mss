@@ -17,7 +17,7 @@
         android:id="@+id/scheduleFragment"
         android:name="com.rodyapal.mss.ui.fragments.schedule.ScheduleFragment"
         android:label="@string/schedule_fragment_label"
-        tools:layout="@layout/schedule_fragment" >
+        tools:layout="@layout/fragment_schedule" >
         <argument
             android:name="groupName"
             app:argType="string"

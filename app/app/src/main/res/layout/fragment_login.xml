@@ -17,8 +17,8 @@
         android:layout_height="match_parent"
         tools:context=".ui.fragments.login.LoginFragment">
 
-        <com.airbnb.epoxy.EpoxyRecyclerView
-            android:id="@+id/lf_rv_groups"
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/lf_shimmer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="6dp"
@@ -26,7 +26,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/lf_refresh_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.airbnb.epoxy.EpoxyRecyclerView
+                    android:id="@+id/lf_rv_groups"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
