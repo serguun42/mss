@@ -6,7 +6,7 @@
 export default {
 	name: "android-app",
 	created() {
-		window.location.assign(`https://github.com/serguun42/mss/releases`);
+		window.location.assign(`/mss-app.apk`);
 	}
 }
 </script>
