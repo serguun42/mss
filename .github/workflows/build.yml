@@ -36,6 +36,8 @@ jobs:
           cp ~/MSS_CONFIGS/telegram-bot.config.json ~/mss/telegram/ &&
           mv ~/mss/telegram/cats ~/mss/telegram/cats_old &&
           ln -s ~/MSS_CONFIGS/cats ~/mss/telegram/cats
+      - name: Copy Android app file
+        run: cp ~/MSS_CONFIGS/mss-app.apk ~/mss/frontend/public/
 
   notifier:
     name: Folder for NOTIFIER
