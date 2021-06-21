@@ -50,15 +50,15 @@ function fromNetwork(request) {
 	});
 
 	if (putToCacheChecker)
-		return new Promise((resolve, reject) =>
-			caches.open(CACHE_STORAGE_NAME).then((cache) =>
-				fetch(request).then((response) =>
-					cache.put(request, response).then(() =>
-						fromCache(request).then((matching) => resolve(matching))
-					).catch(reject)
-				).catch(reject)
-			).catch(reject)
-		);
+		return fetch(request)
+				.then((response) => {
+					if (response.status === 200)
+						caches.open(CACHE_STORAGE_NAME)
+						.then((cache) => cache.put(request, response.clone()))
+						.catch(console.warn);
+
+					return response.clone();
+				});
 	else
 		return fetch(request);
 };
