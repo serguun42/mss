@@ -1,34 +1,26 @@
-const CACHE_STORAGE_NAME = "cache_static";
+const CACHE_STORAGE_NAME = "cache_static_and_dynamic_with_api";
 
 self.addEventListener("install", (e) => {
-	function onInstall() {
-		return caches.open(CACHE_STORAGE_NAME)
-			.then(cache => cache.addAll([
-				"/",
-				"/all",
-				"/group",
-				"/app",
-				"/favicon.ico"
-			]));
-	};
-
-	e.waitUntil(onInstall(e));
+	e.waitUntil(
+		caches
+		.open(CACHE_STORAGE_NAME)
+		.then(cache => cache.addAll([
+			"/",
+			"/all",
+			"/group",
+			"/app",
+			"/about",
+			"/docs/api",
+			"/favicon.ico"
+		]))
+	);
 });
 
-self.addEventListener("activate", (e) => { });
+self.addEventListener("activate", () => { });
 
 self.addEventListener("beforeinstallprompt", () => { });
 
 
-
-/**
- * @typedef {Object.<String>} FetchEvent~Event
- * @property {String} clientId
- * @property {Promise} preloadResponse
- * @property {Request} request
- * @property {String} replacesClientId
- * @property {String} resultingClientId
- */
 
 /**
  * **From Network** _with putting into Cache_
@@ -40,6 +32,12 @@ function fromNetwork(request) {
 	let putToCacheChecker = false;
 
 	[
+		/^(\/?)$/,
+		/^\/all(\/?)$/,
+		/^\/group(\/?)$/,
+		/^\/app(\/?)$/,
+		/^\/about(\/?)$/,
+		/^\/docs\/api(\/?)$/,
 		/^\/api\//i,
 		/^\/manifest.json/gi,
 		/^\/manifest.webmanifest/gi,
@@ -81,7 +79,7 @@ function fromCache(request) {
 		});
 };
 
-self.addEventListener("fetch", /** @param {{ request: Request, preloadResponse: Response }} event */ (event) => {
+self.addEventListener("fetch", /** @param {Event & { request: Request, preloadResponse: Response }} event */ (event) => {
 	const { request } = event;
 
 	if (request.method !== "GET") return fetch(request);
@@ -97,15 +95,12 @@ self.addEventListener("fetch", /** @param {{ request: Request, preloadResponse: 
 	} catch (e) { };
 
 
-	if (apiCalledFlag) {
+	if (apiCalledFlag)
 		event.respondWith(
-			fromNetwork(request)
-				.catch(fromCache(request))
+			fromNetwork(request).catch(() => fromCache(request))
 		);
-	}
 	else
 		event.respondWith(
-			fromCache(request)
-				.catch(() => fromNetwork(request))
+			fromCache(request).catch(() => fromNetwork(request))
 		);
 });
