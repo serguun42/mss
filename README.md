@@ -1,5 +1,4 @@
 # MIREA Schedule System
-### Project is still under `development`. Check out [open issues](../../issues), [closed ones](../../issues?q=is%3Aissue+is%3Aclosed) and [latest commits](../../commits).
 
 ![MSS](https://mirea.xyz/img/logo_wide_transparent.png?2021-04-20)
 
@@ -11,6 +10,8 @@ This repo represents all the code, structure and pipelines for MSS project, incl
 * [Android app](./app) available on [mirea.xyz/app](https://mirea.xyz/app) or in [project's releases](https://github.com/serguun42/mss/releases)
 * [Scrapper](./scrapper) – script for parsing tables for each study group
 * [Notifier](./notifier) – collecting and sending logs and errors
+
+### Project is still under `development`. Check out [open issues](../../issues), [closed ones](../../issues?q=is%3Aissue+is%3Aclosed) and [latest commits](../../commits).
 
 ## Project's API
 
