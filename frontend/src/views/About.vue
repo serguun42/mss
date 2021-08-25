@@ -26,6 +26,21 @@
 				</p>
 			</div>
 		</div>
+
+		<div class="card">
+			<div class="card__header default-header">Юридическая информация</div>
+			<div class="card__content">
+				<p>
+					Этот проект, всё его содержимое и разработчики не связаны с администрацией РТУ МИРЭА.
+				</p>
+				<p>
+					<a href="https://github.com/serguun42/mss/blob/master/LICENSE" target="_blank" rel="noopener noreferrer">Лицензия</a>
+				</p>
+				<p>
+					<router-link to="/privacy">Политика в отношении обработки персональных данных</router-link>
+				</p>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -55,7 +70,7 @@ export default {
 .card {
 	display: block;
 	position: relative;
-	
+
 	width: calc(100% - 16px);
 	max-width: 600px;
 	margin: 0 auto;

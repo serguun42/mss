@@ -3,8 +3,11 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import VWave from "v-wave";
+import ANIMATIONS_CONFIG from "./config/animations.json";
+
 
 Vue.config.productionTip = false;
+
 
 Vue.use(VWave, {
 	color: store.getters.theme.dark ? "#FFFFFF" : getComputedStyle(document.documentElement).getPropertyValue("--ripple-color") || store.getters.rippleColor,
@@ -15,8 +18,8 @@ Vue.use(VWave, {
 	directive: "ripple"
 });
 
-import ANIMATIONS_CONFIG from "./config/animations.json";
-Object.keys(ANIMATIONS_CONFIG).forEach((animationName) => {
+
+const styleBlockWithAnimationsContent = Object.keys(ANIMATIONS_CONFIG).map((animationName) => {
 	const animationValue = (
 		/ms$/i.test(animationName) ?
 			`${ANIMATIONS_CONFIG[animationName]}ms`
@@ -27,8 +30,19 @@ Object.keys(ANIMATIONS_CONFIG).forEach((animationName) => {
 			ANIMATIONS_CONFIG[animationName]
 		);
 
-	document.documentElement.style.setProperty(`--${animationName}`, animationValue)
-});
+	return `\t--${animationName}: ${animationValue};`;
+}).join("\n");
+
+if (document.getElementById("style-block-with-animations")) {
+	document.getElementById("style-block-with-animations").innerHTML += `\n\n:root {\n${styleBlockWithAnimationsContent}\n}`;
+} else {
+	const styleBlockWithAnimations = document.createElement("style");
+		  styleBlockWithAnimations.id = "style-block-with-animations";
+		  styleBlockWithAnimations.innerHTML = `:root {\n${styleBlockWithAnimationsContent}\n}`;
+
+	document.head.appendChild(styleBlockWithAnimations);
+}
+
 
 if (process.env.NODE_ENV !== "development") {
 	window.addEventListener("load", () => {
@@ -36,6 +50,7 @@ if (process.env.NODE_ENV !== "development") {
 			navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
 	});
 }
+
 
 new Vue({
 	router,

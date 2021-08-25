@@ -5,9 +5,11 @@ import About from "./views/About.vue";
 import API from "./views/API.vue";
 import APISwagger from "./views/APISwagger.vue";
 import AllGroups from "./views/AllGroups.vue";
+import Privacy from "./views/Privacy.vue";
 import SingleGroup from "./views/SingleGroup.vue";
 import AndroidApp from "./views/AndroidApp.vue";
 import NotFound404 from "./views/404.vue";
+import ANIMATIONS_CONFIG from "./config/animations.json";
 
 Vue.use(VueRouter);
 
@@ -24,6 +26,14 @@ const routes = [
 		component: About,
 		meta: {
 			title: "О проекте"
+		}
+	},
+	{
+		path: "/privacy",
+		name: "Privacy",
+		component: Privacy,
+		meta: {
+			title: "Политика ПД"
 		}
 	},
 	{
@@ -84,8 +94,10 @@ const router = new VueRouter({
 	mode: "history",
 	base: process.env.BASE_URL,
 	routes,
-	scrollBehavior(to, from, savedPosition) {
-		return { x: 0, y: 0 };
+	scrollBehavior() {
+		return new Promise((resolve) =>
+			setTimeout(() => resolve({ x: 0, y: 0 }), ANIMATIONS_CONFIG.ROUTING_ANIMATION_MS)
+		);
 	}
 });
 

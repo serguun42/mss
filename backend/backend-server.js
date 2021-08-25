@@ -48,6 +48,7 @@ const HTTPS_SERVER_OPTIONS = {
 const PAGES = [
 	"/",
 	"/about",
+	"/privacy",
 	"/all",
 	"/app",
 	/^\/group$/,

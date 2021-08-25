@@ -285,7 +285,7 @@ export default {
 	overflow-x: hidden;
 	overflow-y: auto;
 
-	transition: all var(--DRAWER_OPNENING_ANIMATION_MS) ease-in-out 0s;
+	transition: all var(--DRAWER_OPENING_ANIMATION_MS) ease-in-out 0s;
 }
 
 .site-navigation__drawer.is-opened {
@@ -403,7 +403,7 @@ export default {
 
 	opacity: 0;
 
-	transition: all var(--DRAWER_OPNENING_ANIMATION_MS) ease-in-out 0s;
+	transition: all var(--DRAWER_OPENING_ANIMATION_MS) ease-in-out 0s;
 
 	border: none;
 	outline: none;

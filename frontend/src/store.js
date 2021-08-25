@@ -126,7 +126,7 @@ export default new Store({
 		},
 		closeDrawer(state) {
 			state.commit("setDrawerStatus", false);
-			setTimeout(() => Dispatcher.call("drawerClosed"), ANIMATIONS_CONFIG.DRAWER_OPNENING_ANIMATION_MS)
+			setTimeout(() => Dispatcher.call("drawerClosed"), ANIMATIONS_CONFIG.DRAWER_OPENING_ANIMATION_MS)
 		},
 		/**
 		 * @param {{name: string, suffix?: string, noReload: boolean}} param1
