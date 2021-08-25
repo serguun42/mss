@@ -11,10 +11,10 @@
 
 		<section class="site-footer__section">
 			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">info</i> <router-link to="/about">О проекте</router-link>
+				<i class="material-icons material-icons-round">android</i> <router-link to="/app">Android-приложение</router-link>
 			</div>
 			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">contact_mail</i> <a href="https://github.com/serguun42/mss/issues" target="_blank" rel="noopener noreferrer">Баги и пожелания</a>
+				<i class="material-icons material-icons-round">smart_toy</i> <a href="https://t.me/mirea_table_bot" target="_blank" rel="noopener noreferrer">Telegram-бот</a>
 			</div>
 		</section>
 
@@ -30,15 +30,6 @@
 		</section>
 
 		<section class="site-footer__section">
-			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">android</i> <router-link to="/app">Android-приложение</router-link>
-			</div>
-			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">smart_toy</i> <a href="https://t.me/mirea_table_bot" target="_blank" rel="noopener noreferrer">Telegram-бот</a>
-			</div>
-		</section>
-
-		<section class="site-footer__section">
 			<div class="site-footer__section__item default-no-selection default-pointer" @click="changeTheme">
 				<i class="material-icons material-icons-round" ref="theme-icon" :key="`theme-icon-${$store.getters.theme.icon}`">{{ $store.getters.theme.icon }}</i> Выбрана <span ref="theme-name" :key="`theme-name-${$store.getters.theme.name}`">{{ $store.getters.theme.name }}</span>
 			</div>
@@ -50,6 +41,21 @@
 			</div>
 			<div class="site-footer__section__item default-no-selection default-pointer" @click="clearCache">
 				<i class="material-icons material-icons-round">delete_outline</i> Очистить кэш
+			</div>
+		</section>
+
+		<section class="site-footer__section">
+			<div class="site-footer__section__item">
+				<i class="material-icons material-icons-round">info</i> <router-link to="/about">О проекте</router-link>
+			</div>
+			<div class="site-footer__section__item">
+				<i class="material-icons material-icons-round">contact_mail</i> <a href="https://github.com/serguun42/mss/issues" target="_blank" rel="noopener noreferrer">Баги и пожелания</a>
+			</div>
+			<div class="site-footer__section__item">
+				<i class="material-icons material-icons-round">policy</i> <router-link to="/privacy">Политика в отношении обработки персональных данных</router-link>
+			</div>
+			<div class="site-footer__section__item">
+				<i class="material-icons material-icons-round">rule</i> <a href="https://github.com/serguun42/mss/blob/master/LICENSE" target="_blank" rel="noopener noreferrer">Лицензия</a>
 			</div>
 		</section>
 	</footer>
