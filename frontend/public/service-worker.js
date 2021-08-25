@@ -10,6 +10,7 @@ self.addEventListener("install", (e) => {
 			"/group",
 			"/app",
 			"/about",
+			"/privacy",
 			"/docs/api",
 			"/favicon.ico"
 		]))

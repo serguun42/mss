@@ -120,8 +120,9 @@ export default {
 
 .fade-transition-enter-active,
 .fade-transition-leave-active {
-	transition: opacity 200ms ease-in-out 0s;
+	transition: opacity var(--ROUTING_ANIMATION_MS) ease-in-out 0s;
 }
+
 .fade-transition-enter,
 .fade-transition-leave-active {
 	opacity: 0;
