@@ -31,8 +31,5 @@ Each folder contains its own README with. Here's the list of them with responsib
 | [Notifier](./notifier)		| [@serguun42](https://github.com/serguun42)	| Runs local HTTP server, notifies into *System Telegram*, logs into *stdout*, *stderr*. Use tags (inner and passed), determines which output(s) will be used to log/notify.
 | [CI/CD](./cicd)				| [@serguun42](https://github.com/serguun42)	| Single JS-script used only for notifying on CI/CD events. Also there are 2 Github Action workflow/pipeline scripts:<br><ul><li>[build.yml](.github/workflows/build.yml) contains main workflow for deploying production.</li><li>[notify.yml](.github/workflows/notify.yml) has only one job – to notify on event `push` into every branch except `master`.</li></ul>
 
-## Dev Codex
-* Не коммитить в ветку `master`. Только pull-реквесты.
-* Перед коммитом и пушем проверяем ветку.
-* **Не заливаем** конфиги, храним их *локально*. Заливаем только **образцы** конфигов, а в коде делаем проверку на конфиг (сравниваем с локальным глобальным), и/или подменяем во время CI/CD, и/или как угодно. Но не Secrets – плохо быть завязанным на архитектуру какого-либо сервиса.
-* В каждой ветке сохраняем папочную структуру и **работаем только в той папке, которая предназначена для этой ветки**.
+### Этот проект, всё его содержимое и разработчики не связаны с администрацией РТУ МИРЭА.
+### [License](./LICENSE)
