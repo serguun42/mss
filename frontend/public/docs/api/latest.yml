@@ -94,7 +94,7 @@ paths:
             text/plain:
               schema:
                 type: number
-                example: 1612731600000
+                example: 1630270800000
         default:
           description: Some (un)expected error
           content:
