@@ -20,6 +20,16 @@ class ScheduleViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
+    private val currentTimeInMillis get() = Calendar.getInstance().timeInMillis
+
+    private val firstTermStartInMillis = Calendar.getInstance().apply {
+        set(Calendar.getInstance().get(Calendar.YEAR), 9, 1, 0, 0)
+    }.timeInMillis
+
+    private val secondTermStartInMillis = Calendar.getInstance().apply {
+        set(Calendar.getInstance().get(Calendar.YEAR), 1, 8, 0, 0)
+    }.timeInMillis
+
     private val DEBUG_TAG = "SCHEDULE_VIEW_MODEL_DEBUG"
 
     private val _group: MutableLiveData<Group> = MutableLiveData()
@@ -40,14 +50,14 @@ class ScheduleViewModel @Inject constructor(
     }
 
     fun getCurrentWeekFromTermStart(): Int =
-        ((Calendar.getInstance().timeInMillis - Calendar.getInstance().apply {
-        set(2021, 1, 8, 0, 0)
-    }.timeInMillis) / (7 * 24 * 3600000)).toInt() + 1
+        ((currentTimeInMillis - getTermStart()) / (7 * 24 * 3600000)).toInt() + 1
 
     fun getCurrentDay(): Int =
-        ((Calendar.getInstance().timeInMillis - Calendar.getInstance().apply {
-        set(2021, 1, 8, 0, 0)
-    }.timeInMillis) / (24 * 3600000) % 7).toInt() - 1
+        ((currentTimeInMillis - getTermStart()) / (24 * 3600000) % 7).toInt() - 1
+
+    fun getTermStart(): Long =
+        if (currentTimeInMillis < secondTermStartInMillis) firstTermStartInMillis
+        else secondTermStartInMillis
 
     /**
      * @return list of lessons for day based on current week (even or odd)
