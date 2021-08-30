@@ -323,9 +323,11 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 
 
 	fsStat(location).then((fileStats) => {
-		const { size } = fileStats;
+		const { size, isFile } = fileStats;
 
 		if (!pageChecker) {
+			if (!isFile()) return Promise.reject("This is not a file");
+
 			try {
 				const rangeHeader = req.headers.range;
 
