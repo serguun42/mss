@@ -67,6 +67,7 @@ export default {
 	created() {
 		Dispatcher.link("preload", () => this.preloading = true);
 		Dispatcher.link("preloadingDone", () => this.preloading = false);
+		Dispatcher.link("documentLoadingDone", () => this.documentLoading = false);
 
 		window.addEventListener("load", () => this.documentLoading = false);
 
