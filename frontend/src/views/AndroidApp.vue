@@ -17,7 +17,7 @@ export default {
 		}
 	},
 	created() {
-		// window.location.assign("/mss-app.apk");
+		window.location.assign("/mss-app.apk");
 
 		this.interval = setInterval(() => Dispatcher.call("preloadingDone"), 100);
 	},
