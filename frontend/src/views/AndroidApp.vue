@@ -16,10 +16,10 @@ export default {
 			interval: -1
 		}
 	},
-	created() {
+	mounted() {
+		Dispatcher.call("preloadingDone");
+		Dispatcher.call("documentLoadingDone");
 		window.location.assign("/mss-app.apk");
-
-		this.interval = setInterval(() => Dispatcher.call("preloadingDone"), 100);
 	},
 	beforeDestroy() {
 		clearInterval(this.interval);
