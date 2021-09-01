@@ -11,9 +11,18 @@ import Dispatcher from "../utils/dispatcher.js";
 
 export default {
 	name: "android-app",
+	data() {
+		return {
+			interval: -1
+		}
+	},
 	created() {
-		Dispatcher.call("preloadingDone");
-		window.location.assign("/mss-app.apk");
+		// window.location.assign("/mss-app.apk");
+
+		this.interval = setInterval(() => Dispatcher.call("preloadingDone"), 100);
+	},
+	beforeDestroy() {
+		clearInterval(this.interval);
 	}
 }
 </script>
