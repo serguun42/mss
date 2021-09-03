@@ -758,7 +758,7 @@ telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 	const { chat, from } = ctx;
 
 
-	if (chat && chat["type"] === "private") {
+	if (chat) {
 		const { message } = ctx;
 		if (!message) return false;
 
@@ -766,7 +766,7 @@ telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 		if (!text) return false;
 
 
-		ctx.deleteMessage(message.id).catch(Logging);
+		ctx.deleteMessage(message.id).catch(() => {});
 
 
 		const foundUser = USERS.find((user) => user.id === from.id);
