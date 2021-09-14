@@ -1,5 +1,6 @@
 const
 	path = require("path"),
+	{ createReadStream } = require("fs"),
 	cron = require("node-cron"),
 	Telegraf = require("telegraf").Telegraf,
 	Markup = require("telegraf").Markup;
@@ -71,9 +72,9 @@ const SESSION = ((new Date().getMonth() > 4 && new Date().getMonth() < 7) || (ne
  * @returns {Promise<User>}
  */
 const GettingUserWrapper = (ctx) => new Promise((resolve, reject) => {
-	const { chat, from } = ctx;
+	const { chat } = ctx;
 
-	const foundUser = USERS.find((user) => user.id === from.id);
+	const foundUser = USERS.find((user) => user.id === chat.id);
 
 	if (!foundUser) {
 		PushIntoSendingImmediateQueue({
@@ -222,9 +223,9 @@ const COMMANDS = {
 		description: "⚙ Настройки",
 		/** @type {ButtonCommandCaller} */
 		caller: async (ctx) => {
-			const { chat, from } = ctx;
+			const { chat } = ctx;
 
-			const foundUser = USERS.find((user) => user.id === from.id);
+			const foundUser = USERS.find((user) => user.id === chat.id);
 
 			if (!foundUser) return PushIntoSendingImmediateQueue({
 				text: "Произошла ошибка. Пожалуйста, выполните команду /start",
@@ -601,7 +602,7 @@ const TelegramSend = (messageData) => {
 
 	const sendingPromise = (messageData.photo ?
 		telegram.sendPhoto(messageData.destination, {
-			source: messageData.photo
+			source: createReadStream(messageData.photo)
 		}, {
 			caption: messageData.text,
 			parse_mode: "HTML",
@@ -667,7 +668,7 @@ const ImmediateSendingQueueProcedure = (iMessageData) => {
 			else
 				setTimeout(() => ImmediateSendingQueueProcedure(messageData), 2e3);
 		} else {
-			Logging(`Unknown error code`, e);
+			Logging(new Error(`Unknown error code`), e);
 		}
 	});
 };
@@ -691,12 +692,12 @@ const MailingSendingQueueProcedure = (iMessageData) => {
 			else
 				setTimeout(() => MailingSendingQueueProcedure(messageData), 5e3);
 		} else {
-			Logging(`Unknown error code`, e);
+			Logging(new Error(`Unknown error code`), e);
 		}
 	});
 };
 
-setInterval(MailingSendingQueueProcedure, 2e3);
+setInterval(MailingSendingQueueProcedure, 500);
 
 
 
@@ -708,7 +709,7 @@ telegraf.start(/** @param {import("telegraf").Context} ctx */ (ctx) => {
 	if (!foundUser) {
 		const newUser = {
 			id: ctx.chat.id,
-			username: ctx.chat.username || ctx.chat.first_name,
+			username: ctx.chat.username || ctx.chat.first_name || ctx.chat.title,
 			group: "",
 			cats: true,
 			last_cat_photo: "",
@@ -755,7 +756,7 @@ telegraf.start(/** @param {import("telegraf").Context} ctx */ (ctx) => {
 });
 
 telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
-	const { chat, from } = ctx;
+	const { chat } = ctx;
 
 
 	if (chat) {
@@ -769,7 +770,7 @@ telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 		ctx.deleteMessage(message.id).catch(() => {});
 
 
-		const foundUser = USERS.find((user) => user.id === from.id);
+		const foundUser = USERS.find((user) => user.id === chat.id);
 
 
 		if (foundUser && foundUser.waitingForGroupSelection) {
