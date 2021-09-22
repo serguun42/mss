@@ -3,7 +3,7 @@ const
 	util = require("util"),
 	fsWriteFile = util.promisify(fs.writeFile),
 	xlsx = require("node-xlsx").default,
-	NodeFetch = require("node-fetch"),
+	fetch = require("node-fetch").default,
 	ParseHTML = require("node-html-parser").parse,
 
 
@@ -26,7 +26,6 @@ const
 
 
 
-/** @typedef {import("node-html-parser").HTMLElement} NPHE */
 /**
  * @typedef {Object} Option
  * @property {number[]} [weeks]
@@ -35,28 +34,28 @@ const
  * @property {string} [tutor]
  * @property {string} [place]
  * @property {string} [link]
- * 
- * 
+ *
+ *
  * @typedef {Option[]} Lesson
- * 
- * 
+ *
+ *
  * @typedef {Object} DayOfWeek
  * @property {string} day
  * @property {Lesson[]} odd
  * @property {Lesson[]} even
- * 
- * 
+ *
+ *
  * @typedef {DayOfWeek[]} Schedule
  */
 /**
  * @typedef {Object} GlobalScheduleGroup
- * @property {String} remoteFile
- * @property {String} unitName
- * @property {String} unitCourse
- * @property {String} groupName
- * @property {String} groupSuffix
+ * @property {string} remoteFile
+ * @property {string} unitName
+ * @property {string} unitCourse
+ * @property {string} groupName
+ * @property {string} groupSuffix
  * @property {Date} updatedDate
- * @property {String[][]} lessonsTimes
+ * @property {string[][]} lessonsTimes
  * @property {Schedule} schedule
  */
 /** @typedef {GlobalScheduleGroup[]} GlobalSchedule */
@@ -75,15 +74,15 @@ const XLSX_FILES_COURSE_REGEXP = /<[\w]+(\s+[\w\-]+(\=("|')[^"']*(\3))?)*\sclass
 	  XLSX_FILES_COURSE_REGEXP_GROUP_INDEX = 11;
 
 /**
- * @param {Number[]} iArray
- * @param {Number} iPos
- * @returns {Number}
+ * @param {number[]} iArray
+ * @param {number} iPos
+ * @returns {number}
  */
 const GlobalReduceArrayToIndex = (iArray, iPos) => iArray.reduce((accum, current, index) => index >= iPos ? accum : accum + current, 0);
 
 /**
  * @param {Buffer} iXLSXData
- * @returns {Promise<{ name: string, data: (string | Buffer)[][] }[]>} 
+ * @returns {Promise<{ name: string, data: (string | Buffer)[][] }[]>}
  */
 const GlobalSafeParseXLSX = iXLSXData => new Promise((resolve, reject) => {
 	try {
@@ -95,38 +94,39 @@ const GlobalSafeParseXLSX = iXLSXData => new Promise((resolve, reject) => {
 });
 
 /**
- * @param {String} iRawComplexLesson
- * @returns {String[] | null}
+ * @param {string | number | null} iRawComplexLesson
+ * @returns {string[] | null}
  */
 const ParseLessonPartsAndOptions = iRawComplexLesson => {
 	if (!iRawComplexLesson) return null;
+	if (typeof iRawComplexLesson == "number") iRawComplexLesson = iRawComplexLesson.toString();
 	if (typeof iRawComplexLesson !== "string") return null;
 
 	Object.keys(FIXES).forEach((regexpRaw) => {
 		iRawComplexLesson = iRawComplexLesson.replace(new RegExp(regexpRaw, "g"), FIXES[regexpRaw]);
 	});
-	
-	return iRawComplexLesson.replace(/\r/g, "").split("\n").filter(i => !!i);
+
+	return iRawComplexLesson.replace(/\r/g, "").split("\n").filter(i => !!i) || null;
 };
 
 /**
  * @typedef {Object} XLSXFileDefinition
- * @property {String} remoteFile
- * @property {String} unitName
- * @property {String} unitCourse
+ * @property {string} remoteFile
+ * @property {string} unitName
+ * @property {string} unitCourse
  */
 /**
  * @typedef {Object} XLSXFileData
- * @property {String} remoteFile
+ * @property {string} remoteFile
  * @property {Buffer} fileData
- * @property {String} unitName
- * @property {String} unitCourse
+ * @property {string} unitName
+ * @property {string} unitCourse
  */
 /**
  * @returns {Promise<XLSXFileDefinition[]>}
  */
 const GetLinkToFiles = () => new Promise((resolve, reject) => {
-	NodeFetch(SCHEDULE_LINK, {
+	fetch(SCHEDULE_LINK, {
 		"headers": {
 			"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
 			"accept-language": "en-US,en;q=0.9,ru;q=0.8",
@@ -146,7 +146,7 @@ const GetLinkToFiles = () => new Promise((resolve, reject) => {
 			return res.text();
 		else
 			return Promise.reject(res.status);
-	}).then(/** @param {String} page */ (page) => {
+	}).then((page) => {
 		if (DEV) fsWriteFile("./out/mirea-ru-schedule.html", page).catch(() => {});
 
 
@@ -156,7 +156,7 @@ const GetLinkToFiles = () => new Promise((resolve, reject) => {
 			  UNITS_HTML_BLOCKS = parsedPage.querySelector(".uk-switcher").childNodes.filter((child) => child.nodeType === 1);
 
 
-		UNITS_HTML_BLOCKS.forEach(/** @param {NPHE} unitHTMLBlock */ (unitHTMLBlock, unitIndex) => {
+		UNITS_HTML_BLOCKS.forEach(/** @param {import("node-html-parser").HTMLElement} unitHTMLBlock */ (unitHTMLBlock, unitIndex) => {
 			if (!unitHTMLBlock || unitHTMLBlock.nodeType !== 1) return;
 
 			unitHTMLBlock.querySelectorAll(".uk-card.slider_ads.uk-card-body.uk-card-small").forEach((instituteCard) => {
@@ -176,12 +176,12 @@ const GetLinkToFiles = () => new Promise((resolve, reject) => {
 					let lastHrefExec;
 					while (lastHrefExec = XLSX_FILES_HREF_REGEXP.exec(usualTableCardsLayout)) {
 						subInstituteLinks.push(lastHrefExec[XLSX_FILES_HREF_REGEXP_GROUP_INDEX]);
-					};
+					}
 
 					let lastCourseExec;
 					while (lastCourseExec = XLSX_FILES_COURSE_REGEXP.exec(usualTableCardsLayout)) {
-						subInstituteCourses.push(lastCourseExec[XLSX_FILES_COURSE_REGEXP_GROUP_INDEX]?.trim());
-					};
+						subInstituteCourses.push(lastCourseExec[XLSX_FILES_COURSE_REGEXP_GROUP_INDEX]?.trim?.());
+					}
 
 
 					subInstituteLinks.map((link, index) => ({
@@ -223,18 +223,18 @@ const GetTablesFiles = (iXLSXFileDefinitions) => new Promise((resolve, reject) =
 
 		if (DEV) Logging(`Getting file ${encodeURI(gettingFileProps.remoteFile)}`);
 
-		NodeFetch(encodeURI(gettingFileProps.remoteFile)).then((res) => {
+		fetch(encodeURI(gettingFileProps.remoteFile)).then((res) => {
 			if (res.status === 200)
 				return res.buffer();
 			else
 				return Promise.reject(new Error(`Status code ${res.status} ${res.statusText}`));
-		}).then(/** @param {Buffer} fileData */ (fileData) => {
+		}).then((fileData) => {
 			allXLSXFilesData.push({
 				fileData,
 				...gettingFileProps
 			});
 
-			if (DEV) fsWriteFile(`./data/${gettingFileProps.remoteFile.replace("https://webservices.mirea.ru/upload/iblock", "").replace(/[^\wа-я]/gi, "_")}`, fileData).catch(() => {});
+			if (DEV) fsWriteFile(`./data/${gettingFileProps.remoteFile.replace("https://webservices.mirea.ru/upload/iblock", "").replace(/[^\wа-яё]/gi, "_")}`, fileData).catch(() => {});
 		}).catch((e) => {
 			Logging(`Error on getting ${gettingFileProps.remoteFile}`, e);
 		}).finally(() => setTimeout(() => LocalRecurion(iIndex + 1), 500));
@@ -250,7 +250,7 @@ const GetTablesFiles = (iXLSXFileDefinitions) => new Promise((resolve, reject) =
  */
 const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 	/**
-	 * @param {Number} index
+	 * @param {number} index
 	 * @returns {void}
 	 */
 	const LocalParseSingleFile = (index) => {
@@ -273,7 +273,7 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 			const indexesOfCellsWithGroupNames = lineWithGroups.map((cell, index) => {
 				if (typeof cell !== "string") return null;
 
-				if (/^[\wа-я]{4}-\d{2}-\d{2}/i.test(cell?.trim?.()))
+				if (/^[\wа-яё]{4}-\d{2}-\d{2}/i.test(cell?.trim?.()))
 					return index;
 				else
 					return null;
@@ -287,7 +287,7 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 			});
 
 
-			/** @type {Number[]} */
+			/** @type {number[]} */
 			const daysByLessonsNumber = new Array(6).fill(0);
 
 			let currentDay = -1;
@@ -295,19 +295,19 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 				.slice(INDEX_OF_LINE_WITH_GROUPS_NAMES + 2, finalRowIndex)
 				.forEach((row) => {
 					if (row[0]) ++currentDay;
-					
+
 					++daysByLessonsNumber[currentDay];
 				});
 
 
-			/** @type {String[][]} */
+			/** @type {string[][]} */
 			const lessonsTimes = daysByLessonsNumber.map((day, dayIndex) => {
 				const skipLines = GlobalReduceArrayToIndex(daysByLessonsNumber, dayIndex);
 
 				const timesForDay = new Array(day).fill(true).map((lessonTime, indexOfLessonTime) => {
 					const currentLessonRowIndex = INDEX_OF_LINE_WITH_GROUPS_NAMES + 2 + skipLines + indexOfLessonTime,
-						currentRowLessonStart = tableData[currentLessonRowIndex][2],
-						currentRowLessonEnd = tableData[currentLessonRowIndex][3];
+						  currentRowLessonStart = tableData[currentLessonRowIndex][2],
+						  currentRowLessonEnd = tableData[currentLessonRowIndex][3];
 
 					if (
 						currentRowLessonStart &&
@@ -326,26 +326,27 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 
 			indexesOfCellsWithGroupNames.forEach((indexOfCertainGroup) => {
 				const certainGroupTable = tableData
-										.slice(INDEX_OF_LINE_WITH_GROUPS_NAMES + 2, finalRowIndex)
-										.map(row => row.slice(indexOfCertainGroup, indexOfCertainGroup + 5));
+										  .slice(INDEX_OF_LINE_WITH_GROUPS_NAMES + 2, finalRowIndex)
+										  .map(row => row.slice(indexOfCertainGroup, indexOfCertainGroup + 5));
 
-				/** @type {String} */
-				const certainGroupName = tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup]
-					?.replace?.(/\r|\n/g, "")
-					?.replace?.(/^([\wа-я]{4}-\d{2}-\d{2}).*$/i, "$1")
-					?.trim?.();
-				/** @type {String} */
+				/** @type {string} */
+				const certainGroupName = (tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup] || "")
+										 ?.replace?.(/[\r\n]/g, "")
+										 ?.replace?.(/^([\wа-яё]{4}-\d{2}-\d{2}).*$/i, "$1")
+										 ?.trim?.();
+
+				/** @type {string} */
 				const certainGroupSuffix = (
-					tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup + 1] || 
-					tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup + 2] || 
+					tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup + 1] ||
+					tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup + 2] ||
 					tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup + 3]
 				)
-					?.replace?.(/\r|\n/g, "")
+					?.replace?.(/[\r\n]/g, "")
 					||
 					tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup]
-						?.replace?.(/\r|\n/g, "")
-						?.replace?.(/^[\wа-я]{4}-\d{2}-\d{2}(.*)$/i, "$1")
-						?.replace?.(/\(|\)/g, "")
+						?.replace?.(/[\r\n]/g, "")
+						?.replace?.(/^[\wа-яё]{4}-\d{2}-\d{2}(.*)$/i, "$1")
+						?.replace?.(/[\(\)]/g, "")
 						?.trim?.();
 
 
@@ -354,16 +355,15 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 
 				certainGroupTable.forEach((lessonOption, lessonOptionIndex) => {
 					let dayOfWeek = 0;
-					
 					while (GlobalReduceArrayToIndex(daysByLessonsNumber, dayOfWeek + 1) <= lessonOptionIndex) {
 						++dayOfWeek;
-					};
+					}
 
 					if (!schedule[dayOfWeek]) schedule[dayOfWeek] = {
 						day: DAYS_OF_WEEK[dayOfWeek],
 						odd: [],
 						even: []
-					};
+					}
 
 
 					const splittedLesson = {
@@ -378,7 +378,7 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 
 					if (splittedLesson.name && splittedLesson.name instanceof Array)
 						splittedLesson.name.forEach((optionName, optionIndex) => {
-							/** @type {Number[] | null} */
+							/** @type {number[] | null} */
 							let weeks = null,
 								weeksExclude = [],
 								weeksMatch = optionName.match(/^([\d\,]+)\s?н\.?\s/);
@@ -402,7 +402,7 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 									weeks = weeksArr.join(",");
 								} else
 									weeks = null;
-							};
+							}
 
 							if (!weeks) {
 								weeksMatch = optionName.match(/^кр\.?\s*([\d\,]+)\s*н\.?\s/i);
@@ -411,7 +411,7 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 									weeksExclude = weeksMatch[1].split(",").map((week) => parseInt(week));
 								} else
 									weeksExclude = [];
-							};
+							}
 
 							if (weeksExclude.length) {
 								if (!weeks) {
@@ -497,7 +497,7 @@ GetLinkToFiles()
 	if (DEV) {
 		Logging("Got all files. Go see ./out/global-schedule.json");
 		fsWriteFile("./out/global-schedule.json", JSON.stringify(GLOBAL_SCHEDULE, false, "\t"));
-	};
+	}
 
 	return mongoDispatcher.callDB()
 	.then((DB) => {
@@ -506,7 +506,7 @@ GetLinkToFiles()
 		return COLL.insertMany(GLOBAL_SCHEDULE)
 		.then(() => new Promise((resolveClearingPrevious) => {
 			/**
-			 * @param {Number} iIndex
+			 * @param {number} iIndex
 			 */
 			const LocalRecurionRemove = iIndex => {
 				const studyGroupProps = GLOBAL_SCHEDULE[iIndex];

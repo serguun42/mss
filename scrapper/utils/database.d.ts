@@ -13,7 +13,7 @@ export = MongoDispatcher;
  */
 declare class MongoDispatcher {
     /**
-     * @param {String} iDatabaseName
+     * @param {string} iDatabaseName
      */
     constructor(iDatabaseName: string);
     /**
@@ -27,18 +27,18 @@ declare class MongoDispatcher {
      */
     private events;
     /**
-     * @param {String} iEventName
+     * @param {string} iEventName
      * @param {MongoDispatcherCallback} iOnEventHandler
      * @returns {void}
      */
     on(iEventName: string, iOnEventHandler: MongoDispatcherCallback): void;
     /**
-     * @param {String} iEventName
+     * @param {string} iEventName
      * @returns {void}
      */
     off(iEventName: string): void;
     /**
-     * @param {String} iEventName
+     * @param {string} iEventName
      * @returns {void}
      */
     dispatchEvent(iEventName: string): void;
