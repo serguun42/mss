@@ -4,11 +4,11 @@ const
 		LOGGING_PORT,
 		LOGGING_TAG
 	} = DEV ? require("../../../DEV_CONFIGS/scrapper.config.json") : require("../scrapper.config.json"),
-	NodeFetch = require("node-fetch");
+	fetch = require("node-fetch").default;
 
 
 /**
- * @param {(Error | String)[]} args
+ * @param {(Error | string)[]} args
  * @returns {void}
  */
 const Logging = (...args) => {
@@ -18,7 +18,7 @@ const Logging = (...args) => {
 		tag: LOGGING_TAG
 	};
 
-	NodeFetch(`http://127.0.0.1:${LOGGING_PORT}`, {
+	fetch(`http://127.0.0.1:${LOGGING_PORT}`, {
 		method: "POST",
 		body: JSON.stringify(payload)
 	}).then((res) => {

@@ -1,5 +1,5 @@
 /**
- * @param {(Error | String)[]} args
+ * @param {(Error | string)[]} args
  * @returns {void}
  */
 declare function _exports(...args: (Error | string)[]): void;

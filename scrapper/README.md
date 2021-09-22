@@ -11,7 +11,7 @@ If necessary, notifies via [notifier](https://github.com/serguun42/mss/tree/mast
 ## Commands
 
 1. Install all dependencies `npm install`
-2. Run scrapper for first time `npm run scrap`
+2. Run scrapper for first time `npm run scrapper`
 
 
 ## Cron job
