@@ -19,10 +19,6 @@
 		"evening": "Завтра",
 		"late_evening": "Завтра"
 	},
-	"CATS": {
-		"ENABLED": true,
-		"FOLDER": "./cats/"
-	},
 	"DATABASE_NAME": "mss",
 	"LOGGING_TAG": "telegram_bot",
 	"LOGGING_PORT": 5050
