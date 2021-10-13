@@ -16,14 +16,13 @@ const
 		TELEGRAM_API_SERVER_PORT,
 		DAYS_OF_WEEK,
 		LABELS_FOR_TIMES_OF_DAY,
-		CATS,
 		DATABASE_NAME
 	} = CONFIG;
 
 
 const Logging = require("./utils/logging");
 const MongoDispatcher = require("./utils/database");
-const { Capitalize, Chunkify, GetCatImage, TGE } = require("./utils/common-utils");
+const { Capitalize, Chunkify, TGE } = require("./utils/common-utils");
 const { GetScheduleByGroup, GetWeek, GetDay, BuildDay, BuildWeek, GetToday, GetTomorrow } = require("./utils/build-layout");
 const mongoDispatcher = new MongoDispatcher(DATABASE_NAME);
 
@@ -38,8 +37,6 @@ const mongoDispatcher = new MongoDispatcher(DATABASE_NAME);
  * @property {Boolean} [waitingForTextForSettings]
  * @property {Boolean} [waitingForGroupSelection]
  * @property {String} [selectingGroupName]
- * @property {Boolean} cats
- * @property {String} last_cat_photo
  * @property {Boolean} morning
  * @property {Boolean} evening
  * @property {Boolean} late_evening
@@ -247,9 +244,7 @@ const COMMANDS = {
 🔸🔸 <b>(только на те дни, когда есть пары)</b>
 
 🔹 Присылать ли расписание на следующий день в 22:00.
-🔸🔸 <b>(только на те дни, когда есть пары)</b>
-
-🔹 Присылать ли котиков 🐱 по утрам в дни вместе с расписанием, когда есть семинары или лабы.`,
+🔸🔸 <b>(только на те дни, когда есть пары)</b>`,
 				destination: chat.id,
 				buttons: Markup.keyboard(
 					SETTINGS_COMMANDS.map((settingCommand) =>
@@ -287,8 +282,6 @@ const COMMANDS = {
 
 🔹 расписание на следующий день два раза вечером
 🔸🔸 <b>(только на те дни, когда есть пары)</b>
-
-🔹 А ещё я могу отправлять котиков 🐱 по утрам в дни, когда есть семинары или лабы.
 
 В общем, смотри настройки (/settings) и помощь (/help), если надо 🧐`
 	},
@@ -395,28 +388,6 @@ const SETTINGS_COMMANDS = [
 			.then(() => {
 				PushIntoSendingImmediateQueue({
 					text: `🕖 Рассылка поздним вечером – ${foundUser.late_evening ? "включена" : "выключена"}`,
-					destination: ctx.chat.id,
-					buttons: Markup.keyboard(
-						SETTINGS_COMMANDS.map((settingCommand) =>
-							[({text: settingCommand.text(foundUser)})]
-						)
-					).reply_markup
-				});
-			}).catch(Logging);
-		}).catch(Logging)
-	},
-	{
-		/** @type {SettingsCommandButtonTextSetter} */
-		text: (foundUser) => `🐱 Котики – ${foundUser.cats ? "включены" : "выключены"}`,
-		regexp: /🐱 Котики – в(ы)?ключены/i,
-		/** @type {ButtonCommandCaller} */
-		caller: async (ctx) => GettingUserWrapper(ctx).then((foundUser) => {
-			foundUser.cats = !foundUser.cats;
-
-			SaveUser(foundUser)
-			.then(() => {
-				PushIntoSendingImmediateQueue({
-					text: `🐱 Котики – ${foundUser.cats ? "включены" : "выключены"}`,
 					destination: ctx.chat.id,
 					buttons: Markup.keyboard(
 						SETTINGS_COMMANDS.map((settingCommand) =>
@@ -711,8 +682,6 @@ telegraf.start(/** @param {import("telegraf").Context} ctx */ (ctx) => {
 			id: ctx.chat.id,
 			username: ctx.chat.username || ctx.chat.first_name || ctx.chat.title,
 			group: "",
-			cats: true,
-			last_cat_photo: "",
 			morning: true,
 			evening: true,
 			late_evening: true,
@@ -871,34 +840,7 @@ const GlobalSendToAllUsers = (timeOfDay, layoutFunc) => {
 			});
 		};
 
-
-		if (timeOfDay === "morning" && user.cats && CATS.ENABLED) {
-			const practices = day.layout.match(/\((пр)\)/i)?.[1],
-				  labs = day.layout.match(/\((лаб)\)/i)?.[1];
-
-			if (practices || labs) {
-				GetCatImage(user.last_cat_photo)
-				.then((catImageToSend) => {
-					user.last_cat_photo = catImageToSend;
-
-					LocalDeleteWaitingStates();
-
-					SaveUser(user).catch((e) => Logging(new Error("Error on saving after cats send on morning"), e));
-
-					PushIntoSendingMailingQueue({
-						text: `${LABELS_FOR_TIMES_OF_DAY[timeOfDay]} ${day.nameOfDay} и сегодня есть ${labs ? "лабы" : "семинары"}! Расписание:\n\n${day.layout}`,
-						destination: user.id,
-						photo: path.join(CATS.FOLDER, catImageToSend)
-					});
-				}).catch((e) => {
-					Logging(`Cats sending failed`, e);
-
-					LocalSendDefault();
-				});
-			} else
-				LocalSendDefault();
-		} else
-			LocalSendDefault();
+		LocalSendDefault();
 	});
 };
 
