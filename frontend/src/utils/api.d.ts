@@ -1,4 +1,5 @@
-export function GetAllGroups(): Promise<import("../typings").TinyGroup[]>;
-export function GetGroupsByName(groupName: string): Promise<import("../typings").RichGroup[]>;
-export function GetGroupsByNameAndSuffix(groupName: string, groupSuffix: string): Promise<import("../typings").RichGroup[]>;
+export function GetAllGroups(): Promise<import("../types").TinyGroup[]>;
+export function GetGroupsByName(groupName: string): Promise<import("../types").RichGroup[]>;
+export function GetGroupsByNameAndSuffix(groupName: string, groupSuffix: string): Promise<import("../types").RichGroup[]>;
+export function Stats(): Promise<import("../types").Stats>;
 export function GetCurrentWeek(): Promise<number>;

@@ -121,13 +121,13 @@ export default {
 	},
 	data() {
 		return {
-			/** @type {import("@/typings").DaySchedule} */
+			/** @type {import("@/types").DaySchedule} */
 			dayForCertrainWeek: this.certainWeek < 0 ? this.day : {
 				day: this.day.day,
-				odd: this.day.odd.map(/** @param {import("@/typings").Lesson} lesson */ (lesson) =>
+				odd: this.day.odd.map(/** @param {import("@/types").Lesson} lesson */ (lesson) =>
 					lesson.filter((option) => !option.weeks || option.weeks.includes(this.certainWeek))
 				),
-				even: this.day.even.map(/** @param {import("@/typings").Lesson} lesson */ (lesson) =>
+				even: this.day.even.map(/** @param {import("@/types").Lesson} lesson */ (lesson) =>
 					lesson.filter((option) => !option.weeks || option.weeks.includes(this.certainWeek))
 				)
 			}

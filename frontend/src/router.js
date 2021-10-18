@@ -8,6 +8,7 @@ import AllGroups from "./views/AllGroups.vue";
 import Privacy from "./views/Privacy.vue";
 import SingleGroup from "./views/SingleGroup.vue";
 import AndroidApp from "./views/AndroidApp.vue";
+import Stats from "./views/Stats.vue";
 import NotFound404 from "./views/404.vue";
 import ANIMATIONS_CONFIG from "./config/animations.json";
 
@@ -66,6 +67,14 @@ const routes = [
 		component: AndroidApp,
 		meta: {
 			title: "Android-приложение"
+		}
+	},
+	{
+		path: "/stats",
+		name: "Stats",
+		component: Stats,
+		meta: {
+			title: "Статистика"
 		}
 	},
 	{
