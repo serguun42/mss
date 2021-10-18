@@ -26,7 +26,7 @@ const HOUR_IPS = new Object();
  * Returns `FALSE` if everything is okay.
  * 
  * @param {import("http").IncomingMessage} req
- * @returns {Boolean}
+ * @returns {boolean}
  */
 module.exports = req => {
 	if (!req) return true;
