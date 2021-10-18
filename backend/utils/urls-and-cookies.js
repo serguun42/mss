@@ -4,7 +4,7 @@ const
 
 /**
  * MIME-Type accordance for different file formats
- * @type {{format: String, type: String, noCharset?: Boolean}[]}
+ * @type {{format: string, type: string, noCharset?: boolean}[]}
  */
 const TYPES_ACCORDANCE = [
 	{ format: "mp4", type: "video/mp4", noCharset: true },
@@ -45,8 +45,8 @@ const TYPES_ACCORDANCE = [
 ];
 
 /**
- * @param {String} iString
- * @returns {String}
+ * @param {string} iString
+ * @returns {string}
  */
 const SafeDecode = iString => {
 	if (typeof iString !== "string") return iString;
@@ -60,8 +60,8 @@ const SafeDecode = iString => {
 };
 
 /**
- * @param {String} iString
- * @returns {String}
+ * @param {string} iString
+ * @returns {string}
  */
 const SafeEscape = iString => {
 	if (typeof iString !== "string") return iString;
@@ -73,7 +73,7 @@ const SafeEscape = iString => {
 };
 
 /**
- * @param {String} iReqHeaders
+ * @param {string} iReqHeaders
  * @returns {{[name: string]: string}}
  */
 const ParseCookie = iReqHeaders => {
@@ -98,8 +98,8 @@ const ParseCookie = iReqHeaders => {
 };
 
 /**
- * @param {String | String[]} iPath
- * @returns {String[]}
+ * @param {string | string[]} iPath
+ * @returns {string[]}
  */
 const ParsePath = iPath => {
 	if (iPath instanceof Array) {
@@ -114,7 +114,7 @@ const ParsePath = iPath => {
 };
 
 /**
- * @param {String} iQuery
+ * @param {string} iQuery
  * @returns {{[queryName: string]: string | true}}
  */
 const ParseQuery = iQuery => {
@@ -138,7 +138,7 @@ const ParseQuery = iQuery => {
 
 /**
  * @param {{[queryName: string]: string | true}} iQueries
- * @returns {String}
+ * @returns {string}
  */
 const CombineQueries = iQueries => {
 	if (typeof iQueries !== "object") return "";
@@ -148,7 +148,7 @@ const CombineQueries = iQueries => {
 };
 
 /**
- * @param {String} iPathname
+ * @param {string} iPathname
  * @returns {URL}
  */
 const SafeURL = iPathname => {
@@ -158,8 +158,8 @@ const SafeURL = iPathname => {
 };
 
 /**
- * @param {String} iLoc
- * @returns {String}
+ * @param {string} iLoc
+ * @returns {string}
  */
 const SetMIMEType = iLoc => {
 	const filename = iLoc.toString().split("/").pop(),
@@ -174,8 +174,8 @@ const SetMIMEType = iLoc => {
 };
 
 /**
- * @param {String} iLoc
- * @returns {String}
+ * @param {string} iLoc
+ * @returns {string}
  */
 const SetCompleteMIMEType = iLoc => {
 	const filename = iLoc.toString().split("/").pop(),
@@ -194,21 +194,7 @@ const SetCompleteMIMEType = iLoc => {
 
 
 
-/**
- * @typedef {Object} UTIL
- * @property {(iString: String) => String} SafeDecode - Example `UTIL.SafeDecode(UTIL.SafeURL(req.url).pathname)`
- * @property {(iString: String) => String} SafeEscape - Example `UTIL.SafeEscape(pathname)`
- * @property {(iPathname: String) => URL} SafeURL - Example `UTIL.SafeURL(req.url)`
- * @property {{iHeaders: {[headerName: string]: string}} => {[name: string]: string}} ParseCookie - Example `UTIL.ParseCookie(req.headers)`
- * @property {(iPath: String) => String[]} ParsePath - Example `UTIL.ParsePath(pathname)`
- * @property {(iQuery: String) => {[queryName: string]: string | true}} ParseQuery - Example `UTIL.ParseQuery(UTIL.SafeURL(req.url).search)`
- * @property {(iQueries: {[queryName: string]: string | true}) => String} CombineQueries - Example `UTIL.CombineQueries({ pass: true, search: "Seeking group" })`
- * @property {(iExtention: String) => String} SetMIMEType
- * @property {(iExtention: String) => String} SetCompleteMIMEType
- */
-/**
- * @type {UTIL}
- */
+/** @type {import("../types").UtilsType} */
 module.exports = {
 	SafeDecode,
 	SafeEscape,
@@ -218,5 +204,5 @@ module.exports = {
 	ParseQuery,
 	CombineQueries,
 	SetMIMEType,
-	SetCompleteMIMEType,
+	SetCompleteMIMEType
 }

@@ -5,7 +5,7 @@ const
 		REMOTE_LOGS_TAG,
 		LOGGING_TAG
 	} = DEV ? require("../../../DEV_CONFIGS/backend.config.json") : require("../backend.config.json"),
-	NodeFetch = require("node-fetch");
+	fetch = require("node-fetch").default;
 
 
 /**
@@ -19,7 +19,7 @@ const Logging = (...args) => {
 		tag: LOGGING_TAG
 	};
 
-	NodeFetch(`http://127.0.0.1:${LOGGING_PORT}`, {
+	fetch(`http://127.0.0.1:${LOGGING_PORT}`, {
 		method: "POST",
 		body: JSON.stringify(payload)
 	}).then((res) => {
@@ -47,7 +47,7 @@ const LoggingWithCustomTag = (customTag, ...args) => {
 		tag: customTag
 	};
 
-	NodeFetch(`http://127.0.0.1:${LOGGING_PORT}`, {
+	fetch(`http://127.0.0.1:${LOGGING_PORT}`, {
 		method: "POST",
 		body: JSON.stringify(payload)
 	}).then((res) => {
@@ -69,5 +69,5 @@ const LoggingWithCustomTag = (customTag, ...args) => {
  */
 const WrapperForLoggingWithCustomTag = (...args) => LoggingWithCustomTag(REMOTE_LOGS_TAG, ...args);
 
-module.exports = Logging;
-module.exports.WithCustomTag = WrapperForLoggingWithCustomTag;
+module.exports = DEV ? console.log : Logging;
+module.exports.WithCustomTag = DEV ? console.log : WrapperForLoggingWithCustomTag;

@@ -1,12 +1,10 @@
 const
 	{ join } = require("path"),
-	fs = require("fs"),
-	util = require("util"),
-	{ createReadStream: fsCreateReadStream, ReadStream: fsReadStream } = fs,
-	fsStat = util.promisify(fs.stat),
-	zlib = require("zlib"),
-	{ createGzip } = zlib,
-	gzip = util.promisify(zlib.gzip);
+	{ promisify } = require("util"),
+	{ createReadStream: fsCreateReadStream, ReadStream: fsReadStream, readFileSync, stat } = require("fs"),
+	{ createGzip, gzip } = require("zlib"),
+	fsStat = promisify(stat),
+	gzipPromise = promisify(gzip);
 
 const
 	LOG_CONNECTIONS = false,
@@ -38,12 +36,12 @@ const GetStatusCodes = (iStatusCodes) => {
  */
 const STATUSES = GetStatusCodes(http.STATUS_CODES);
 const HTTPS_SERVER_OPTIONS = {
-	key: fs.readFileSync(CERTS.key),
-	cert: fs.readFileSync(CERTS.cert)
+	key: readFileSync(CERTS.key),
+	cert: readFileSync(CERTS.cert)
 };
 /**
  * Usual Front-end Pages
- * @type {(String | RegExp)[]}
+ * @type {(string | RegExp)[]}
  */
 const PAGES = [
 	"/",
@@ -51,13 +49,14 @@ const PAGES = [
 	"/privacy",
 	"/all",
 	"/app",
+	"/stats",
 	/^\/group$/,
 	/^\/group\//,
 	/^\/docs\/api(\/(swagger(\/)?)?)?$/
 ];
 /**
  * URLs with redirection
- * @type {{required: String | RegExp, redirect: String, savePathname?: Boolean, exceptions?: (String | RegExp)[]}[]}
+ * @type {{required: string | RegExp, redirect: string, savePathname?: boolean, exceptions?: (string | RegExp)[]}[]}
  */
 const REDIRECTIONS = [
 	{
@@ -99,7 +98,7 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 
 
 	/**
-	 * @param {String} [iWhen]
+	 * @param {string} [iWhen]
 	 */
 	const LogConnection = (iWhen = "REQ") => {
 		if (!LOG_CONNECTIONS) return;
@@ -110,8 +109,8 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 	LogConnection("REG");
 
 	/**
-	 * @param {Number} iCode
-	 * @param {String | Buffer | ReadStream | Object} iData 
+	 * @param {number} iCode
+	 * @param {string | Buffer | ReadStream | Object} iData 
 	 * @returns {false}
 	 */
 	const GlobalSendCustom = (iCode, iData) => {
@@ -131,7 +130,7 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 			const dataToSend = iData.toString();
 			
 			if (acceptGzip) {
-				gzip(dataToSend)
+				gzipPromise(dataToSend)
 				.then((compressed) => {
 					res.setHeader("Content-Encoding", "gzip");
 					res.setHeader("Content-Length", compressed.length);
@@ -152,7 +151,7 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 			res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".json"));
 
 			if (acceptGzip) {
-				gzip(dataToSend)
+				gzipPromise(dataToSend)
 				.then((compressed) => {
 					res.setHeader("Content-Encoding", "gzip");
 					res.setHeader("Content-Length", compressed.length);
@@ -174,7 +173,7 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 	};
 
 	/**
-	 * @param {Number} iCode
+	 * @param {number} iCode
 	 * @returns {false}
 	 */
 	const GlobalSend = iCode => {
@@ -295,7 +294,7 @@ https.createServer(HTTPS_SERVER_OPTIONS, (req, res) => {
 
 
 
-	/** @type {import("./typings").ModuleCallingObjectType} */
+	/** @type {import("./types").ModuleCallingObjectType} */
 	const CALLING_PROPS = {
 		req, res,
 		pathname,
