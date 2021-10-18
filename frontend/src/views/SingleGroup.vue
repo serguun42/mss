@@ -9,6 +9,7 @@
 			<div id="single-group-page__title__additional-info">
 				<div class="single-group-page__title__additional-info__item" v-if="apiData && apiData.unitName">{{ apiData.unitName }}</div>
 				<div class="single-group-page__title__additional-info__item" v-if="apiData && apiData.unitCourse">{{ apiData.unitCourse }}</div>
+				<div class="single-group-page__title__additional-info__item" v-if="updateDate">Обновлено {{ updateDate }}</div>
 				<div class="single-group-page__title__additional-info__item" v-if="apiData && apiData.remoteFile">
 					<a :href="apiData.remoteFile" target="_blank" rel="noopener noreferrer">
 						<i class="material-icons material-icons-round">file_download</i>
@@ -40,8 +41,6 @@ import { GetCurrentWeek, GetGroupsByNameAndSuffix } from "@/utils/api";
 import Day from "@/components/Day.vue";
 import router from "@/router";
 
-let ComponentOnViewLoad;
-
 export default {
   components: { Day },
 	name: "single-group-page",
@@ -49,9 +48,28 @@ export default {
 		name: String,
 		suffix: String
 	},
+	computed: {
+		/** @returns {string | null} */
+		updateDate() {
+			if (!this.apiData) return null;
+			if (!this.apiData.updatedDate) return null;
+
+			const parsedUpdatedDate = new Date(this.apiData.updatedDate);
+			if (isNaN(parsedUpdatedDate.getTime())) return null;
+
+			if (Math.floor((parsedUpdatedDate.getTime() - new Date().getTimezoneOffset() * 60e3) / 86400e3) === Math.floor((Date.now() - new Date().getTimezoneOffset() * 60e3) / 86400e3))
+				return `сегодня, ${parsedUpdatedDate.getHours()}:${parsedUpdatedDate.getHours().toString().padStart(2, "0")}`;
+			
+			if (Math.floor((parsedUpdatedDate.getTime() - new Date().getTimezoneOffset() * 60e3) / 86400e3) === Math.floor((Date.now() - new Date().getTimezoneOffset() * 60e3) / 86400e3) - 1)
+				return `вчера, ${parsedUpdatedDate.getHours()}:${parsedUpdatedDate.getHours().toString().padStart(2, "0")}`;
+
+			return `${parsedUpdatedDate.toLocaleDateString()}, ${parsedUpdatedDate.getHours()}:${parsedUpdatedDate.getHours().toString().padStart(2, "0")}`;
+		}
+	},
 	data() {
 		return {
 			myGroupRequested: store.getters.userGroup?.name && (!this.name || store.getters.userGroup?.name === this.name),
+			/** @type {import("../types").RichGroup} */
 			apiData: {},
 			currentWeek: 0
 		}
@@ -65,26 +83,8 @@ export default {
 	created() {
 		Dispatcher.call("preload");
 
-		const LocalOnViewLoad = () => {
-			if (!this.name && !store.getters.userGroup?.name) {
-				Dispatcher.unlink("groupViewPropsChanged", ComponentOnViewLoad);
-				return router.push({ path: "/" });
-			};
-
-			GetGroupsByNameAndSuffix(this.myGroupRequested ? store.getters.userGroup?.name : this.name, this.myGroupRequested ? store.getters.userGroup?.suffix : this.suffix || "")
-				.then((group) => {
-					this.apiData = group[0];
-
-					return GetCurrentWeek();
-				})
-				.then((week) => this.currentWeek = week)
-				.catch(console.warn)
-				.finally(() => Dispatcher.call("preloadingDone"));
-		}
-
-		LocalOnViewLoad();
-		ComponentOnViewLoad = LocalOnViewLoad;
-		Dispatcher.link("groupViewPropsChanged", ComponentOnViewLoad);
+		this.onload();
+		Dispatcher.link("groupViewPropsChanged", this.onload);
 
 
 		Dispatcher.link("userGroupUpdated", () => {
@@ -93,12 +93,31 @@ export default {
 	},
 
 	beforeDestroy() {
-		Dispatcher.unlink("groupViewPropsChanged", ComponentOnViewLoad);
+		Dispatcher.unlink("groupViewPropsChanged", this.onload);
 	},
 
 	methods: {
 		saveGroup() {
 			store.dispatch("saveGroup", { name: this.name || store.getters.userGroup?.name, suffix: this.suffix || store.getters.userGroup?.suffix || "", noReload: true });
+		},
+		onload() {
+			if (!this.name && !store.getters.userGroup?.name) {
+				Dispatcher.unlink("groupViewPropsChanged", this.onload);
+				return router.push({ path: "/" });
+			}
+
+			GetGroupsByNameAndSuffix(
+				this.myGroupRequested ? store.getters.userGroup?.name : this.name,
+				this.myGroupRequested ? store.getters.userGroup?.suffix : this.suffix || ""
+			)
+			.then((group) => {
+				this.apiData = group[0];
+
+				return GetCurrentWeek();
+			})
+			.then((week) => this.currentWeek = week)
+			.catch(console.warn)
+			.finally(() => Dispatcher.call("preloadingDone"));
 		}
 	}
 }
@@ -156,7 +175,7 @@ export default {
 	position: relative;
 
 	margin: 0;
-	padding: 0;
+	padding: 6px 0 0;
 	box-sizing: border-box;
 
 	font-size: 16px;
@@ -170,7 +189,7 @@ export default {
 	position: relative;
 
 	margin: 0;
-	padding: 8px 0 0;
+	padding: 2px 0 0;
 	box-sizing: border-box;
 }
 
@@ -209,6 +228,7 @@ export default {
 	font-weight: 500;
 	line-height: 24px;
 	white-space: nowrap;
+	vertical-align: 1px;
 
 	color: #FFF;
 	background-color: var(--primary-color);

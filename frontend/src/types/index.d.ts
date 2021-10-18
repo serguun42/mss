@@ -37,3 +37,8 @@ export type RichGroup = {
 	updatedDate: Date;
 	schedule: DaySchedule[];
 }
+
+export type Stats = {
+	groupsCount: number;
+	scrapperUpdatedDate: Date;
+}

@@ -1,13 +1,13 @@
-import CONFIG from "../config/config";
+import API_CONFIG from "../config/api-config";
 
 
 /**
  * @param {String} iMethod
- * @param {import("../typings").QueriesForApi} iQueries
+ * @param {import("../types").QueriesForApi} iQueries
  * @returns {String}
  */
 const API_URL_CONSTUCTOR = (iMethod, iQueries) => {
-	const baseAndMethod = `${CONFIG.API.BASE_URL}/${CONFIG.API.VERSION}/${iMethod}`;
+	const baseAndMethod = `${API_CONFIG.BASE_URL}/${API_CONFIG.VERSION}/${iMethod}`;
 	const queriesCombined = (
 		iQueries && Object.keys(iQueries).length
 		?
@@ -37,7 +37,7 @@ const API_URL_CONSTUCTOR = (iMethod, iQueries) => {
 };
 
 /**
- * @param {{method: String, queries: import("../typings").QueriesForApi}} iURL
+ * @param {{method: String, queries: import("../types").QueriesForApi}} iURL
  * @param {RequestInit} iOptions
  */
 const FetchMethod = (iURL, iOptions) => {
@@ -54,7 +54,7 @@ const FetchMethod = (iURL, iOptions) => {
 };
 
 /**
- * @returns {Promise<import("../typings").TinyGroup[]>}
+ * @returns {Promise<import("../types").TinyGroup[]>}
  */
 export const GetAllGroups = () => FetchMethod({
 	method: "groups/all"
@@ -62,7 +62,7 @@ export const GetAllGroups = () => FetchMethod({
 
 /**
  * @param {String} groupName
- * @returns {Promise<import("../typings").RichGroup[]>}
+ * @returns {Promise<import("../types").RichGroup[]>}
  */
 export const GetGroupsByName = (groupName) => FetchMethod({
 	method: "groups/certain",
@@ -74,7 +74,7 @@ export const GetGroupsByName = (groupName) => FetchMethod({
 /**
  * @param {String} groupName
  * @param {String} groupSuffix
- * @returns {Promise<import("../typings").RichGroup[]>}
+ * @returns {Promise<import("../types").RichGroup[]>}
  */
 export const GetGroupsByNameAndSuffix = (groupName, groupSuffix) => FetchMethod({
 	method: "groups/certain",
@@ -82,6 +82,13 @@ export const GetGroupsByNameAndSuffix = (groupName, groupSuffix) => FetchMethod(
 		name: groupName,
 		suffix: groupSuffix
 	}
+});
+
+/**
+ * @returns {Promise<import("../types").Stats>}
+ */
+export const Stats = () => FetchMethod({
+	method: "stats"
 });
 
 /**
