@@ -501,9 +501,9 @@ GetLinkToFiles()
 
 	return mongoDispatcher.callDB()
 	.then((DB) => {
-		const COLL = DB.collection("study-groups");
+		const STUDY_GROUPS_COLLECTION = DB.collection("study-groups");
 
-		return COLL.insertMany(GLOBAL_SCHEDULE)
+		return STUDY_GROUPS_COLLECTION.insertMany(GLOBAL_SCHEDULE)
 		.then(() => new Promise((resolveClearingPrevious) => {
 			/**
 			 * @param {number} iIndex
@@ -512,7 +512,7 @@ GetLinkToFiles()
 				const studyGroupProps = GLOBAL_SCHEDULE[iIndex];
 				if (!studyGroupProps) return resolveClearingPrevious();
 
-				COLL.findOneAndDelete({
+				STUDY_GROUPS_COLLECTION.findOneAndDelete({
 					groupName: studyGroupProps.groupName,
 					groupSuffix: studyGroupProps.groupSuffix,
 					updatedDate: {
@@ -525,10 +525,13 @@ GetLinkToFiles()
 
 			LocalRecurionRemove(0);
 		}))
-		.then(() => {
-			Logging(`Successfully done inserting study groups.`);
-			mongoDispatcher.closeConnection();
-		});
+		.then(() => DB.collection("params").findOneAndUpdate(
+			{ name: "scrapper_updated_date" },
+			{ $set: {
+				value: new Date()
+			} }
+		))
+		.then(() => mongoDispatcher.closeConnection());
 	});
 })
 .catch((e) => {
