@@ -5,8 +5,11 @@ const
 	MONGO_URL = "mongodb://localhost:27017/";
 
 /**
+ * @typedef {import("mongodb").Db} DB
+ */
+/**
  * @callback MongoDispatcherCallback
- * @param {import("mongodb").Db} iDB 
+ * @param {DB} iDB
  * @returns {void}
  */
 /**
@@ -15,12 +18,12 @@ const
  */
 class MongoDispatcher {
 	/**
-	 * @param {String} iDatabaseName
+	 * @param {string} iDatabaseName
 	 */
 	constructor(iDatabaseName) {
 		/**
 		 * @private
-		 * @type {import("mongodb").Db}
+		 * @type {DB}
 		 */
 		this.DB = null;
 
@@ -49,7 +52,7 @@ class MongoDispatcher {
 
 
 	/**
-	 * @param {String} iEventName
+	 * @param {string} iEventName
 	 * @param {MongoDispatcherCallback} iOnEventHandler
 	 * @returns {void}
 	 */
@@ -61,15 +64,15 @@ class MongoDispatcher {
 	}
 
 	/**
-	 * @param {String} iEventName
+	 * @param {string} iEventName
 	 * @returns {void}
 	 */
 	off(iEventName) {
-		delete this.events[iEventName];	
+		delete this.events[iEventName];
 	}
 
 	/**
-	 * @param {String} iEventName
+	 * @param {string} iEventName
 	 * @returns {void}
 	 */
 	dispatchEvent(iEventName) {
@@ -92,7 +95,7 @@ class MongoDispatcher {
 
 
 	/**
-	 * @returns {Promise<import("mongodb").Db>}
+	 * @returns {Promise<DB>}
 	 */
 	callDB() {
 		return new Promise((resolve) => {

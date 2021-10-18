@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   description: This is API for MIREA Schedule System (MSS), made by @serguun42.
-  version: "1.2.0"
+  version: "1.3.0"
   contact:
     name: MSS API
     url: https://mirea.xyz/docs/api
@@ -14,14 +14,16 @@ info:
     url: 'https://mirea.xyz/img/logo_wide.png'
 
 servers:
-  - description: MSS Production Server, API version 1.2.0
-    url: https://mirea.xyz/api/v1.2/
+  - description: MSS Production Server, API version 1.3.0
+    url: https://mirea.xyz/api/v1.3/
 
 tags:
   - name: groups
     description: Everything about groups
   - name: time
     description: Fetch or sync time (weeks, days, etc.)
+  - name: stats
+    description: Get overall statistics
   - name: logs
     description: Getting logs from some sources (e.g. app)
 
@@ -38,7 +40,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TinyGroups'
+                type: array
+                items:
+                  $ref: '#/components/schemas/TinyGroup'
         default:
           description: Some (un)expected error
           content:
@@ -73,7 +77,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RichGroups'
+                type: array
+                items:
+                  $ref: '#/components/schemas/RichGroup'
         default:
           description: Some (un)expected error
           content:
@@ -93,8 +99,9 @@ paths:
           content:
             text/plain:
               schema:
-                type: number
-                example: 1630270800000
+                type: string
+                format: date-time
+                example: "2021-08-29T21:00:00.000Z"
         default:
           description: Some (un)expected error
           content:
@@ -115,6 +122,26 @@ paths:
               schema:
                 type: number
                 example: 10
+        default:
+          description: Some (un)expected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SomeError'
+
+  /stats:
+    get:
+      description: "Get some statistic (like total groups count or last updated time)"
+      operationId: stats
+      tags:
+        - stats
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stats'
         default:
           description: Some (un)expected error
           content:
@@ -187,16 +214,6 @@ components:
       example:
         - groupName: ИАБВ-12-99
           groupSuffix: Кафедра ЫЫЫ
-
-    TinyGroups:
-      type: array
-      items:         
-        $ref: '#/components/schemas/TinyGroup'
-      example:
-        - groupName: ИАБВ-12-99
-          groupSuffix: Кафедра ЫЫЫ
-        - groupName: ИАБВ-34-99
-          groupSuffix: Кафедра АБВ
 
     Option:
       type: object
@@ -311,7 +328,6 @@ components:
             tutor: Люлява Д.В.
             place: И-205-б
             link:
-
 
     RichGroup:
       type: object
@@ -829,8 +845,17 @@ components:
             - []
             - []
 
-
-    RichGroups:
-      type: array
-      items:         
-        $ref: '#/components/schemas/RichGroup'
+    Stats:
+      type: object
+      properties:
+        groupsCount:
+          type: number
+        scrapperUpdatedDate:
+          type: string
+          format: date-time
+      required:
+        - groupsCount
+        - scrapperUpdatedDate
+      example:
+        groupsCount: 1337
+        scrapperUpdatedDate: "2021-10-17T22:22:22.222Z"

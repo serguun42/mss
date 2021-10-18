@@ -102,7 +102,7 @@ const LocalGetForm = (iNumber, iForms) => {
 	else if (/5|6|7|8|9|0/g.test(iNumber.slice(-1))) return iForms[2];
 };
 
-/** @typedef {import("@/typings").DaySchedule & {certainWeek: number, customTitle: string}} CustomDay */
+/** @typedef {import("@/types").DaySchedule & {certainWeek: number, customTitle: string}} CustomDay */
 
 export default {
 	name: "index-page",
@@ -113,7 +113,7 @@ export default {
 	data() {
 		return {
 			windowWidth: window.innerWidth,
-			/** @type {import("@/typings").RichGroup} */
+			/** @type {import("@/types").RichGroup} */
 			savedUserGroup: {},
 			/** @type {CustomDay[]} */
 			savedUserGroupDays: [],
