@@ -1,6 +1,6 @@
 <template>
 	<div id="stats-page">
-		<h1>Stats</h1>
+		<h1>Статистика</h1>
 		<div class="stats__cards">
 			<div class="stats__card">
 				<div class="stats__card__header default-header">groupsCount</div>
@@ -8,7 +8,7 @@
 			</div>
 			<div class="stats__card">
 				<div class="stats__card__header default-header">scrapperUpdatedDate</div>
-				<div class="stats__card__content">{{ apiData.scrapperUpdatedDate ? new Date(apiData.scrapperUpdatedDate).toISOString() : "Словно позавчера" }}</div>
+				<div class="stats__card__content">{{ apiData.scrapperUpdatedDate ? new Date(apiData.scrapperUpdatedDate).toLocaleString() : "Словно позавчера" }}</div>
 			</div>
 		</div>
 	</div>
