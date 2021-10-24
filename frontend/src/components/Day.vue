@@ -138,7 +138,7 @@ export default {
 		 * @param {String} iLessonTime
 		 * @returns {Boolean}
 		 */
-		lessonStarted: function (iLessonTime) {
+		lessonStarted(iLessonTime) {
 			if (typeof iLessonTime !== "string") return false;
 
 			const splitted = iLessonTime.split(/\s*[\-–—]\s*/)
@@ -167,7 +167,7 @@ export default {
 		 * @param {String} iLessonTime
 		 * @returns {Boolean}
 		 */
-		lessonPlanned: function (iLessonTime) {
+		lessonPlanned(iLessonTime) {
 			if (typeof iLessonTime !== "string") return false;
 
 			const splitted = iLessonTime.split(/\s*[\-–—]\s*/)

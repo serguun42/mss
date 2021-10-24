@@ -14,7 +14,7 @@
 					:customTitle="day.customTitle"
 					:certainWeek="day.certainWeek || -1"
 					:oneLine="true"
-					:showOngoingAndPlannedLesson="dayIndex === 0"
+					:showOngoingAndPlannedLesson="day.showOngoingAndPlannedLesson"
 				></day>
 			</div>
 			<h2 class="index-page__subtitle default-no-selection" v-else>
@@ -102,7 +102,7 @@ const LocalGetForm = (iNumber, iForms) => {
 	else if (/5|6|7|8|9|0/g.test(iNumber.slice(-1))) return iForms[2];
 };
 
-/** @typedef {import("@/types").DaySchedule & {certainWeek: number, customTitle: string}} CustomDay */
+/** @typedef {import("@/types").DaySchedule & {certainWeek: number, customTitle: string, showOngoingAndPlannedLesson: boolean}} CustomDay */
 
 export default {
 	name: "index-page",
@@ -150,16 +150,19 @@ export default {
 					const today = this.savedUserGroup.schedule[new Date().getDay() - 1 < 0 ? 7 + (new Date().getDay() - 1) : new Date().getDay() - 1];
 					if (today) today.customTitle = "Сегодня";
 					if (today) today.certainWeek = this.currentWeek;
+					if (today) today.showOngoingAndPlannedLesson = true;
 
 					/** @type {CustomDay} */
 					const tomorrow = this.savedUserGroup.schedule[new Date().getDay() % 7];
 					if (tomorrow) tomorrow.customTitle = "Завтра";
 					if (tomorrow) tomorrow.certainWeek = this.currentWeek + (new Date().getDay() === 0);
+					if (tomorrow) tomorrow.showOngoingAndPlannedLesson = false;
 
 					/** @type {CustomDay} */
 					const dayAfterTomorrow = this.savedUserGroup.schedule[(new Date().getDay() + 1) % 7];
 					if (dayAfterTomorrow) dayAfterTomorrow.customTitle = "Послезавтра";
 					if (dayAfterTomorrow) dayAfterTomorrow.certainWeek = this.currentWeek + (new Date().getDay() === 6);
+					if (dayAfterTomorrow) dayAfterTomorrow.showOngoingAndPlannedLesson = false;
 
 
 					this.savedUserGroupDays = (
