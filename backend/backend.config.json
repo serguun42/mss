@@ -1,9 +1,5 @@
 {
-	"CERTS": {
-		"key": "$MSS/certs/key.pem",
-		"cert": "$MSS/certs/cert.pem"
-	},
-	"FRONT_ROOT": "$MSS/front/",
+	"NODE_PORT": 5061,
 	"HOSTNAME": "mirea.xyz",
 	"DATABASE_NAME": "mss",
 	"LOGGING_TAG": "backend",

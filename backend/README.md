@@ -2,10 +2,11 @@
 
 ## BACKEND
 
-Handles back for front, back for API, back for user accounts. All the stuff.
-<br>
+Uses Node.js as backend for API, nginx for static.
 Proxies logs from [app](https://github.com/serguun42/mss/tree/master/app) to [notifier](https://github.com/serguun42/mss/tree/master/notifier).
 
+### `nginx`
+Uses nginx as server for static and as reverse-proxy for API. See [nginxconfig.io](https://nginxconfig.io/)
 
 ## Commands
 
@@ -18,4 +19,4 @@ Proxies logs from [app](https://github.com/serguun42/mss/tree/master/app) to [no
 * `pages` – Backend side for some pages, e.g. `/` -> `index.js`, `/api` -> `api.js`
 
 ## Some other files
-`backend.config.json` – File for certs, hooks, DB, etc.
+`backend.config.json` – Config file with ports, DB, logging, rate limiter 
