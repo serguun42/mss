@@ -29,10 +29,7 @@ const HOUR_IPS = new Object();
  * @returns {boolean}
  */
 module.exports = req => {
-	if (!req) return true;
-	if (!req.socket) return true;
-
-	const cIP = req.socket.remoteAddress;
+	const cIP = req.headers?.["x-real-ip"] || req.socket?.remoteAddress;
 
 	if (!cIP) return true;
 

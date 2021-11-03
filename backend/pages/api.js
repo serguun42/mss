@@ -22,7 +22,7 @@ const RECENTLY_LOGGED_IPS = {};
  * @returns {void}
  */
 const LogTooManyRequests = (req) => {
-	const cIP = req.socket?.remoteAddress;
+	const cIP = req.headers?.["x-real-ip"] || req.socket?.remoteAddress;
 
 	if (!cIP) return;
 
