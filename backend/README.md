@@ -6,7 +6,7 @@ Uses Node.js as backend for API, nginx for static.
 Proxies logs from [app](https://github.com/serguun42/mss/tree/master/app) to [notifier](https://github.com/serguun42/mss/tree/master/notifier).
 
 ### `nginx`
-Uses nginx as server for static and as reverse-proxy for API. See [nginxconfig.io](https://nginxconfig.io/)
+Uses nginx as server for static and as reverse-proxy for API. See [nginxconfig.io](https://nginxconfig.io/) and [nginx.base.conf](./nginx.base.conf)
 
 ## Commands
 

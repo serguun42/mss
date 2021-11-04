@@ -1,11 +1,6 @@
-const
-	{ promisify } = require("util"),
-	{ gzip } = require("zlib"),
-	gzipPromise = promisify(gzip),
-	http = require("http");
+const http = require("http");
 
 const
-	LOG_CONNECTIONS = false,
 	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
 	{ NODE_PORT } = DEV ? require("../../DEV_CONFIGS/backend.config.json") : require("./backend.config.json");
 
@@ -34,22 +29,9 @@ http.createServer((req, res) => {
 	const pathname = UTIL.SafeDecode(UTIL.SafeURL(req.url).pathname),
 		  path = UTIL.ParsePath(pathname),
 		  queries = UTIL.ParseQuery(UTIL.SafeURL(req.url).search),
-		  cookies = UTIL.ParseCookie(req.headers),
-		  acceptGzip = /\bgzip\b/i.test(req.headers["accept-encoding"] || "");
+		  cookies = UTIL.ParseCookie(req.headers);
 
 	res.setHeader("Content-Type", "charset=UTF-8");
-
-
-	/**
-	 * @param {string} [iWhen]
-	 */
-	const LogConnection = (iWhen = "REQ") => {
-		if (!LOG_CONNECTIONS) return;
-
-		console.log(`${(iWhen + ":").padEnd(15, " ")}${UTIL.SafeDecode(req.url).padEnd(50, " ")} ${new Date().toISOString()}`);
-	}
-
-	LogConnection("REG");
 
 	/**
 	 * @param {number} iCode
@@ -57,51 +39,17 @@ http.createServer((req, res) => {
 	 * @returns {false}
 	 */
 	const GlobalSendCustom = (iCode, iData) => {
-		LogConnection("RES START");
-
 		res.statusCode = iCode;
 
 		if (iData instanceof Buffer || typeof iData == "string") {
 			const dataToSend = iData.toString();
-			
-			if (acceptGzip) {
-				gzipPromise(dataToSend)
-				.then((compressed) => {
-					res.setHeader("Content-Encoding", "gzip");
-					res.setHeader("Content-Length", compressed.length);
-					res.end(compressed, () => LogConnection("RES END"));
-				})
-				.catch(() => {
-					res.removeHeader("Content-Encoding");
-					res.setHeader("Content-Length", dataToSend.length);
-					res.end(dataToSend, () => LogConnection("RES END"));
-				});
-			} else {
-				res.removeHeader("Content-Encoding");
-				res.setHeader("Content-Length", dataToSend.length);
-				res.end(dataToSend, () => LogConnection("RES END"));
-			}
+
+			res.end(dataToSend);
 		} else {
 			const dataToSend = JSON.stringify(iData);
 			res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".json"));
 
-			if (acceptGzip) {
-				gzipPromise(dataToSend)
-				.then((compressed) => {
-					res.setHeader("Content-Encoding", "gzip");
-					res.setHeader("Content-Length", compressed.length);
-					res.end(compressed, () => LogConnection("RES END"));
-				})
-				.catch(() => {
-					res.removeHeader("Content-Encoding");
-					res.setHeader("Content-Length", dataToSend.length);
-					res.end(dataToSend, () => LogConnection("RES END"));
-				});
-			} else {
-				res.removeHeader("Content-Encoding");
-				res.setHeader("Content-Length", dataToSend.length);
-				res.end(dataToSend, () => LogConnection("RES END"));
-			}
+			res.end(dataToSend);
 		}
 
 		return false;
@@ -112,10 +60,8 @@ http.createServer((req, res) => {
 	 * @returns {false}
 	 */
 	const GlobalSend = iCode => {
-		LogConnection("RES START");
-
 		res.statusCode = iCode || 200;
-		res.end(STATUSES[iCode || 200], () => LogConnection("RES END"));
+		res.end(STATUSES[iCode || 500]);
 		return false;
 	};
 
@@ -128,10 +74,8 @@ http.createServer((req, res) => {
 		path,
 		queries,
 		cookies,
-		acceptGzip,
 		GlobalSend,
-		GlobalSendCustom,
-		...UTIL
+		GlobalSendCustom
 	};
 
 
