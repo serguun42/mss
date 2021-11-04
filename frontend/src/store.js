@@ -3,10 +3,14 @@ import Vuex, { Store } from "vuex";
 import Dispatcher from "./utils/dispatcher";
 import ANIMATIONS_CONFIG from "./config/animations.json";
 
+Vue.use(Vuex);
+
+
+
 const userGroup = JSON.parse(localStorage.getItem("user-group")) || {};
 
 
-/** @typedef {"light" | "dark" | "auto"} ThemeEnum */
+/** @typedef {"light" | "dark" | "schedule" | "system"} ThemeEnum */
 /**
  * @typedef {Object} ThemeObject
  * @property {ThemeEnum} raw
@@ -21,25 +25,49 @@ const StoreLocalGetRawTheme = () => localStorage.getItem("theme-raw");
  * @param {ThemeEnum} [iThemeRaw]
  */
 const StoreLocalCheckIfItsDarkTheme = (iThemeRaw = "") => {
+	/** @type {ThemeEnum} */
 	const themeRaw = iThemeRaw || StoreLocalGetRawTheme();
 	if (themeRaw === "dark") return true;
-	if (themeRaw === "light") return false;
 
-	return (
+	if (themeRaw === "schedule") return (
 		new Date().getHours() > 19 || (new Date().getHours() === 19 && new Date().getMinutes() >= 30) ||
 		new Date().getHours() < 7 || (new Date().getHours() === 7 && new Date().getMinutes() <= 29)
+	);
+
+	if (themeRaw === "light") return false;
+
+	return window.matchMedia?.("(prefers-color-scheme: dark)")?.matches;
+};
+
+window.matchMedia?.("(prefers-color-scheme: dark)")?.addEventListener("change", (mediaQueryListEvent) => {
+	if (["light", "dark", "schedule"].includes(store.getters.theme.raw)) return;
+
+	store.commit("theme", "system");
+});
+
+/**
+ * @param {ThemeEnum} iThemeRaw
+ */
+const StoreLocalGetThemeIcon = (iThemeRaw) => {
+	return (
+		iThemeRaw === "light" ? "light_mode" :
+		iThemeRaw === "dark" ? "dark_mode" :
+		iThemeRaw === "schedule" ? "auto_awesome" :
+		"settings_suggest"
 	);
 };
 
 /**
  * @param {ThemeEnum} iThemeRaw
  */
-const StoreLocalGetThemeIcon = (iThemeRaw) => iThemeRaw === "light" ? "light_mode" : iThemeRaw === "dark" ? "dark_mode" : "auto_awesome";
-
-/**
- * @param {ThemeEnum} iThemeRaw
- */
-const StoreLocalGetThemeName = (iThemeRaw) => iThemeRaw === "light" ? "светлая тема" : iThemeRaw === "dark" ? "тёмная тема" : "автоматическая тема";
+const StoreLocalGetThemeName = (iThemeRaw) => {
+	return (
+		iThemeRaw === "light" ? "светлая тема (постоянно)" :
+		iThemeRaw === "dark" ? "тёмная тема (постоянно)" :
+		iThemeRaw === "schedule" ? "тема по расписанию (тёмная после 19:30)" :
+		"системная тема"
+	);
+};
 
 /**
  * @param {ThemeEnum} [iThemeRaw]
@@ -59,9 +87,7 @@ const StoreLocalGetCompleteTheme = (iThemeRaw = "") => {
 
 
 
-Vue.use(Vuex);
-
-export default new Store({
+const store = new Store({
 	state: () => ({
 		primaryColor: process.env.VUE_APP_PRIMARY_COLOR,
 		rippleColor: process.env.VUE_APP_PRIMARY_COLOR,
@@ -111,8 +137,8 @@ export default new Store({
 		 * @param {ThemeEnum} newTheme
 		 */
 		theme(state, newTheme) {
-			if (newTheme !== "light" && newTheme !== "dark" && newTheme !== "auto")
-				newTheme = "auto";
+			if (newTheme !== "light" && newTheme !== "dark" && newTheme !== "schedule" && newTheme !== "system")
+				newTheme = "system";
 
 			localStorage.setItem("theme-raw", newTheme);
 			state.theme = StoreLocalGetCompleteTheme(newTheme);
@@ -181,9 +207,9 @@ export default new Store({
 		},
 
 
-		changeTheme({ state, commit, getters }) {
+		changeTheme({ state, commit }) {
 			const { raw } = state.theme,
-				  themesToChoose = ["dark", "light", "auto", "dark"],
+				  themesToChoose = ["dark", "light", "schedule", "system", "dark"],
 				  indexOfCurrentTheme = themesToChoose.indexOf(raw);
 
 			commit("theme", themesToChoose[indexOfCurrentTheme + 1]);
@@ -220,3 +246,5 @@ export default new Store({
 	},
 	modules: {},
 });
+
+export default store;
