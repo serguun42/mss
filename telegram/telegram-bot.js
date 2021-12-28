@@ -60,7 +60,12 @@ mongoDispatcher.callDB() // Reading users
 })
 .catch((e) => Logging("Error on getting users", e));
 
-const SESSION = ((new Date().getMonth() > 4 && new Date().getMonth() < 7) || (new Date().getMonth() === 7 && new Date().getDate() < 20));
+const SESSION = (
+	(new Date().getMonth() > 4 && new Date().getMonth() < 7) ||
+	(new Date().getMonth() === 7 && new Date().getDate() < 25) ||
+	(new Date().getMonth() === 11 && new Date().getDate() >= 19) ||
+	(new Date().getMonth() === 0)
+);
 
 
 
