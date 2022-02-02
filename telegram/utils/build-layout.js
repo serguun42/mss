@@ -5,7 +5,6 @@ const
 	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
 	CONFIG = DEV ? require("../../../DEV_CONFIGS/telegram-bot.config.json") : require("../telegram-bot.config.json"),
 	{
-		START_OF_WEEKS,
 		DAYS_OF_WEEK,
 		DATABASE_NAME
 	} = CONFIG;
@@ -13,8 +12,21 @@ const
 
 const MongoDispatcher = require("./database");
 const { Capitalize, TGE } = require("./common-utils");
+const Logging = require("./logging");
 const mongoDispatcher = new MongoDispatcher(DATABASE_NAME);
 
+
+let START_OF_WEEKS = 0;
+
+mongoDispatcher.callDB()
+.then((DB) => DB.collection("params").findOne({ name: "start_of_weeks" }))
+.then((found) => {
+	if (found?.value) 
+		START_OF_WEEKS = found.value;
+	else
+		return Promise.reject("No <found?.value> for <START_OF_WEEKS>");
+})
+.catch(Logging);
 
 
 /**

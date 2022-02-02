@@ -1,5 +1,4 @@
 const
-	path = require("path"),
 	{ createReadStream } = require("fs"),
 	cron = require("node-cron"),
 	Telegraf = require("telegraf").Telegraf,
@@ -64,7 +63,8 @@ const SESSION = (
 	(new Date().getMonth() > 4 && new Date().getMonth() < 7) ||
 	(new Date().getMonth() === 7 && new Date().getDate() < 25) ||
 	(new Date().getMonth() === 11 && new Date().getDate() >= 19) ||
-	(new Date().getMonth() === 0)
+	(new Date().getMonth() === 0) ||
+    (new Date().getMonth() === 1 && new Date().getDate() < 7)
 );
 
 
