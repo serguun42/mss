@@ -59,22 +59,22 @@
 								'option__info__item-time--ongoing': showOngoingAndPlannedLesson && lessonStarted(lessonsTimes[dayIndex][lessonIndex]),
 								'option__info__item-time--planned': showOngoingAndPlannedLesson && lessonPlanned(lessonsTimes[dayIndex][lessonIndex])
 							}">
-							<i class="material-icons material-icons-round default-no-selection">schedule</i>
+							<i class="material-icons material-icons-round default-no-select">schedule</i>
 							<span>{{ lessonsTimes[dayIndex][lessonIndex] }}</span>
 							<i v-if="showOngoingAndPlannedLesson && lessonStarted(lessonsTimes[dayIndex][lessonIndex])">(сейчас)</i>
 						</div>
 
-						<div class="option__info__item" v-if="option.place === 'Д' || option.place === 'д'"><i class="material-icons material-icons-round default-no-selection">alternate_email</i>
+						<div class="option__info__item" v-if="option.place === 'Д' || option.place === 'д'"><i class="material-icons material-icons-round default-no-select">alternate_email</i>
 							<a v-if="option.link" :href="option.link" target="_blank" rel="noopener noreferrer">Дистанционно</a>
 							<span v-else>Дистанционно</span>
 						</div>
-						<div class="option__info__item" v-else-if="option.place"><i class="material-icons material-icons-round default-no-selection">place</i>{{ option.place }}</div>
+						<div class="option__info__item" v-else-if="option.place"><i class="material-icons material-icons-round default-no-select">place</i>{{ option.place }}</div>
 
-						<div class="option__info__item" v-if="option.tutor"><i class="material-icons material-icons-round default-no-selection">person</i>{{ option.tutor }}</div>
+						<div class="option__info__item" v-if="option.tutor"><i class="material-icons material-icons-round default-no-select">person</i>{{ option.tutor }}</div>
 
-						<div class="option__info__item" v-if="option.type"><i class="material-icons material-icons-round default-no-selection">info</i>{{ lessonType(option.type) }}</div>
+						<div class="option__info__item" v-if="option.type"><i class="material-icons material-icons-round default-no-select">info</i>{{ lessonType(option.type) }}</div>
 
-						<div class="option__info__item" v-if="certainWeek < 0 && option.weeks && option.weeks.length"><i class="material-icons material-icons-round default-no-selection">date_range</i>
+						<div class="option__info__item" v-if="certainWeek < 0 && option.weeks && option.weeks.length"><i class="material-icons material-icons-round default-no-select">date_range</i>
 							<span>Недели: </span>
 							<span
 								:class="{
@@ -135,7 +135,7 @@ export default {
 	},
 	methods: {
 		/**
-		 * @param {String} iLessonTime
+		 * @param {string} iLessonTime
 		 * @returns {Boolean}
 		 */
 		lessonStarted(iLessonTime) {
@@ -164,7 +164,7 @@ export default {
 			return startTime.getTime() <= Date.now() && finishTime.getTime() >= Date.now();
 		},
 		/**
-		 * @param {String} iLessonTime
+		 * @param {string} iLessonTime
 		 * @returns {Boolean}
 		 */
 		lessonPlanned(iLessonTime) {
@@ -187,8 +187,8 @@ export default {
 			return startTime.getTime() > Date.now();
 		},
 		/**
-		 * @param {String} iType
-		 * @returns {String}
+		 * @param {string} iType
+		 * @returns {string}
 		 */
 		lessonType(iType) {
 			if (typeof iType !== "string") return iType;
@@ -203,8 +203,8 @@ export default {
 			}
 		},
 		/**
-		 * @param {String} iName
-		 * @returns {String}
+		 * @param {string} iName
+		 * @returns {string}
 		 */
 		lessonName(iName) {
 			if (typeof iName !== "string") return iName;

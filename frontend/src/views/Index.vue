@@ -2,7 +2,7 @@
 	<div id="index-page">
 		<div id="index-page__group" v-if="savedUserGroup && savedUserGroup.schedule">
 			<h1 class="index-page__title index-page__group__title">Группа {{ savedUserGroup.groupName }}</h1>
-			<h3 class="index-page__subtitle default-no-selection">Расписание МИРЭА – MSS Project</h3>
+			<h3 class="index-page__subtitle default-no-select">Расписание МИРЭА – MSS Project</h3>
 			<div id="index-page__current-week" v-if="currentWeek > -1">Текущая неделя – {{ currentWeek }}</div>
 			<div id="index-page__group__days" v-if="savedUserGroupDays.length">
 				<day
@@ -17,7 +17,7 @@
 					:showOngoingAndPlannedLesson="day.showOngoingAndPlannedLesson"
 				></day>
 			</div>
-			<h2 class="index-page__subtitle default-no-selection" v-else>
+			<h2 class="index-page__subtitle default-no-select" v-else>
 				<span>Нет расписания на следующих два дня</span>
 				<br>
 				<router-link to="/group">Всё расписание</router-link>
@@ -35,7 +35,7 @@
 				:bigger="windowWidth > 600"
 				@search-on-choose="searchOnChoose"
 			></search>
-			<div id="index-page__search__supporter" class="default-no-selection default-bold" v-if="groups && groups.length">
+			<div id="index-page__search__supporter" class="default-no-select default-bold" v-if="groups && groups.length">
 				Сейчас в базе есть {{ groupsFineCount }}
 			</div>
 

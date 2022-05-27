@@ -2,9 +2,9 @@ import API_CONFIG from "../config/api-config";
 
 
 /**
- * @param {String} iMethod
+ * @param {string} iMethod
  * @param {import("../types").QueriesForApi} iQueries
- * @returns {String}
+ * @returns {string}
  */
 const API_URL_CONSTUCTOR = (iMethod, iQueries) => {
 	const baseAndMethod = `${API_CONFIG.BASE_URL}/${API_CONFIG.VERSION}/${iMethod}`;
@@ -61,7 +61,7 @@ export const GetAllGroups = () => FetchMethod({
 });
 
 /**
- * @param {String} groupName
+ * @param {string} groupName
  * @returns {Promise<import("../types").RichGroup[]>}
  */
 export const GetGroupsByName = (groupName) => FetchMethod({
@@ -72,8 +72,8 @@ export const GetGroupsByName = (groupName) => FetchMethod({
 });
 
 /**
- * @param {String} groupName
- * @param {String} groupSuffix
+ * @param {string} groupName
+ * @param {string} groupSuffix
  * @returns {Promise<import("../types").RichGroup[]>}
  */
 export const GetGroupsByNameAndSuffix = (groupName, groupSuffix) => FetchMethod({
@@ -92,8 +92,15 @@ export const Stats = () => FetchMethod({
 });
 
 /**
- * @returns {Promise<Number>}
+ * @returns {Promise<number>}
  */
 export const GetCurrentWeek = () => fetch(API_URL_CONSTUCTOR("time/week"))
 .then((res) => res.text())
 .then((week) => Promise.resolve(parseInt(week)));
+
+/**
+ * @returns {Promise<Date>}
+ */
+export const GetTimeStart = () => fetch(API_URL_CONSTUCTOR("time/startTime"))
+.then((res) => res.text())
+.then((timeStart) => Promise.resolve(new Date(timeStart)));

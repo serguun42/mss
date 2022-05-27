@@ -3,7 +3,7 @@ const Dispatcher = {
 	listeners: {},
 
 	/**
-	 * @param {String} eventName
+	 * @param {string} eventName
 	 * @param {Function} eventHandler
 	 * @returns {void}
 	 */
@@ -15,7 +15,7 @@ const Dispatcher = {
 	},
 
 	/**
-	 * @param {String} eventName
+	 * @param {string} eventName
 	 * @param {Function} eventHandler
 	 * @returns {void}
 	 */
@@ -28,7 +28,7 @@ const Dispatcher = {
 	},
 
 	/**
-	 * @param {String} eventName
+	 * @param {string} eventName
 	 * @param {Array} argsForHandler
 	 * @returns {void}
 	 */

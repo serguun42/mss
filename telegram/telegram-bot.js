@@ -64,7 +64,8 @@ const SESSION = (
 	(new Date().getMonth() === 7 && new Date().getDate() < 25) ||
 	(new Date().getMonth() === 11 && new Date().getDate() >= 19) ||
 	(new Date().getMonth() === 0) ||
-    (new Date().getMonth() === 1 && new Date().getDate() < 7)
+    (new Date().getMonth() === 1 && new Date().getDate() < 7) || 
+	(new Date().getMonth() === 4 && new Date().getDate() >= 29)
 );
 
 
@@ -486,7 +487,7 @@ const SETTINGS_COMMANDS = [
 
 const COMMANDS_ALIASES = {};
 Object.keys(COMMANDS).forEach((key) => {
-	const alias = COMMANDS[key].description.replace(/[^\w\dа-я]+/gi, "");
+	const alias = COMMANDS[key].description.replace(/[^\p{L}]+/gi, "");
 	COMMANDS_ALIASES[alias] = COMMANDS[key];
 });
 
@@ -773,7 +774,7 @@ telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 		}
 
 
-		const commandAlias = Capitalize(text.replace(/[^\w\dа-я]+/gi, "").trim());
+		const commandAlias = Capitalize(text.replace(/[^\p{L}]+/gu, "").trim());
 
 		if (COMMANDS_ALIASES[commandAlias]) {
 			if (typeof COMMANDS_ALIASES[commandAlias].caller == "function")
@@ -786,7 +787,7 @@ telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 		};
 
 
-		const commandMatch = text.match(/^\/([\w\d]+)(\@mirea_table_bot)?$/i);
+		const commandMatch = text.match(/^\/([\w_]+)(\@mirea_table_bot)?$/i);
 
 		if (commandMatch && commandMatch[1]) {
 			if (COMMANDS[commandMatch[1]]) {

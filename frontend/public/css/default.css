@@ -68,7 +68,6 @@ body {
 	background-color: var(--accent-color);
 }
 
-.default-no-selection,
 .default-no-select {
 	user-select: none;
 	-ms-user-select: none;

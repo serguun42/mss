@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex, { Store } from "vuex";
 import Dispatcher from "./utils/dispatcher";
 import ANIMATIONS_CONFIG from "./config/animations.json";
+import { ExportToIcs } from "./utils/export-to-ics";
 
 Vue.use(Vuex);
 
@@ -14,9 +15,9 @@ const userGroup = JSON.parse(localStorage.getItem("user-group")) || {};
 /**
  * @typedef {Object} ThemeObject
  * @property {ThemeEnum} raw
- * @property {Boolean} dark
- * @property {String} icon
- * @property {String} name
+ * @property {boolean} dark
+ * @property {string} icon
+ * @property {string} name
  */
 
 const StoreLocalGetRawTheme = () => localStorage.getItem("theme-raw");
@@ -110,7 +111,7 @@ const store = new Store({
 	}),
 	mutations: {
 		/**
-		 * @param {Boolean} status 
+		 * @param {boolean} status 
 		 */
 		setDrawerStatus(state, status) {
 			state.drawerOpened = status;
@@ -121,13 +122,13 @@ const store = new Store({
 		},
 
 		/**
-		 * @param {{text?: String, shown?: Boolean}} payload
+		 * @param {{text?: String, shown?: boolean}} payload
 		 */
 		setMessage(state, payload) {
 			state.message = { ...payload };
 		},
 		/**
-		 * @param {String} messageID
+		 * @param {string} messageID
 		 */
 		lastMessageID(state, messageID) {
 			state.lastMessageID = messageID;
@@ -146,14 +147,19 @@ const store = new Store({
 		}
 	},
 	actions: {
-		openDrawer(state) {
-			state.commit("setDrawerStatus", true);
+		openDrawer({ commit }) {
+			commit("setDrawerStatus", true);
 			Dispatcher.call("drawerOpened");
 		},
-		closeDrawer(state) {
-			state.commit("setDrawerStatus", false);
+		closeDrawer({ commit }) {
+			commit("setDrawerStatus", false);
 			setTimeout(() => Dispatcher.call("drawerClosed"), ANIMATIONS_CONFIG.DRAWER_OPENING_ANIMATION_MS)
 		},
+
+		exportToIcs() {
+			ExportToIcs();
+		},
+		
 		/**
 		 * @param {{name: string, suffix?: string, noReload: boolean}} param1
 		 */
@@ -176,7 +182,7 @@ const store = new Store({
 
 		/**
 		 * @param {{commit: Function, getters: { lastMessageID: String }}} state
-		 * @param {String} messageText
+		 * @param {string} messageText
 		 */
 		showMessage({ commit, dispatch, getters }, messageText) {
 			commit("setMessage", { text: messageText, shown: true });
@@ -216,7 +222,7 @@ const store = new Store({
 		},
 		/**
 		 * @param {import("vuex").ActionContext} state
-		 * @param {Boolean} [showMessage=false]
+		 * @param {boolean} [showMessage=false]
 		 */
 		clearCache({ dispatch }, showMessage = false) {
 			caches.delete("cache_static").then(() => {

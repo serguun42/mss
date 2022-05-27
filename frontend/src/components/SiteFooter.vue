@@ -16,6 +16,9 @@
 			<div class="site-footer__section__item">
 				<i class="material-icons material-icons-round">smart_toy</i> <a href="https://t.me/mirea_table_bot" target="_blank" rel="noopener noreferrer">Telegram-бот</a>
 			</div>
+			<div class="site-footer__section__item default-no-select default-pointer" @click="exportToIcs">
+				<i class="material-icons material-icons-round">calendar_month</i> <span>Экспортировать в .ics</span>
+			</div>
 		</section>
 
 		<section class="site-footer__section">
@@ -33,16 +36,16 @@
 		</section>
 
 		<section class="site-footer__section">
-			<div class="site-footer__section__item default-no-selection default-pointer" @click="changeTheme">
+			<div class="site-footer__section__item default-no-select default-pointer" @click="changeTheme">
 				<i class="material-icons material-icons-round" ref="theme-icon" :key="`theme-icon-${$store.getters.theme.icon}`">{{ $store.getters.theme.icon }}</i> Выбрана <span ref="theme-name" :key="`theme-name-${$store.getters.theme.name}`">{{ $store.getters.theme.name }}</span>
 			</div>
 		</section>
 
 		<section class="site-footer__section">
-			<div class="site-footer__section__item default-no-selection default-pointer" @click="clearGroup">
+			<div class="site-footer__section__item default-no-select default-pointer" @click="clearGroup">
 				<i class="material-icons material-icons-round">restart_alt</i> Сбросить группу
 			</div>
-			<div class="site-footer__section__item default-no-selection default-pointer" @click="clearCache">
+			<div class="site-footer__section__item default-no-select default-pointer" @click="clearCache">
 				<i class="material-icons material-icons-round">delete_outline</i> Очистить кэш
 			</div>
 		</section>
@@ -72,6 +75,9 @@ export default {
 	methods: {
 		changeTheme() {
 			store.dispatch("changeTheme");
+		},
+		exportToIcs() {
+			store.dispatch("exportToIcs");
 		},
 		clearGroup() {
 			store.dispatch("saveGroup", { name: null, suffix: null });

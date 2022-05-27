@@ -26,7 +26,7 @@
 			}"
 		>
 			<div
-				class="search-container__prompts-list__item default-no-selection default-pointer"
+				class="search-container__prompts-list__item default-no-select default-pointer"
 				v-for="(prompting, promptingIndex) in showingPrompts"
 				:key="`search-container__prompts-list__item-${promptingIndex}`"
 				v-ripple
@@ -49,7 +49,7 @@ const LATIN = [
 
 
 /**
- * @param {String} iString
+ * @param {string} iString
  */
 const LocalParse = iString => {
 	if (typeof iString !== "string") return iString;
