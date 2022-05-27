@@ -1,6 +1,6 @@
 <template>
 	<div id="all-groups-page">
-		<h1 id="all-groups-page__title" class="default-no-selection">Все группы</h1>
+		<h1 id="all-groups-page__title" class="default-no-select">Все группы</h1>
 		<search
 			id="all-groups-page__search"
 			:seeking="seeking"

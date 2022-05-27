@@ -1,9 +1,9 @@
 /**
  * @callback AnimationStyleSettingFunc
- * @param {Number} iProgress
+ * @param {number} iProgress
  */
 /**
- * @param {Number} iDuration
+ * @param {number} iDuration
  * @param {AnimationStyleSettingFunc} iStyleSettingFunc - Function for setting props by progress
  * @param {"ease-in-out"|"ripple"|"linear"} [iCurveStyle="ease-in-out"] - Curve Style
  * @returns {Promise<null>}
@@ -45,7 +45,7 @@ export const GlobalAnimation = (iDuration, iStyleSettingFunc, iCurveStyle = "eas
  */
 /**
  * @param {HTMLElement} iElem
- * @param {Number} iDuration
+ * @param {number} iDuration
  * @param {AnimationsOptionsType} [iOptions]
  * @returns {Promise<String>}
  */
@@ -68,7 +68,7 @@ export const FadeIn = (iElem, iDuration, iOptions) => {
 
 /**
  * @param {HTMLElement} iElem
- * @param {Number} iDuration
+ * @param {number} iDuration
  * @param {AnimationsOptionsType} [iOptions]
  * @returns {Promise<String>}
  */
@@ -90,7 +90,7 @@ export const FadeOut = (iElem, iDuration, iOptions) => {
 
 /**
  * @param {HTMLElement} iElem
- * @param {Number} iDuration
+ * @param {number} iDuration
  * @param {AnimationsOptionsType} [iOptions]
  * @param {AnimationStyleSettingFunc} [iStyleSettingFunc]
  * @returns {Promise<String>}
@@ -145,7 +145,7 @@ export const SlideDown = (iElem, iDuration, iOptions, iStyleSettingFunc) => {
 
 /**
  * @param {HTMLElement} iElem
- * @param {Number} iDuration
+ * @param {number} iDuration
  * @param {AnimationStyleSettingFunc} [iStyleSettingFunc]
  * @returns {Promise<String>}
  */

@@ -1,6 +1,6 @@
 <template>
 	<div id="single-group-page" :key="myGroupRequested">
-		<div id="single-group-page__title" class="default-no-selection">
+		<div id="single-group-page__title" class="default-no-select">
 			<div id="single-group-page__title__name">{{ myGroupRequested ? $store.getters.userGroup && $store.getters.userGroup.name : name }}</div>
 			<div id="single-group-page__title__suffix" v-if="myGroupRequested ? $store.getters.userGroup && $store.getters.userGroup.suffix : suffix">{{ myGroupRequested ? $store.getters.userGroup && $store.getters.userGroup.suffix : suffix }}</div>
 			<div id="single-group-page__title__your-group-badge" v-if="myGroupRequested">Моя группа</div>
