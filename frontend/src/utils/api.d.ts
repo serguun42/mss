@@ -3,3 +3,4 @@ export function GetGroupsByName(groupName: string): Promise<import("../types").R
 export function GetGroupsByNameAndSuffix(groupName: string, groupSuffix: string): Promise<import("../types").RichGroup[]>;
 export function Stats(): Promise<import("../types").Stats>;
 export function GetCurrentWeek(): Promise<number>;
+export function GetTimeStart(): Promise<Date>;

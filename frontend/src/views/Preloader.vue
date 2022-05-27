@@ -1,5 +1,5 @@
 <template>
-	<div class="preloader default-no-selection">
+	<div class="preloader default-no-select">
 		<div class="preloader__obfuscator"></div>
 		<div class="preloader__logo">
 			<div class="preloader__logo__waves">
@@ -9,7 +9,7 @@
 				<div class="preloader__logo__waves__wave preloader__logo__waves__wave-4"></div>
 			</div>
 
-			<div class="preloader__logo__image default-no-selection" ref="preloader__logo__image">
+			<div class="preloader__logo__image default-no-select" ref="preloader__logo__image">
 				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1320 1080">
 					<g>
 						<polygon fill="#5CC8F8" points="1003.09,0 1319.56,1080 1121.25,1080 805.08,0"/>
