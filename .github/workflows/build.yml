@@ -44,7 +44,7 @@ jobs:
 
     steps:
       - name: npm install
-        run: cd ~/mss/notifier/ && npm i --progress=false --only=prod
+        run: cd ~/mss/notifier/ && npm i --progress=false --omit=dev
       - name: Delete old PM2 instance
         run: |
           pm2 delete notifier-and-logger 2> /dev/null &&
@@ -62,7 +62,7 @@ jobs:
 
     steps:
       - name: npm install
-        run: cd ~/mss/cicd/ && npm i --progress=false --only=prod
+        run: cd ~/mss/cicd/ && npm i --progress=false --omit=dev
 
   scrapper:
     name: Folder for SCRAPPER
@@ -71,7 +71,7 @@ jobs:
 
     steps:
       - name: npm install
-        run: cd ~/mss/scrapper/ && npm i --progress=false --only=prod
+        run: cd ~/mss/scrapper/ && npm i --progress=false --omit=dev
 
   backend:
     name: Folder for BACKEND
@@ -80,7 +80,7 @@ jobs:
 
     steps:
       - name: npm install
-        run: cd ~/mss/backend/ && npm i --progress=false --only=prod
+        run: cd ~/mss/backend/ && npm i --progress=false --omit=dev
       - name: Delete old PM2 instance
         run: |
           pm2 delete backend-server 2> /dev/null &&
@@ -98,7 +98,7 @@ jobs:
 
     steps:
       - name: npm install
-        run: cd ~/mss/telegram/ && npm i --progress=false --only=prod
+        run: cd ~/mss/telegram/ && npm i --progress=false --omit=dev
       - name: Delete old PM2 instance
         run: |
           pm2 delete telegram-bot 2> /dev/null &&
@@ -120,7 +120,7 @@ jobs:
 
     steps:
       - name: npm install
-        run: cd ~/mss/frontend/ && npm i --progress=false --only=prod
+        run: cd ~/mss/frontend/ && npm i --progress=false --omit=dev
       - name: npm run build
         run: cd ~/mss/frontend/ && npm run build
 
