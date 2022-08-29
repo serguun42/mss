@@ -152,7 +152,7 @@ const GetLinkToFiles = () => new Promise((resolve, reject) => {
 
 		const allXLSXDefinitionsToResolve = [],
 			  parsedPage = ParseHTML(page, { lowerCaseTagName: true }),
-			  UNITS_NAMES = parsedPage.querySelectorAll(".rasspisanie .uk-active a").map((anchor) => anchor.innerText),
+			  UNITS_NAMES = parsedPage.querySelectorAll(".schedule .uk-active a").map((anchor) => anchor.innerText),
 			  UNITS_HTML_BLOCKS = parsedPage.querySelector(".uk-switcher").childNodes.filter((child) => child.nodeType === 1);
 
 
@@ -234,7 +234,7 @@ const GetTablesFiles = (iXLSXFileDefinitions) => new Promise((resolve, reject) =
 				...gettingFileProps
 			});
 
-			if (DEV) fsWriteFile(`./data/${gettingFileProps.remoteFile.replace("https://webservices.mirea.ru/upload/iblock", "").replace(/[^\wа-яё]/gi, "_")}`, fileData).catch(() => {});
+			if (DEV) fsWriteFile(`./data/${gettingFileProps.remoteFile.replace("https://webservices.mirea.ru/upload/iblock", "").replace(/[^\wа-яё_.]/gi, "_")}`, fileData).catch(() => {});
 		}).catch((e) => {
 			Logging(`Error on getting ${gettingFileProps.remoteFile}`, e);
 		}).finally(() => setTimeout(() => LocalRecurion(iIndex + 1), 500));
