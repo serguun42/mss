@@ -26,7 +26,7 @@ jobs:
           figlet "Moved old ~/mss" ||
           echo "No old folder so not deleting it"
       - name: Copy fresh project into ~/mss folder
-        run: cd .. && cp -r mss ~/mss
+        run: cd .. && mv mss ~/mss
       - name: Copy configs to each folder
         run: |
           cp ~/MSS_CONFIGS/notifier-and-logger.config.json ~/mss/notifier/ &&
@@ -50,10 +50,10 @@ jobs:
           pm2 delete notifier-and-logger 2> /dev/null &&
           echo "Process <notifier-and-logger> exited successfully" ||
           echo "Process <notifier-and-logger> did not run on PM2"
-      - name: Delete previous PM2 logs
-        run: cd ~/.pm2/logs/ && rm -rf notifier-and-logger-*
       - name: Start new PM2 instance
         run: cd ~/mss/notifier/ && pm2 start notifier-and-logger.js
+      - name: Delete previous PM2 logs
+        run: pm2 flush notifier-and-logger
 
   cicd:
     name: Folder for CI/CD
@@ -86,10 +86,10 @@ jobs:
           pm2 delete backend-server 2> /dev/null &&
           echo "Process <backend-server> exited successfully" ||
           echo "Process <backend-server> did not run on PM2"
-      - name: Delete previous PM2 logs
-        run: cd ~/.pm2/logs/ && rm -rf backend-server-*
       - name: Start new PM2 instance
         run: cd ~/mss/backend/ && pm2 start backend-server.js
+      - name: Delete previous PM2 logs
+        run: pm2 flush backend-server
 
   telegram:
     name: Folder for TELEGRAM
@@ -104,10 +104,10 @@ jobs:
           pm2 delete telegram-bot 2> /dev/null &&
           echo "Process <telegram-bot> exited successfully" ||
           echo "Process <telegram-bot> did not run on PM2"
-      - name: Delete previous PM2 logs
-        run: cd ~/.pm2/logs/ && rm -rf telegram-bot-*
       - name: Start new PM2 instance
         run: cd ~/mss/telegram/ && pm2 start telegram-bot.js
+      - name: Delete previous PM2 logs
+        run: pm2 flush telegram-bot
 
   frontend:
     name: Folder for FRONTEND
@@ -123,6 +123,8 @@ jobs:
         run: cd ~/mss/frontend/ && npm i --progress=false --omit=dev
       - name: npm run build
         run: cd ~/mss/frontend/ && npm run build
+      - name: clear node_modules
+        run: cd ~/mss/frontend/ && rm -rf node_modules
 
   redoc:
     name: Generate Redoc
