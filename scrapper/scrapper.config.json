@@ -8,8 +8,18 @@
 		"пятница",
 		"суббота"
 	],
-	"SCHEDULE_LINK": "https://www.mirea.ru/schedule/",
-	"SCRAPPER_COOKIE": "Your custom cookie",
+	"SCHEDULE_PAGES": [
+		{
+			"type": "main",
+			"baseUrl": "https://www.mirea.ru/schedule/",
+			"cookie": ""
+		},
+		{
+			"type": "fryazino",
+			"baseUrl": "https://f-mirea.ru/students/schedule/",
+			"cookie": ""
+		}
+	],
 	"INDEX_OF_LINE_WITH_GROUPS_NAMES": 1,
 	"PROXY_PORT": 8050,
 	"LOGGING_TAG": "scrapper",

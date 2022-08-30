@@ -12,8 +12,7 @@ const
 	{
 		DATABASE_NAME,
 		DAYS_OF_WEEK,
-		SCHEDULE_LINK,
-		SCRAPPER_COOKIE,
+		SCHEDULE_PAGES,
 		INDEX_OF_LINE_WITH_GROUPS_NAMES,
 		PROXY_PORT
 	} = DEV ? require("../../DEV_CONFIGS/scrapper.config.json") : require("./scrapper.config.json"),
@@ -70,13 +69,29 @@ const GLOBAL_SCHEDULE = [];
 
 
 
-
-
-const XLSX_FILES_HREF_REGEXP = /<[\w]+(\s+[\w\-]+(\=("|')[^"']*(\3))?)*\sclass="([^"]*\s+)*uk-link-toggle(\s+[^"]*)*"(\s+[\w\-]+(\=("|')[^"']*(\9))?)*\s+href="([^"]+)"(\s+[\w\-]+(\=("|')[^"']*(\14))?)*>/gi,
-	  XLSX_FILES_HREF_REGEXP_GROUP_INDEX = 11;
-
-const XLSX_FILES_COURSE_REGEXP = /<[\w]+(\s+[\w\-]+(\=("|')[^"']*(\3))?)*\sclass="([^"]*\s+)*uk-link-heading uk-margin-small-top(\s+[^"]*)*"(\s+[\w\-]+(\=("|')[^"']*(\9))?)*>([^<]+)/gi,
-	  XLSX_FILES_COURSE_REGEXP_GROUP_INDEX = 11;
+/**
+ * @param {string} [cookie]
+ * @returns {import("node-fetch").RequestInit}
+ */
+const BuildFetchOptions = (cookie) => ({
+	headers: {
+		"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+		"accept-language": "en-US,en;q=0.9,ru;q=0.8",
+		"cache-control": "no-cache",
+		"pragma": "no-cache",
+		"Sec-Fetch-Dest": `document`,
+		"Sec-Fetch-Mode": `navigate`,
+		"Sec-Fetch-Site": `none`,
+		"Sec-Fetch-User": `?1`,
+		"Upgrade-Insecure-Requests": `1`,
+		"User-Agent": `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36`,
+		"sec-ch-ua": `"Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104"`,
+		"sec-ch-ua-mobile": `?0`,
+		"sec-ch-ua-platform": `"Windows"`,
+		"cookie": cookie || null
+	},
+	agent: proxyAgent
+});
 
 /**
  * @param {number[]} iArray
@@ -128,93 +143,139 @@ const ParseLessonPartsAndOptions = iRawComplexLesson => {
  * @property {string} unitCourse
  */
 /**
- * @returns {Promise<XLSXFileDefinition[]>}
+ * @returns {Promise<XLSXFileDefinition[][]>}
  */
-const GetLinkToFiles = () => new Promise((resolve, reject) => {
-	fetch(SCHEDULE_LINK, {
-		headers: {
-			"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-			"accept-language": "en-US,en;q=0.9,ru;q=0.8",
-			"cache-control": "no-cache",
-			"pragma": "no-cache",
-			"Sec-Fetch-Dest": `document`,
-			"Sec-Fetch-Mode": `navigate`,
-			"Sec-Fetch-Site": `none`,
-			"Sec-Fetch-User": `?1`,
-			"Upgrade-Insecure-Requests": `1`,
-			"User-Agent": `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36`,
-			"sec-ch-ua": `"Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104"`,
-			"sec-ch-ua-mobile": `?0`,
-			"sec-ch-ua-platform": `"Windows"`,
-			"cookie": SCRAPPER_COOKIE
-		},
-		agent: proxyAgent
-	}).then((res) => {
+const GetLinkToFiles = () => Promise.all(SCHEDULE_PAGES.map((schedulePage, schedulePageIndex) =>
+	fetch(schedulePage.baseUrl, BuildFetchOptions(schedulePage.cookie)).then((res) => {
 		if (res.status === 200)
 			return res.text();
 		else
-			return Promise.reject(res.status);
+			return Promise.reject(new Error(`Error on getting ${schedulePage.baseUrl}\nStatus code ${res.status} ${res.statusText}`));
 	}).then((page) => {
-		if (DEV) fsWriteFile("./out/mirea-ru-schedule.html", page).catch(() => {});
+		if (DEV) fsWriteFile(`./out/mirea-ru-${schedulePage.type}-${schedulePageIndex}.html`, page).catch(() => {});
 
 
-		const allXLSXDefinitionsToResolve = [],
-			  parsedPage = ParseHTML(page, { lowerCaseTagName: true }),
-			  UNITS_NAMES = parsedPage.querySelectorAll(".schedule .uk-active a").map((anchor) => anchor.innerText),
-			  UNITS_HTML_BLOCKS = parsedPage.querySelector(".uk-switcher").childNodes.filter((child) => child.nodeType === 1);
+		/** @type {XLSXFileDefinition[]} */
+		const allXLSXDefinitions = [];
+		const parsedMainPage = ParseHTML(page, { lowerCaseTagName: true });
 
 
-		UNITS_HTML_BLOCKS.forEach(/** @param {import("node-html-parser").HTMLElement} unitHTMLBlock */ (unitHTMLBlock, unitIndex) => {
-			if (!unitHTMLBlock || unitHTMLBlock.nodeType !== 1) return;
+		if (schedulePage.type === "main") {
+			const XLSX_FILES_HREF_REGEXP = /<[\w]+(\s+[\w\-]+(\=("|')[^"']*(\3))?)*\sclass="([^"]*\s+)*uk-link-toggle(\s+[^"]*)*"(\s+[\w\-]+(\=("|')[^"']*(\9))?)*\s+href="([^"]+)"(\s+[\w\-]+(\=("|')[^"']*(\14))?)*>/gi;
+			const XLSX_FILES_HREF_REGEXP_GROUP_INDEX = 11;
 
-			unitHTMLBlock.querySelectorAll(".uk-card.slider_ads.uk-card-body.uk-card-small").forEach((instituteCard) => {
-				const instituteName = instituteCard.querySelector(".uk-text-bold")?.innerText;
+			const XLSX_FILES_COURSE_REGEXP = /<[\w]+(\s+[\w\-]+(\=("|')[^"']*(\3))?)*\sclass="([^"]*\s+)*uk-link-heading uk-margin-small-top(\s+[^"]*)*"(\s+[\w\-]+(\=("|')[^"']*(\9))?)*>([^<]+)/gi;
+			const XLSX_FILES_COURSE_REGEXP_GROUP_INDEX = 11;
 
-				if (!instituteName) return;
-
-
-				instituteCard.outerHTML.split("<hr").forEach((subInstitute) => {
-					// Layout расписания вне сессии
-					const usualTableCardsLayout = subInstitute.split("Расписание занятий")?.[1]?.split(/расписание/i)[0];
+			/** `"Бакалавриат, магистратура, etc."` */
+			const unitsNames = parsedMainPage.querySelectorAll(".schedule .uk-active a").map((anchor) => anchor.innerText);
+			const unitsHTMLBlocks = parsedMainPage.querySelector(".uk-switcher").childNodes.filter((child) => child.nodeType === 1);
 
 
-					const subInstituteLinks = [],
-						  subInstituteCourses = [];
+			unitsHTMLBlocks.forEach(/** @param {import("node-html-parser").HTMLElement} unitHTMLBlock */ (unitHTMLBlock, unitIndex) => {
+				if (!unitHTMLBlock || unitHTMLBlock.nodeType !== 1) return;
 
-					let lastHrefExec;
-					while (lastHrefExec = XLSX_FILES_HREF_REGEXP.exec(usualTableCardsLayout)) {
-						subInstituteLinks.push(lastHrefExec[XLSX_FILES_HREF_REGEXP_GROUP_INDEX]);
-					}
+				unitHTMLBlock.querySelectorAll(".uk-card.slider_ads.uk-card-body.uk-card-small").forEach((instituteCard) => {
+					const instituteName = instituteCard.querySelector(".uk-text-bold")?.innerText;
 
-					let lastCourseExec;
-					while (lastCourseExec = XLSX_FILES_COURSE_REGEXP.exec(usualTableCardsLayout)) {
-						subInstituteCourses.push(lastCourseExec[XLSX_FILES_COURSE_REGEXP_GROUP_INDEX]?.trim?.());
-					}
+					if (!instituteName) return;
 
 
-					subInstituteLinks.map((link, index) => ({
-						remoteFile: link,
-						unitName: instituteName,
-						unitCourse: `${UNITS_NAMES[unitIndex]}${subInstituteCourses[index] ? ", " + subInstituteCourses[index] : ""}`,
-					})).forEach((def) => allXLSXDefinitionsToResolve.push(def));
+					instituteCard.outerHTML.split("<hr").forEach((subInstitute) => {
+						// Layout расписания вне сессии
+						const usualTableCardsLayout = subInstitute.split("Расписание занятий")?.[1]?.split(/расписание/i)[0];
+
+
+						const subInstituteLinks = [];
+						const subInstituteCourses = [];
+
+						let lastHrefExec;
+						while (lastHrefExec = XLSX_FILES_HREF_REGEXP.exec(usualTableCardsLayout)) {
+							subInstituteLinks.push(lastHrefExec[XLSX_FILES_HREF_REGEXP_GROUP_INDEX]);
+						}
+
+						let lastCourseExec;
+						while (lastCourseExec = XLSX_FILES_COURSE_REGEXP.exec(usualTableCardsLayout)) {
+							subInstituteCourses.push(lastCourseExec[XLSX_FILES_COURSE_REGEXP_GROUP_INDEX]?.trim?.());
+						}
+
+
+						allXLSXDefinitions.push(
+							...subInstituteLinks.map(/** @return {XLSXFileDefinition} */ (link, index) => ({
+								remoteFile: link,
+								unitName: instituteName,
+								unitCourse: `${unitsNames[unitIndex]}${subInstituteCourses[index] ? ", " + subInstituteCourses[index] : ""}`,
+							}))
+						);
+					});
 				});
 			});
-		});
 
 
-		resolve(allXLSXDefinitionsToResolve);
-	}).catch((e) => reject(e));
-});
+			return Promise.resolve(allXLSXDefinitions);
+		} else if (schedulePage.type === "fryazino") {
+			const NEWS_HEADER_TARGET_REGEXP = /Расписани.*семестра.*\d{2,4}-?\d{2,4}.*г(?:ода|.)?\s(\d+(?:-\d+)?\sкурс(?:.*формы)?)/i;
+			const NEWS_HEADER_TARGET_GROUP_INDEX = 1;
+			const FRYAZINO_UNIT_NAME = "Филиал Фрязино";
+
+			const newsHeaders = parsedMainPage.querySelectorAll(".news-list .news-item-header").filter((header) =>
+				NEWS_HEADER_TARGET_REGEXP.test(header.innerText)
+			);
+
+			/**
+			 * @typedef {Object} FryazinoScheduleNewsTarget
+			 * @property {string} unitName See `FRYAZINO_UNIT_NAME`
+			 * @property {string} unitCourse `"Бакалавриат/магистратура 1/2/3 курса"`
+			 * @property {string} targetPageUrl Link to page where to find link to XLSX
+			 */
+			/** @type {FryazinoScheduleNewsTarget[]} */
+			const scheduleNewsTargets = newsHeaders.map((header) => {
+				const targetPageUrl = header.querySelector("a")?.getAttribute("href");
+				const unitCourse = header.innerText.match(NEWS_HEADER_TARGET_REGEXP)?.[NEWS_HEADER_TARGET_GROUP_INDEX];
+
+				return {
+					unitName: FRYAZINO_UNIT_NAME,
+					unitCourse,
+					targetPageUrl: new URL(targetPageUrl, schedulePage.baseUrl).href
+				}
+			});
+
+			return Promise.all(scheduleNewsTargets.map((scheduleNewsTarget) =>
+				fetch(scheduleNewsTarget.targetPageUrl, BuildFetchOptions(schedulePage.cookie)).then((res) => {
+					if (res.status === 200)
+						return res.text();
+					else
+						return Promise.reject(new Error(`Status code ${res.status} ${res.statusText}`));
+				}).then((scheduleNewsTargetPage) => {
+					const parsedNewsTargetPage = ParseHTML(scheduleNewsTargetPage, { lowerCaseTagName: true });
+					const xslxLink = parsedNewsTargetPage.querySelector(".doc_item.clearfix a")?.getAttribute?.("href");
+
+					/** @type {XLSXFileDefinition} */
+					const scheduleNewsTargetXLSXDefinition = {
+						remoteFile: decodeURI(new URL(xslxLink, schedulePage.baseUrl).href),
+						unitCourse: scheduleNewsTarget.unitCourse,
+						unitName: scheduleNewsTarget.unitName
+					};
+
+					return Promise.resolve(scheduleNewsTargetXLSXDefinition);
+				}).catch((e) => {
+					Logging(`Error on getting ${scheduleNewsTarget.targetPageUrl}`, e);
+					return Promise.resolve(null);
+				})
+			));
+		}
+	})
+));
 
 /**
- * @param {XLSXFileDefinition[]} iXLSXFileDefinitions
+ * @param {XLSXFileDefinition[]} allXLSXDefinitions
  * @returns {Promise<XLSXFileData[]>}
  */
-const GetTablesFiles = (iXLSXFileDefinitions) => new Promise((resolve, reject) => {
-	if (!iXLSXFileDefinitions || !(iXLSXFileDefinitions instanceof Array))
+const GetTablesFiles = (allXLSXDefinitions) => new Promise((resolve, reject) => {
+	if (!allXLSXDefinitions || !(allXLSXDefinitions instanceof Array))
 		return reject({
 			message: `Error on getting link to xlsx files. Wrong link to table files`,
-			err: iXLSXFileDefinitions
+			err: allXLSXDefinitions
 		});
 
 
@@ -223,7 +284,7 @@ const GetTablesFiles = (iXLSXFileDefinitions) => new Promise((resolve, reject) =
 
 
 	const LocalRecurion = (iIndex) => {
-		const gettingFileProps = iXLSXFileDefinitions[iIndex];
+		const gettingFileProps = allXLSXDefinitions[iIndex];
 
 		if (!gettingFileProps)
 			return resolve(allXLSXFilesData);
@@ -231,7 +292,7 @@ const GetTablesFiles = (iXLSXFileDefinitions) => new Promise((resolve, reject) =
 
 		if (DEV) Logging(`Getting file ${encodeURI(gettingFileProps.remoteFile)}`);
 
-		fetch(encodeURI(gettingFileProps.remoteFile), { agent: proxyAgent }).then((res) => {
+		fetch(encodeURI(gettingFileProps.remoteFile), BuildFetchOptions()).then((res) => {
 			if (res.status === 200)
 				return res.buffer();
 			else
@@ -499,7 +560,7 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 
 
 GetLinkToFiles()
-.then((allLinksToXLSXFiles) => GetTablesFiles(allLinksToXLSXFiles))
+.then((allXLSXDefinitions) => GetTablesFiles(allXLSXDefinitions.flat()))
 .then((allXLSXFilesData) => BuildGlobalSchedule(allXLSXFilesData))
 .then(() => {
 	if (DEV) {
@@ -511,13 +572,15 @@ GetLinkToFiles()
 	.then((DB) => {
 		const STUDY_GROUPS_COLLECTION = DB.collection("study-groups");
 
+		if (!GLOBAL_SCHEDULE.length) return Promise.resolve();
+
 		return STUDY_GROUPS_COLLECTION.insertMany(GLOBAL_SCHEDULE)
 		.then(() => new Promise((resolveClearingPrevious) => {
 			/**
-			 * @param {number} iIndex
+			 * @param {number} clearingGroupIndex
 			 */
-			const LocalRecurionRemove = iIndex => {
-				const studyGroupProps = GLOBAL_SCHEDULE[iIndex];
+			const LocalRecurionRemove = (clearingGroupIndex) => {
+				const studyGroupProps = GLOBAL_SCHEDULE[clearingGroupIndex];
 				if (!studyGroupProps) return resolveClearingPrevious();
 
 				STUDY_GROUPS_COLLECTION.findOneAndDelete({
@@ -528,7 +591,7 @@ GetLinkToFiles()
 					}
 				})
 				.catch(() => {})
-				.finally(() => LocalRecurionRemove(iIndex + 1));
+				.finally(() => LocalRecurionRemove(clearingGroupIndex + 1));
 			};
 
 			LocalRecurionRemove(0);
