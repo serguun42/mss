@@ -5,7 +5,8 @@ const
 	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
 	{
 		MAX_NUMBER_OF_BACKEND_REQUESTS_IN_MINUTE,
-		MAX_NUMBER_OF_BACKEND_REQUESTS_IN_HOUR
+		MAX_NUMBER_OF_BACKEND_REQUESTS_IN_HOUR,
+		BACKEND_REQUESTS_WHITELIST
 	} = DEV ? require("../../../DEV_CONFIGS/backend.config.json") : require("../backend.config.json");
 
 
@@ -32,6 +33,8 @@ module.exports = req => {
 	const cIP = req.headers?.["x-real-ip"] || req.socket?.remoteAddress;
 
 	if (!cIP) return true;
+
+	if (BACKEND_REQUESTS_WHITELIST.includes(cIP)) return false;
 
 	if (!MINUTE_IPS[cIP])
 		MINUTE_IPS[cIP] = 1;
