@@ -508,7 +508,7 @@ const telegram = telegraf.telegram;
  * @param {User} foundUser 
  */
 const GroupNotFound = (ctx, foundUser) => {
-	Logging(new Error(`No group for foundUser`), foundUser);
+	// Logging(new Error(`No group for foundUser`), foundUser);
 
 	PushIntoSendingImmediateQueue({
 		text: `Ваша группа не найдена. Попробуйте задать её заново в настройках (команда /settings).`,
