@@ -92,6 +92,8 @@
 </template>
 
 <script>
+import LessonNameByType from "../utils/lesson-type";
+
 export default {
 	name: "day",
 	props: {
@@ -191,16 +193,7 @@ export default {
 		 * @returns {string}
 		 */
 		lessonType(iType) {
-			if (typeof iType !== "string") return iType;
-
-			switch (iType.trim().toLowerCase()) {
-				case "пр": return "Семинар"; break;
-				case "лк": return "Лекция"; break;
-				case "лаб": return "Лабораторная"; break;
-				case "ср":
-				case "с/р": return "Сам. раб."; break;
-				default: return iType; break;
-			}
+			return LessonNameByType(iType);
 		},
 		/**
 		 * @param {string} iName
