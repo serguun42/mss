@@ -13,6 +13,7 @@ const
 const MongoDispatcher = require("./database");
 const { Capitalize, TGE } = require("./common-utils");
 const Logging = require("./logging");
+const CheckIfDistant = require("./chech-if-distant");
 const mongoDispatcher = new MongoDispatcher(DATABASE_NAME);
 
 
@@ -118,7 +119,7 @@ const BuildOptionLayout = (iGroup, iDay, iOption, iLessonPosition, iSkipTime = f
 		+ `<b>${TGE(iOption.name)}</b>`
 		+ (iOption.type ? ` (${TGE(iOption.type)})` : "")
 		+ (iOption.tutor ? `\n<i>${TGE(iOption.tutor)}</i>` : "")
-		+ (iOption.place ? `${iOption.tutor ? ", " : "\n"}<i>${TGE(iOption.place === "Д" ? "Дистанционно" : iOption.place)}</i>` : "")
+		+ (iOption.place ? `${iOption.tutor ? ", " : "\n"}<i>${TGE(CheckIfDistant(iOption) ? "Дистанционно" : iOption.place)}</i>` : "")
 		+ (iOption.link ? `\n<a href="${encodeURI(iOption.link)}">Ссылка на пару</a>` : "")
 	);
 };
