@@ -65,6 +65,7 @@ const
 /** @typedef {GlobalScheduleGroup[]} GlobalSchedule */
 /** @type {GlobalSchedule} */
 const GLOBAL_SCHEDULE = [];
+const UPDATE_TIMESTAMP = new Date();
 
 
 
@@ -132,7 +133,13 @@ const ParseLessonPartsAndOptions = iRawComplexLesson => {
 		iRawComplexLesson = iRawComplexLesson.replace(new RegExp(regexpRaw, "g"), FIXES[regexpRaw]);
 	});
 
-	return iRawComplexLesson.replace(/\r/g, "").split("\n").filter(i => !!i) || null;
+	return iRawComplexLesson
+	.replace(/\r/g, "")
+	/** Replace split for actual messed up subgroups from multiple spaces to single line break */
+	.replace(/\u0020{6,}/g, "\n")
+	.split("\n")
+	.map((value) => typeof value === "string" ? value.trim() : value)
+	.filter(Boolean);
 };
 
 /**
@@ -188,7 +195,7 @@ const GetLinkToFiles = () => Promise.all(SCHEDULE_PAGES.map((schedulePage, sched
 
 
 					instituteCard.outerHTML.split("<hr").forEach((subInstitute) => {
-						// Layout расписания вне сессии
+						/** Layout расписания вне сессии */
 						const usualTableCardsLayout = subInstitute.split("Расписание занятий")?.[1]?.split(/расписание/i)[0];
 
 
@@ -311,7 +318,12 @@ const GetTablesFiles = (allXLSXDefinitions) => new Promise((resolve, reject) => 
 				...gettingFileProps
 			});
 
-			if (DEV) fsWriteFile(`./data/${gettingFileProps.remoteFile.replace("https://webservices.mirea.ru/upload/iblock", "").replace(/[^\wа-яё_.]/gi, "_")}`, fileData).catch(() => {});
+			if (DEV)
+				fsWriteFile(`./data/${
+					new URL(gettingFileProps.remoteFile).pathname
+					.replace("/upload/iblock", "")
+					.replace(/[^\wа-яё_.]/gi, "_")
+				}`, fileData).catch(() => {});
 		}).catch((e) => {
 			Logging(`Error on getting ${gettingFileProps.remoteFile}`, e);
 		}).finally(() => setTimeout(() => LocalRecurion(iIndex + 1), 500));
@@ -453,7 +465,13 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 
 						const formedLesson = [];
 
-						if (splittedLesson.name && splittedLesson.name instanceof Array)
+						if (splittedLesson.name && splittedLesson.name instanceof Array) {
+							/** Messed up subgroups with their indices on the second line */
+							if (splittedLesson.name.length === 2 && /(\d+\s*п\/г)(,\1)*/i.test(splittedLesson.name[1]))
+								splittedLesson.name[0] = `${splittedLesson.name[0]} ${
+									splittedLesson.name.pop().replace(/([\d,])/g, "$1 ")
+								}`.trim();
+
 							splittedLesson.name.forEach((optionName, optionIndex) => {
 								/** @type {number[] | null} */
 								let weeks = null,
@@ -529,12 +547,18 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 											.trim()
 											:
 											optionName.trim(),
-									type: splittedLesson.type ? splittedLesson.type[optionIndex] || null : null,
+									/**
+									 * In the single lesson any type is always the same
+									 * because lesson holds options for different subgroups
+									 * (indicated whether by messed up ones or line break/multiple spaces)
+									 */
+									type: splittedLesson.type ? splittedLesson.type[0] || null : null,
 									tutor: splittedLesson.tutor ? splittedLesson.tutor[optionIndex] || null : null,
 									place: splittedLesson.place ? splittedLesson.place[optionIndex] || null : null,
 									link: splittedLesson.link ? splittedLesson.link[optionIndex] ? splittedLesson.link[optionIndex] : (splittedLesson.link[optionIndex - 1] || null) : null
 								});
 							});
+						}
 
 						if (lessonOptionIndex % 2)
 							schedule[dayOfWeek].even.push(formedLesson);
@@ -551,7 +575,7 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 						unitName: XLSXFileData.unitName,
 						unitCourse: XLSXFileData.unitCourse,
 						lessonsTimes: lessonsTimes,
-						updatedDate: new Date(),
+						updatedDate: UPDATE_TIMESTAMP,
 						schedule: schedule,
 					};
 
@@ -588,13 +612,26 @@ GetLinkToFiles()
 			/**
 			 * @param {number} clearingGroupIndex
 			 */
-			const LocalRecurionRemove = (clearingGroupIndex) => {
+			const LocalRecurionRemove = async (clearingGroupIndex) => {
 				const studyGroupProps = GLOBAL_SCHEDULE[clearingGroupIndex];
 				if (!studyGroupProps) return resolveClearingPrevious();
 
-				STUDY_GROUPS_COLLECTION.findOneAndDelete({
+				const successfullyDeletedSameButPrevious = (
+					await STUDY_GROUPS_COLLECTION.deleteOne({
+						groupName: studyGroupProps.groupName,
+						groupSuffix: studyGroupProps.groupSuffix,
+						updatedDate: {
+							$lt: studyGroupProps.updatedDate
+						}
+					})
+					.catch(() => Promise.resolve({ deletedCount: 0 }))
+				)?.deletedCount;
+
+				if (successfullyDeletedSameButPrevious)
+					return LocalRecurionRemove(clearingGroupIndex + 1);
+
+				STUDY_GROUPS_COLLECTION.deleteOne({
 					groupName: studyGroupProps.groupName,
-					groupSuffix: studyGroupProps.groupSuffix,
 					updatedDate: {
 						$lt: studyGroupProps.updatedDate
 					}
@@ -608,7 +645,7 @@ GetLinkToFiles()
 		.then(() => DB.collection("params").findOneAndUpdate(
 			{ name: "scrapper_updated_date" },
 			{ $set: {
-				value: new Date()
+				value: UPDATE_TIMESTAMP
 			} }
 		));
 	});
@@ -616,5 +653,5 @@ GetLinkToFiles()
 .catch(Logging)
 .finally(() => {
 	mongoDispatcher.closeConnection();
-	setTimeout(() => process.exit(0), 10 * 1000);
+	setTimeout(() => process.exit(0), DEV ? 0 : 10 * 1000);
 });
