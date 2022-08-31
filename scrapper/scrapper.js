@@ -610,11 +610,11 @@ GetLinkToFiles()
 			{ $set: {
 				value: new Date()
 			} }
-		))
-		.then(() => mongoDispatcher.closeConnection());
+		));
 	});
 })
-.catch((e) => {
-	Logging(e);
+.catch(Logging)
+.finally(() => {
 	mongoDispatcher.closeConnection();
+	setTimeout(() => process.exit(0), 10 * 1000);
 });
