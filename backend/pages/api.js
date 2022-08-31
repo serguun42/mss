@@ -3,10 +3,7 @@ const
 	MINUTE = SECOND * 60,
 	HOUR = MINUTE * 60,
 	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
-	{
-		DATABASE_NAME,
-		HOSTNAME
-	} = DEV ? require("../../../DEV_CONFIGS/backend.config.json") : require("../backend.config.json"),
+	{ DATABASE_NAME } = DEV ? require("../../../DEV_CONFIGS/backend.config.json") : require("../backend.config.json"),
 	RateLimiter = require("../utils/rate-limiter"),
 	MongoDispatcher = require("../utils/database"),
 	Logging = require("../utils/logging");
@@ -35,7 +32,7 @@ const LogTooManyRequests = (req) => {
 
 	if (RECENTLY_LOGGED_IPS[cIP] > 1) return;
 
-	Logging(`Too many requests from ${typeof cIP === "string" ? cIP.replace("::ffff:", "") : cIP} on ${HOSTNAME}${req.url}`);
+	Logging(`Too many requests from ${typeof cIP === "string" ? cIP.replace("::ffff:", "") : cIP} to ${req.url}`);
 };
 
 /**
@@ -384,7 +381,7 @@ module.exports = (iModuleDataObject) => {
 					DB.collection("params").findOne({ name: "scrapper_updated_date" })
 					.then((scrapperUpdatedDate) => {
 						if (scrapperUpdatedDate)
-							return DB.collection("study-groups").find().count().then((groupsCount) => {
+							return DB.collection("study-groups").countDocuments().then((groupsCount) => {
 								GlobalSendCustom(200, {
 									scrapperUpdatedDate: new Date(scrapperUpdatedDate.value || 0).toISOString(),
 									groupsCount
