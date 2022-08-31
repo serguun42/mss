@@ -485,9 +485,10 @@ const SETTINGS_COMMANDS = [
 	}
 ];
 
+const COMMAND_ALIAS_REGEXP = /[^\p{L}\d\s+-]+/giu;
 const COMMANDS_ALIASES = {};
 Object.keys(COMMANDS).forEach((key) => {
-	const alias = COMMANDS[key].description.replace(/[^\p{L}]+/giu, "");
+	const alias = COMMANDS[key].description.replace(COMMAND_ALIAS_REGEXP, "").trim();
 	COMMANDS_ALIASES[alias] = COMMANDS[key];
 });
 
@@ -774,7 +775,7 @@ telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 		}
 
 
-		const commandAlias = Capitalize(text.replace(/[^\p{L}]+/giu, "").trim());
+		const commandAlias = Capitalize(text.replace(COMMAND_ALIAS_REGEXP, "").trim());
 
 		if (COMMANDS_ALIASES[commandAlias]) {
 			if (typeof COMMANDS_ALIASES[commandAlias].caller == "function")
