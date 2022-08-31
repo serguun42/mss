@@ -2,6 +2,7 @@ import ical from "ical-generator";
 import router from "../router";
 import store from "../store";
 import { GetGroupsByNameAndSuffix, GetTimeStart } from "./api";
+import LessonNameByType from "./lesson-type";
 
 /** @typedef {import("ical-generator").ICalEvent | import("ical-generator").ICalEventData} CalEvent */
 /** Let's pretend every semester has only 17 weeks in it (precisely) */
@@ -13,23 +14,6 @@ const MINUTE = SECOND * 60;
 const HOUR = MINUTE * 60;
 const DAY = HOUR * 24;
 const WEEK = DAY * 7;
-
-/**
- * @param {string} type
- * @returns {string}
- */
-const LessonNameByType = (type) => {
-	if (typeof type !== "string") return "";
-
-	switch (type.trim().toLowerCase()) {
-		case "пр": return "Семинар"; break;
-		case "лк": return "Лекция"; break;
-		case "лаб": return "Лабораторная"; break;
-		case "ср":
-		case "с/р": return "Сам. раб."; break;
-		default: return type; break;
-	}
-}
 
 /**
  * Collects data, builds and downloads .ICS file
