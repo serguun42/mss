@@ -94,6 +94,12 @@ const BuildFetchOptions = (cookie) => ({
 });
 
 /**
+ * @param {number} delay
+ * @returns {Promise<null>}
+ */
+const Wait = (delay) => new Promise((resolve) => setTimeout(resolve, delay || 0));
+
+/**
  * @param {number[]} iArray
  * @param {number} iPos
  * @returns {number}
@@ -240,8 +246,10 @@ const GetLinkToFiles = () => Promise.all(SCHEDULE_PAGES.map((schedulePage, sched
 				}
 			});
 
-			return Promise.all(scheduleNewsTargets.map((scheduleNewsTarget) =>
-				fetch(scheduleNewsTarget.targetPageUrl, BuildFetchOptions(schedulePage.cookie)).then((res) => {
+			return Promise.all(scheduleNewsTargets.map((scheduleNewsTarget, scheduleNewsTargetIndex) =>
+				Wait(scheduleNewsTargetIndex * 500)
+				.then(() => fetch(scheduleNewsTarget.targetPageUrl, BuildFetchOptions(schedulePage.cookie)))
+				.then((res) => {
 					if (res.status === 200)
 						return res.text();
 					else
@@ -328,229 +336,230 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 		if (!XLSXFileData) return resolve(GLOBAL_SCHEDULE);
 
 
-		GlobalSafeParseXLSX(XLSXFileData.fileData).then((workSheetsFromFile) => {
-			const tableSheet = workSheetsFromFile[0];
-
-			const tableData = tableSheet.data;
-			if (!tableData) return;
-
-
-			const lineWithGroups = tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES];
-			if (!(lineWithGroups instanceof Array)) return Promise.reject(`No groups in the sheet`);
+		GlobalSafeParseXLSX(XLSXFileData.fileData)
+		.then((workSheetsFromFile) =>
+			workSheetsFromFile.map((tableSheet) => {
+				const tableData = tableSheet.data;
+				if (!tableData) return;
 
 
-			const indexesOfCellsWithGroupNames = lineWithGroups.map((cell, index) => {
-				if (typeof cell !== "string") return null;
-
-				if (/^[\wа-яё]{4}-\d{2}-\d{2}/i.test(cell?.trim?.()))
-					return index;
-				else
-					return null;
-			}).filter((index) => index !== null);
+				const lineWithGroups = tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES];
+				if (!(lineWithGroups instanceof Array)) return;
 
 
-			let finalRowIndex = INDEX_OF_LINE_WITH_GROUPS_NAMES + 2 + 72;
+				const indexesOfCellsWithGroupNames = lineWithGroups.map((cell, index) => {
+					if (typeof cell !== "string") return null;
 
-			tableData.forEach((row, rowIndex) => {
-				if (/Начальник\s+УМУ/gi.test(row[2])) finalRowIndex = rowIndex;
-			});
-
-
-			/** @type {number[]} */
-			const daysByLessonsNumber = new Array(6).fill(0);
-
-			let currentDay = -1;
-			tableData
-				.slice(INDEX_OF_LINE_WITH_GROUPS_NAMES + 2, finalRowIndex)
-				.forEach((row) => {
-					if (row[0]) ++currentDay;
-
-					++daysByLessonsNumber[currentDay];
-				});
-
-
-			/** @type {string[][]} */
-			const lessonsTimes = daysByLessonsNumber.map((day, dayIndex) => {
-				const skipLines = GlobalReduceArrayToIndex(daysByLessonsNumber, dayIndex);
-
-				const timesForDay = new Array(day).fill(true).map((lessonTime, indexOfLessonTime) => {
-					const currentLessonRowIndex = INDEX_OF_LINE_WITH_GROUPS_NAMES + 2 + skipLines + indexOfLessonTime,
-						  currentRowLessonStart = tableData[currentLessonRowIndex][2],
-						  currentRowLessonEnd = tableData[currentLessonRowIndex][3];
-
-					if (
-						currentRowLessonStart &&
-						typeof currentRowLessonStart == "string" &&
-						currentRowLessonEnd &&
-						typeof currentRowLessonEnd == "string"
-					)
-						return `${currentRowLessonStart.replace(/(\d+)(:|-)(\d+)/, "$1:$3")} – ${currentRowLessonEnd.replace(/(\d+)(:|-)(\d+)/, "$1:$3")}`;
+					if (/^[\wа-яё]{4}-\d{2}-\d{2}/i.test(cell?.trim?.()))
+						return index;
 					else
 						return null;
-				}).filter((lessonTimes) => lessonTimes !== null);
-
-				return timesForDay;
-			});
+				}).filter((index) => index !== null);
 
 
-			indexesOfCellsWithGroupNames.forEach((indexOfCertainGroup) => {
-				const certainGroupTable = tableData
-										  .slice(INDEX_OF_LINE_WITH_GROUPS_NAMES + 2, finalRowIndex)
-										  .map(row => row.slice(indexOfCertainGroup, indexOfCertainGroup + 5));
+				let finalRowIndex = INDEX_OF_LINE_WITH_GROUPS_NAMES + 2 + 72;
 
-				/** @type {string} */
-				const certainGroupName = (tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup] || "")
-										 ?.replace?.(/[\r\n]/g, "")
-										 ?.replace?.(/^([\wа-яё]{4}-\d{2}-\d{2}).*$/i, "$1")
-										 ?.trim?.();
-
-				/** @type {string} */
-				const certainGroupSuffix = (
-					tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup + 1] ||
-					tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup + 2] ||
-					tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup + 3]
-				)
-					?.replace?.(/[\r\n]/g, "")
-					||
-					tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup]
-						?.replace?.(/[\r\n]/g, "")
-						?.replace?.(/^[\wа-яё]{4}-\d{2}-\d{2}(.*)$/i, "$1")
-						?.replace?.(/[\(\)]/g, "")
-						?.trim?.();
-
-
-				/** @type {Schedule} */
-				const schedule = [];
-
-				certainGroupTable.forEach((lessonOption, lessonOptionIndex) => {
-					let dayOfWeek = 0;
-					while (GlobalReduceArrayToIndex(daysByLessonsNumber, dayOfWeek + 1) <= lessonOptionIndex) {
-						++dayOfWeek;
-					}
-
-					if (!schedule[dayOfWeek]) schedule[dayOfWeek] = {
-						day: DAYS_OF_WEEK[dayOfWeek],
-						odd: [],
-						even: []
-					}
-
-
-					const splittedLesson = {
-						name: ParseLessonPartsAndOptions(lessonOption[0]),
-						type: ParseLessonPartsAndOptions(lessonOption[1]),
-						tutor: ParseLessonPartsAndOptions(lessonOption[2]),
-						place: ParseLessonPartsAndOptions(lessonOption[3]),
-						link: ParseLessonPartsAndOptions(lessonOption[4])
-					};
-
-					const formedLesson = [];
-
-					if (splittedLesson.name && splittedLesson.name instanceof Array)
-						splittedLesson.name.forEach((optionName, optionIndex) => {
-							/** @type {number[] | null} */
-							let weeks = null,
-								weeksExclude = [],
-								weeksMatch = optionName.match(/^([\d\,]+)\s?н\.?\s/);
-
-							if (weeksMatch && weeksMatch[1])
-								weeks = weeksMatch[1];
-							else
-								weeks = null;
-
-							if (!weeks) {
-								weeksMatch = optionName.match(/^((\d+)\-(\d+))\s?н\.?\s/);
-
-								if (weeksMatch && weeksMatch[1] && weeksMatch[2] && weeksMatch[3]) {
-									let weeksArr = [],
-										startingWeek = parseInt(weeksMatch[2]),
-										endingWeek = parseInt(weeksMatch[3]);
-
-									for (let i = startingWeek; i <= endingWeek; i += 2)
-										weeksArr.push(i);
-
-									weeks = weeksArr.join(",");
-								} else
-									weeks = null;
-							}
-
-							if (!weeks) {
-								weeksMatch = optionName.match(/^кр\.?\s*([\d\,]+)\s*н\.?\s/i);
-
-								if (weeksMatch && weeksMatch[1]) {
-									weeksExclude = weeksMatch[1].split(",").map((week) => parseInt(week));
-								} else
-									weeksExclude = [];
-							}
-
-							if (weeksExclude.length) {
-								if (!weeks) {
-									weeks = [];
-
-									/**
-									 * if lessonOptionIndex % 2 === 0
-									 * then
-									 *  [0]    [2]    [4]   index
-									 * 	first, third, fifth, so on row – odd days
-									 * elif lessonOptionIndex % 2 === 1
-									 * then
-									 *  [1]    [3]    [5]   index
-									 * 	second, fourth, sixth
-									 * fi
-									 */
-									for (let i = 1 + lessonOptionIndex % 2; i <= 16; i += 2) {
-										if (!weeksExclude.includes(i))
-											weeks.push(i);
-									}
-
-									weeks = weeks.join(",");
-								} else {
-									weeks = weeks
-											.split(",").map((week) => parseInt(week))
-											.filter((week) => !weeksExclude.includes(week))
-											.join(",");
-								}
-							}
-
-							formedLesson.push({
-								weeks: weeks ? weeks.split(",").map((week) => parseInt(week)) : null,
-								name: weeks ?
-										optionName
-										.replace(/^([\d\,]+)\s?н\.?\s/, "")
-										.replace(/^((\d+)\-(\d+))\s?н\.?\s/, "")
-										.replace(/^кр\.?\s*([\d\,]+)\s*н\.?\s/i, "")
-										.trim()
-										:
-										optionName.trim(),
-								type: splittedLesson.type ? splittedLesson.type[optionIndex] || null : null,
-								tutor: splittedLesson.tutor ? splittedLesson.tutor[optionIndex] || null : null,
-								place: splittedLesson.place ? splittedLesson.place[optionIndex] || null : null,
-								link: splittedLesson.link ? splittedLesson.link[optionIndex] ? splittedLesson.link[optionIndex] : (splittedLesson.link[optionIndex - 1] || null) : null
-							});
-						});
-
-					if (lessonOptionIndex % 2)
-						schedule[dayOfWeek].even.push(formedLesson);
-					else
-						schedule[dayOfWeek].odd.push(formedLesson);
+				tableData.forEach((row, rowIndex) => {
+					if (/Начальник\s+УМУ/gi.test(row[2])) finalRowIndex = rowIndex;
 				});
 
 
-				/** @type {GlobalScheduleGroup} */
-				const groupObjectForGlobal = {
-					groupName: certainGroupName,
-					groupSuffix: certainGroupSuffix,
-					remoteFile: XLSXFileData.remoteFile,
-					unitName: XLSXFileData.unitName,
-					unitCourse: XLSXFileData.unitCourse,
-					lessonsTimes: lessonsTimes,
-					updatedDate: new Date(),
-					schedule: schedule,
-				};
+				/** @type {number[]} */
+				const daysByLessonsNumber = new Array(6).fill(0);
+
+				let currentDay = -1;
+				tableData
+					.slice(INDEX_OF_LINE_WITH_GROUPS_NAMES + 2, finalRowIndex)
+					.forEach((row) => {
+						if (row[0]) ++currentDay;
+
+						++daysByLessonsNumber[currentDay];
+					});
 
 
-				GLOBAL_SCHEDULE.push(groupObjectForGlobal);
-			});
-		})
+				/** @type {string[][]} */
+				const lessonsTimes = daysByLessonsNumber.map((day, dayIndex) => {
+					const skipLines = GlobalReduceArrayToIndex(daysByLessonsNumber, dayIndex);
+
+					const timesForDay = new Array(day).fill(true).map((lessonTime, indexOfLessonTime) => {
+						const currentLessonRowIndex = INDEX_OF_LINE_WITH_GROUPS_NAMES + 2 + skipLines + indexOfLessonTime,
+							currentRowLessonStart = tableData[currentLessonRowIndex][2],
+							currentRowLessonEnd = tableData[currentLessonRowIndex][3];
+
+						if (
+							currentRowLessonStart &&
+							typeof currentRowLessonStart == "string" &&
+							currentRowLessonEnd &&
+							typeof currentRowLessonEnd == "string"
+						)
+							return `${currentRowLessonStart.replace(/(\d+)(:|-)(\d+)/, "$1:$3")} – ${currentRowLessonEnd.replace(/(\d+)(:|-)(\d+)/, "$1:$3")}`;
+						else
+							return null;
+					}).filter((lessonTimes) => lessonTimes !== null);
+
+					return timesForDay;
+				});
+
+
+				indexesOfCellsWithGroupNames.forEach((indexOfCertainGroup) => {
+					const certainGroupTable = tableData
+											.slice(INDEX_OF_LINE_WITH_GROUPS_NAMES + 2, finalRowIndex)
+											.map(row => row.slice(indexOfCertainGroup, indexOfCertainGroup + 5));
+
+					/** @type {string} */
+					const certainGroupName = (tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup] || "")
+											?.replace?.(/[\r\n]/g, "")
+											?.replace?.(/^([\wа-яё]{4}-\d{2}-\d{2}).*$/i, "$1")
+											?.trim?.();
+
+					/** @type {string} */
+					const certainGroupSuffix = (
+						tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup + 1] ||
+						tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup + 2] ||
+						tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup + 3]
+					)
+						?.replace?.(/[\r\n]/g, "")
+						||
+						tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup]
+							?.replace?.(/[\r\n]/g, "")
+							?.replace?.(/^[\wа-яё]{4}-\d{2}-\d{2}(.*)$/i, "$1")
+							?.replace?.(/[\(\)]/g, "")
+							?.trim?.();
+
+
+					/** @type {Schedule} */
+					const schedule = [];
+
+					certainGroupTable.forEach((lessonOption, lessonOptionIndex) => {
+						let dayOfWeek = 0;
+						while (GlobalReduceArrayToIndex(daysByLessonsNumber, dayOfWeek + 1) <= lessonOptionIndex) {
+							++dayOfWeek;
+						}
+
+						if (!schedule[dayOfWeek]) schedule[dayOfWeek] = {
+							day: DAYS_OF_WEEK[dayOfWeek],
+							odd: [],
+							even: []
+						}
+
+
+						const splittedLesson = {
+							name: ParseLessonPartsAndOptions(lessonOption[0]),
+							type: ParseLessonPartsAndOptions(lessonOption[1]),
+							tutor: ParseLessonPartsAndOptions(lessonOption[2]),
+							place: ParseLessonPartsAndOptions(lessonOption[3]),
+							link: ParseLessonPartsAndOptions(lessonOption[4])
+						};
+
+						const formedLesson = [];
+
+						if (splittedLesson.name && splittedLesson.name instanceof Array)
+							splittedLesson.name.forEach((optionName, optionIndex) => {
+								/** @type {number[] | null} */
+								let weeks = null,
+									weeksExclude = [],
+									weeksMatch = optionName.match(/^([\d\,]+)\s?н\.?\s/);
+
+								if (weeksMatch && weeksMatch[1])
+									weeks = weeksMatch[1];
+								else
+									weeks = null;
+
+								if (!weeks) {
+									weeksMatch = optionName.match(/^((\d+)\-(\d+))\s?н\.?\s/);
+
+									if (weeksMatch && weeksMatch[1] && weeksMatch[2] && weeksMatch[3]) {
+										let weeksArr = [],
+											startingWeek = parseInt(weeksMatch[2]),
+											endingWeek = parseInt(weeksMatch[3]);
+
+										for (let i = startingWeek; i <= endingWeek; i += 2)
+											weeksArr.push(i);
+
+										weeks = weeksArr.join(",");
+									} else
+										weeks = null;
+								}
+
+								if (!weeks) {
+									weeksMatch = optionName.match(/^кр\.?\s*([\d\,]+)\s*н\.?\s/i);
+
+									if (weeksMatch && weeksMatch[1]) {
+										weeksExclude = weeksMatch[1].split(",").map((week) => parseInt(week));
+									} else
+										weeksExclude = [];
+								}
+
+								if (weeksExclude.length) {
+									if (!weeks) {
+										weeks = [];
+
+										/**
+										 * if lessonOptionIndex % 2 === 0
+										 * then
+										 *  [0]    [2]    [4]   index
+										 * 	first, third, fifth, so on row – odd days
+										 * elif lessonOptionIndex % 2 === 1
+										 * then
+										 *  [1]    [3]    [5]   index
+										 * 	second, fourth, sixth
+										 * fi
+										 */
+										for (let i = 1 + lessonOptionIndex % 2; i <= 16; i += 2) {
+											if (!weeksExclude.includes(i))
+												weeks.push(i);
+										}
+
+										weeks = weeks.join(",");
+									} else {
+										weeks = weeks
+												.split(",").map((week) => parseInt(week))
+												.filter((week) => !weeksExclude.includes(week))
+												.join(",");
+									}
+								}
+
+								formedLesson.push({
+									weeks: weeks ? weeks.split(",").map((week) => parseInt(week)) : null,
+									name: weeks ?
+											optionName
+											.replace(/^([\d\,]+)\s?н\.?\s/, "")
+											.replace(/^((\d+)\-(\d+))\s?н\.?\s/, "")
+											.replace(/^кр\.?\s*([\d\,]+)\s*н\.?\s/i, "")
+											.trim()
+											:
+											optionName.trim(),
+									type: splittedLesson.type ? splittedLesson.type[optionIndex] || null : null,
+									tutor: splittedLesson.tutor ? splittedLesson.tutor[optionIndex] || null : null,
+									place: splittedLesson.place ? splittedLesson.place[optionIndex] || null : null,
+									link: splittedLesson.link ? splittedLesson.link[optionIndex] ? splittedLesson.link[optionIndex] : (splittedLesson.link[optionIndex - 1] || null) : null
+								});
+							});
+
+						if (lessonOptionIndex % 2)
+							schedule[dayOfWeek].even.push(formedLesson);
+						else
+							schedule[dayOfWeek].odd.push(formedLesson);
+					});
+
+
+					/** @type {GlobalScheduleGroup} */
+					const groupObjectForGlobal = {
+						groupName: certainGroupName,
+						groupSuffix: certainGroupSuffix,
+						remoteFile: XLSXFileData.remoteFile,
+						unitName: XLSXFileData.unitName,
+						unitCourse: XLSXFileData.unitCourse,
+						lessonsTimes: lessonsTimes,
+						updatedDate: new Date(),
+						schedule: schedule,
+					};
+
+
+					GLOBAL_SCHEDULE.push(groupObjectForGlobal);
+				});
+			})
+		)
 		.catch((e) => Logging(`Error on parsing xlsx (URL: ${XLSXFileData.remoteFile} | unitName: ${XLSXFileData.unitName} | unitCourse: ${XLSXFileData.unitCourse})`, e))
 		.finally(() => LocalParseSingleFile(index + 1));
 	};
