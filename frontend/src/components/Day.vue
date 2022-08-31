@@ -64,7 +64,7 @@
 							<i v-if="showOngoingAndPlannedLesson && lessonStarted(lessonsTimes[dayIndex][lessonIndex])">(сейчас)</i>
 						</div>
 
-						<div class="option__info__item" v-if="option.place === 'Д' || option.place === 'д'"><i class="material-icons material-icons-round default-no-select">alternate_email</i>
+						<div class="option__info__item" v-if="checkIfDistant(option)"><i class="material-icons material-icons-round default-no-select">alternate_email</i>
 							<a v-if="option.link" :href="option.link" target="_blank" rel="noopener noreferrer">Дистанционно</a>
 							<span v-else>Дистанционно</span>
 						</div>
@@ -92,6 +92,7 @@
 </template>
 
 <script>
+import CheckIfDistant from "../utils/chech-if-distant";
 import LessonNameByType from "../utils/lesson-type";
 
 export default {
@@ -167,7 +168,7 @@ export default {
 		},
 		/**
 		 * @param {string} iLessonTime
-		 * @returns {Boolean}
+		 * @returns {boolean}
 		 */
 		lessonPlanned(iLessonTime) {
 			if (typeof iLessonTime !== "string") return false;
@@ -207,6 +208,13 @@ export default {
 			if (/^ин(остранный)?(\.)?\s*яз(ык)?(\.)?$/i.test(iName.trim())) return "Иностранный язык";
 
 			return iName;
+		},
+		/**
+		 * @param {import("../types").Option} iOption
+		 * @returns {string}
+		 */
+		checkIfDistant(iOption) {
+			return CheckIfDistant(iOption);
 		}
 	}
 }

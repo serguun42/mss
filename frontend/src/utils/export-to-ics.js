@@ -2,6 +2,7 @@ import ical from "ical-generator";
 import router from "../router";
 import store from "../store";
 import { GetGroupsByNameAndSuffix, GetTimeStart } from "./api";
+import CheckIfDistant from "./chech-if-distant";
 import LessonNameByType from "./lesson-type";
 
 /** @typedef {import("ical-generator").ICalEvent | import("ical-generator").ICalEventData} CalEvent */
@@ -67,7 +68,7 @@ export const ExportToIcs = () => {
 								start: lessonStartDate,
 								end: lessonEndDate,
 								summary: option.name + (option.type ? ` (${option.type})` : ''),
-								location: option.place === "Д" || option.place === "д" ? "Дистанционно" : option.place,
+								location: CheckIfDistant(option) ? "Дистанционно" : option.place,
 								url: option.link || undefined,
 								description: (option.tutor || option.type) ? `${
 									option.tutor ? `Преподаватель: ${option.tutor}` : ""
