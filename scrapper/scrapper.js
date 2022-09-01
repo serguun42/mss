@@ -101,19 +101,20 @@ const BuildFetchOptions = (cookie) => ({
 const Wait = (delay) => new Promise((resolve) => setTimeout(resolve, delay || 0));
 
 /**
- * @param {number[]} iArray
- * @param {number} iPos
+ * @param {number[]} array
+ * @param {number} position
  * @returns {number}
  */
-const GlobalReduceArrayToIndex = (iArray, iPos) => iArray.reduce((accum, current, index) => index >= iPos ? accum : accum + current, 0);
+const GlobalReduceArrayToIndex = (array, position) =>
+	array.reduce((accum, current, index) => index >= position ? accum : accum + current, 0);
 
 /**
- * @param {Buffer} iXLSXData
+ * @param {Buffer} XLSXData
  * @returns {Promise<{ name: string, data: (string | Buffer)[][] }[]>}
  */
-const GlobalSafeParseXLSX = iXLSXData => new Promise((resolve, reject) => {
+const GlobalSafeParseXLSX = (XLSXData) => new Promise((resolve, reject) => {
 	try {
-		const parsedData = xlsx.parse(iXLSXData);
+		const parsedData = xlsx.parse(XLSXData);
 		resolve(parsedData);
 	} catch (e) {
 		reject(e);
@@ -121,25 +122,35 @@ const GlobalSafeParseXLSX = iXLSXData => new Promise((resolve, reject) => {
 });
 
 /**
- * @param {string | number | null} iRawComplexLesson
+ * @param {string | number | null} rawComplexLesson
  * @returns {string[] | null}
  */
-const ParseLessonPartsAndOptions = iRawComplexLesson => {
-	if (!iRawComplexLesson) return null;
-	if (typeof iRawComplexLesson == "number") iRawComplexLesson = iRawComplexLesson.toString();
-	if (typeof iRawComplexLesson !== "string") return null;
+const ParseLessonPartsAndOptions = (rawComplexLesson) => {
+	if (!rawComplexLesson) return null;
+	if (typeof rawComplexLesson == "number") rawComplexLesson = rawComplexLesson.toString();
+	if (typeof rawComplexLesson !== "string") return null;
 
 	Object.keys(FIXES).forEach((regexpRaw) => {
-		iRawComplexLesson = iRawComplexLesson.replace(new RegExp(regexpRaw, "g"), FIXES[regexpRaw]);
+		rawComplexLesson = rawComplexLesson.replace(new RegExp(regexpRaw, "g"), FIXES[regexpRaw]);
 	});
 
-	return iRawComplexLesson
+	return rawComplexLesson
 	.replace(/\r/g, "")
 	/** Replace split for actual messed up subgroups from multiple spaces to single line break */
 	.replace(/\u0020{6,}/g, "\n")
 	.split("\n")
 	.map((value) => typeof value === "string" ? value.trim() : value)
 	.filter(Boolean);
+};
+
+/**
+ * @param {string} place
+ * @returns {string}
+ */
+const TrimOptionPlace = (place) => {
+	if (typeof place !== "string") return place;
+
+	return place.replace(/^(ауд|комп)\.?\s?/i, "").trim();
 };
 
 /**
@@ -472,6 +483,16 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 									splittedLesson.name.pop().replace(/([\d,])/g, "$1 ")
 								}`.trim();
 
+							if (
+								splittedLesson.name.length === 2 &&
+								/военн/i.test(splittedLesson.name[0]) &&
+								/подг/i.test(splittedLesson.name[1])
+							)
+								splittedLesson.name[0] = `${splittedLesson.name[0]} ${splittedLesson.name.pop()}`.trim();
+
+							if (splittedLesson.place instanceof Array)
+								splittedLesson.place = splittedLesson.place.map(TrimOptionPlace);
+
 							splittedLesson.name.forEach((optionName, optionIndex) => {
 								/** @type {number[] | null} */
 								let weeks = null,
@@ -552,10 +573,22 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 									 * because lesson holds options for different subgroups
 									 * (indicated whether by messed up ones or line break/multiple spaces)
 									 */
-									type: splittedLesson.type ? splittedLesson.type[0] || null : null,
-									tutor: splittedLesson.tutor ? splittedLesson.tutor[optionIndex] || null : null,
-									place: splittedLesson.place ? splittedLesson.place[optionIndex] || null : null,
-									link: splittedLesson.link ? splittedLesson.link[optionIndex] ? splittedLesson.link[optionIndex] : (splittedLesson.link[optionIndex - 1] || null) : null
+									type: splittedLesson.type
+										? splittedLesson.type[optionIndex]
+										|| splittedLesson.type[0]
+										|| null : null,
+									tutor: splittedLesson.tutor
+										? splittedLesson.tutor[optionIndex]
+										|| splittedLesson.tutor[0]
+										|| null : null,
+									place: splittedLesson.place
+										? splittedLesson.place[optionIndex]
+										|| splittedLesson.place[0]
+										|| null : null,
+									link: splittedLesson.link
+										? splittedLesson.link[optionIndex]
+										|| splittedLesson.link[optionIndex - 1]
+										|| null : null
 								});
 							});
 						}
