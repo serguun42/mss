@@ -33,3 +33,4 @@ public/manifest.json
 public/manifest.webmanifest
 public/version.txt
 public/docs/api/*.html
+src/config/tag-manager.*

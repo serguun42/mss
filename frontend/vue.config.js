@@ -8,6 +8,18 @@ const crypto = require("crypto");
 const BUILD_HASH = crypto.createHash("sha256").update(Date.now().toString() + "SOME_SALT_FOR_HASH").digest("hex");
 fs.writeFileSync(path.join("public", "version.txt"), `BUILD_HASH=${BUILD_HASH}`);
 
+const TAG_MANAGER_LOCATION = path.join("src", "config", "tag-manager.html");
+
+let tagManager = "";
+try {
+	const stats = fs.statSync(TAG_MANAGER_LOCATION);
+	if (!stats.isFile()) throw new Error("No tag manager file");
+
+	tagManager = fs.readFileSync(TAG_MANAGER_LOCATION).toString();
+} catch (e) {
+	console.log("Skipping tag manager");
+}
+
 
 const DotenvWebpackPlugin = require("dotenv-webpack");
 const dotenvPlugin = new DotenvWebpackPlugin({
@@ -16,7 +28,8 @@ const dotenvPlugin = new DotenvWebpackPlugin({
 	systemvars: true
 });
 const buildHashEnvPlugin = new webpack.DefinePlugin({
-	"process.env.BUILD_HASH": JSON.stringify(BUILD_HASH)
+	"process.env.BUILD_HASH": JSON.stringify(BUILD_HASH),
+	"process.env.TAG_MANAGER": JSON.stringify(tagManager)
 });
 
 
