@@ -1,0 +1,31 @@
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+	<url>
+		<loc><%= VUE_APP_FULL_PATH %></loc>
+		<lastmod>2022-09-01T10:00:00.000Z</lastmod>
+		<changefreq>daily</changefreq>
+	</url>
+	<url>
+		<loc><%= VUE_APP_FULL_PATH %>/all</loc>
+		<lastmod>2022-09-01T10:00:00.000Z</lastmod>
+		<changefreq>daily</changefreq>
+	</url>
+	<url>
+		<loc><%= VUE_APP_FULL_PATH %>/app</loc>
+		<lastmod>2022-09-01T10:00:00.000Z</lastmod>
+		<changefreq>daily</changefreq>
+	</url>
+		<loc><%= VUE_APP_FULL_PATH %>/group</loc>
+		<lastmod>2022-09-01T10:00:00.000Z</lastmod>
+		<changefreq>daily</changefreq>
+	</url>
+	<url>
+		<loc><%= VUE_APP_FULL_PATH %>/stats</loc>
+		<lastmod>2022-09-01T10:00:00.000Z</lastmod>
+		<changefreq>daily</changefreq>
+	</url>
+	<url>
+		<loc><%= VUE_APP_FULL_PATH %>/docs/api</loc>
+		<lastmod>2022-09-01T10:00:00.000Z</lastmod>
+		<changefreq>daily</changefreq>
+	</url>
+</urlset>

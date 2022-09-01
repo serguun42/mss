@@ -5,36 +5,43 @@ const path = require("path");
 const crypto = require("crypto");
 
 
-const BUILD_HASH = crypto.createHash("sha256").update(Date.now().toString() + "SOME_SALT_FOR_HASH").digest("hex");
-fs.writeFileSync(path.join("public", "version.txt"), `BUILD_HASH=${BUILD_HASH}`);
+/**
+ * @param {string[]} pathToFile
+ * @returns {string}
+ */
+const ReadFileSafe = (...pathToFile) => {
+	if (pathToFile instanceof Array) pathToFile = path.join(...pathToFile);
+	if (typeof pathToFile !== "string") return "";
 
-const TAG_MANAGER_LOCATION = path.join("src", "config", "tag-manager.html");
+	try {
+		const stats = fs.statSync(pathToFile);
+		if (!stats.isFile()) throw new Error("No tag manager file");
 
-let tagManager = "";
-try {
-	const stats = fs.statSync(TAG_MANAGER_LOCATION);
-	if (!stats.isFile()) throw new Error("No tag manager file");
-
-	tagManager = fs.readFileSync(TAG_MANAGER_LOCATION).toString();
-} catch (e) {
-	console.log("Skipping tag manager");
+		return fs.readFileSync(pathToFile).toString();
+	} catch (e) {
+		return "";
+	}
 }
 
-
-const DotenvWebpackPlugin = require("dotenv-webpack");
-const dotenvPlugin = new DotenvWebpackPlugin({
-	path: "./.env",
-	safe: false,
-	systemvars: true
+/**
+ * @param {string} plain
+ * @returns {string}
+ */
+const ReplaceWithEnvVariables = (plain) => plain.replace(/<%= ([\w\.]+) %>/gi, (_match, group) => {
+	if (dotenvPlugin?.definitions?.[group]) {
+		try {
+			return JSON.parse(dotenvPlugin.definitions[group]);
+		} catch (e) {
+			return dotenvPlugin.definitions[group];
+		}
+	}
+	
+	try {
+		return JSON.parse(dotenvPlugin?.definitions?.[`process.env.${group}`]);
+	} catch (e) {
+		return dotenvPlugin?.definitions?.[`process.env.${group}`];
+	}
 });
-const buildHashEnvPlugin = new webpack.DefinePlugin({
-	"process.env.BUILD_HASH": JSON.stringify(BUILD_HASH),
-	"process.env.TAG_MANAGER": JSON.stringify(tagManager)
-});
-
-
-
-const EXAMPLE_MANIFEST = require("./src/config/manifest.example.json");
 
 /**
  * @typedef {{[prop: string]: string | number | null | ManifesType}} ManifesType
@@ -51,36 +58,44 @@ const ManifestTemplateHandler = (iManifestLevel) => {
 			else
 				newManifestPart[key] = ManifestTemplateHandler(iManifestLevel[key]);
 		} else if (typeof iManifestLevel[key] === "string")
-			newManifestPart[key] = iManifestLevel[key].replace(/<%= ([\w\.]+) %>/gi, (match, group) => {
-				if (dotenvPlugin?.definitions?.[group]) {
-					try {
-						return JSON.parse(dotenvPlugin.definitions[group]);
-					} catch (e) {
-						return dotenvPlugin.definitions[group];
-					};
-				};
-				
-				try {
-					return JSON.parse(dotenvPlugin?.definitions?.[`process.env.${group}`]);
-				} catch (e) {
-					return dotenvPlugin?.definitions?.[`process.env.${group}`];
-				};
-			});
+			newManifestPart[key] = ReplaceWithEnvVariables(iManifestLevel[key]);
 		else
 			newManifestPart[key] = iManifestLevel[key];
 	});
 
-	return newManifestPart
+	return newManifestPart;
 };
 
-const OUTPUT_MANIFEST = ManifestTemplateHandler(EXAMPLE_MANIFEST);
+
+const DotenvWebpackPlugin = require("dotenv-webpack");
+const dotenvPlugin = new DotenvWebpackPlugin({
+	path: "./.env",
+	safe: false,
+	systemvars: true
+});
+
+const BUILD_HASH = crypto.createHash("sha256").update(Date.now().toString() + "SOME_SALT_FOR_HASH").digest("hex");
+fs.writeFileSync(path.join("public", "version.txt"), `BUILD_HASH=${BUILD_HASH}`);
+const TAG_MANAGER = ReadFileSafe("src", "config", "tag-manager.html");
+
+const buildHashEnvPlugin = new webpack.DefinePlugin({
+	"process.env.BUILD_HASH": JSON.stringify(BUILD_HASH),
+	"process.env.TAG_MANAGER": JSON.stringify(TAG_MANAGER)
+});
+
+const BASE_MANIFEST = require("./src/config/manifest.base.json");
+const OUTPUT_MANIFEST = ManifestTemplateHandler(BASE_MANIFEST);
 fs.writeFileSync(path.join("public", "manifest.json"), JSON.stringify(OUTPUT_MANIFEST, false, "\t"));
 fs.writeFileSync(path.join("public", "manifest.webmanifest"), JSON.stringify(OUTPUT_MANIFEST, false, "\t"));
 
+const BASE_SITEMAP = ReadFileSafe("src", "config", "sitemap.base.xml");
+fs.writeFileSync(path.join("public", "sitemap.xml"), ReplaceWithEnvVariables(BASE_SITEMAP));
+
+const BASE_ROBOTS = ReadFileSafe("src", "config", "robots.base.txt");
+fs.writeFileSync(path.join("public", "robots.txt"), ReplaceWithEnvVariables(BASE_ROBOTS));
 
 
-
-/** @type {"development"|"production"} */
+/** @type {"development" | "production"} */
 const MODE = process.env.NODE_ENV;
 
 /** @type {{ configureWebpack: webpack.Configuration }} */

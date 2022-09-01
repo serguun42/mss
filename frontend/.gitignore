@@ -31,6 +31,8 @@ tsconfig.create.bat
 package-lock.json
 public/manifest.json
 public/manifest.webmanifest
+public/robots.txt
+public/sitemap.xml
 public/version.txt
 public/docs/api/*.html
 src/config/tag-manager.*

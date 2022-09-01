@@ -1,0 +1,10 @@
+User-agent: Googlebot
+
+User-agent: *
+Allow: /
+Disallow: /css/
+Disallow: /js/
+Disallow: /manifest.json
+Disallow: /manifest.webmanifest
+
+Sitemap: <%= VUE_APP_FULL_PATH %>/sitemap.xml
