@@ -21,7 +21,7 @@
 				</p>
 				<p>
 					Сделано всё <strike>на костылях, велосипедах и непонятно чём</strike> преимущественно на JS: бэк на Node.js, фронт на Vue, бот с помощью <a href="https://www.npmjs.com/package/telegraf" target="_blank" rel="noopener noreferrer">Telegraf</a>. Android-приложение было написано на Kotlin (<a href="https://github.com/rodyapal" target="_blank" rel="noopener noreferrer">его разработчик</a>), однако больше не поддерживается – зато есть 
-					<router-link to="/app">много других нативных</router-link>.
+					<router-link to="/apps">много других нативных</router-link>.
 				</p>
 			</div>
 		</div>

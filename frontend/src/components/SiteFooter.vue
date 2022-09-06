@@ -17,7 +17,7 @@
 				<i class="material-icons material-icons-round">calendar_month</i> <span>Экспортировать в .ics</span>
 			</div>
 			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">android</i> <router-link to="/app">Приложения для Android и iOS</router-link>
+				<i class="material-icons material-icons-round">android</i> <router-link to="/apps">Приложения для Android и iOS</router-link>
 			</div>
 		</section>
 

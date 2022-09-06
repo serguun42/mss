@@ -5,11 +5,12 @@
 ## Complete system for MIREA schedule
 
 This repo represents all the code, structure and pipelines for MSS project, including
-* [Front](./frontend) and [back](./backend)-ends for [mirea.xyz](https://mirea.xyz) site
+* [Frontend](./frontend) for [mirea.xyz](https://mirea.xyz) site
+* [Backend](./backend) with API for that
 * [Telegram bot](./telegram) available by [@mirea_table_bot](https://t.me/mirea_table_bot)
-* [Android app](./app) available on [mirea.xyz/app](https://mirea.xyz/app) or in [project's releases](https://github.com/serguun42/mss/releases)
 * [Scrapper](./scrapper) – script for parsing tables for each study group
 * [Notifier](./notifier) – collecting and sending logs and errors
+* [Android app](./app) – outdated, [see this page](https://mirea.xyz/apps)
 
 ## Project's API
 
@@ -27,8 +28,9 @@ Each folder contains its own README with. Here's the list of them with responsib
 | [Scrapper](./scrapper)		| [@serguun42](https://github.com/serguun42)	| Parses schedule page, gets links to `.xlsx`-files, parses them then, builds table models for each and every possible study group, updates DB schedule for each group of those ones.
 | [Notifier](./notifier)		| [@serguun42](https://github.com/serguun42)	| Runs local HTTP server, notifies into *System Telegram*, logs into *stdout*, *stderr*. Use tags (inner and passed), determines which output(s) will be used to log/notify.
 | [CI/CD](./cicd)				| [@serguun42](https://github.com/serguun42)	| Single JS-script used only for notifying on CI/CD events. Also there are 2 Github Action workflow/pipeline scripts:<br><ul><li>[build.yml](.github/workflows/build.yml) contains main workflow for deploying production.</li><li>[notify.yml](.github/workflows/notify.yml) has only one job – to notify on event `push` into every branch except `master`.</li></ul>
-| [Android app](./app)			| [@rodyapal](https://github.com/rodyapal)		| Outdated, [see this page](https://mirea.xyz/app).
+| [Android app](./app)			| [@rodyapal](https://github.com/rodyapal)		| Outdated, [see this page](https://mirea.xyz/apps).
 
+---
 
 ### Этот проект, всё его содержимое и разработчики не связаны с администрацией РТУ МИРЭА.
 ### [License](./LICENSE)
