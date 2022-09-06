@@ -11,13 +11,13 @@
 
 		<section class="site-footer__section">
 			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">android</i> <router-link to="/app">Android-приложение</router-link>
-			</div>
-			<div class="site-footer__section__item">
 				<i class="material-icons material-icons-round">smart_toy</i> <a href="https://t.me/mirea_table_bot" target="_blank" rel="noopener noreferrer">Telegram-бот</a>
 			</div>
 			<div class="site-footer__section__item default-no-select default-pointer" @click="exportToIcs">
 				<i class="material-icons material-icons-round">calendar_month</i> <span>Экспортировать в .ics</span>
+			</div>
+			<div class="site-footer__section__item">
+				<i class="material-icons material-icons-round">android</i> <router-link to="/app">Приложения для Android и iOS</router-link>
 			</div>
 		</section>
 

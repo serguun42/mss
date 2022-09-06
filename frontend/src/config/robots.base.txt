@@ -2,8 +2,10 @@ User-agent: Googlebot
 
 User-agent: *
 Allow: /
+Disallow: /api/
 Disallow: /css/
 Disallow: /js/
+Disallow: /app/
 Disallow: /manifest.json
 Disallow: /manifest.webmanifest
 

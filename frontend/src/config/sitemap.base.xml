@@ -10,11 +10,6 @@
 		<changefreq>daily</changefreq>
 	</url>
 	<url>
-		<loc><%= VUE_APP_FULL_PATH %>/app</loc>
-		<lastmod>2022-09-01T10:00:00.000Z</lastmod>
-		<changefreq>daily</changefreq>
-	</url>
-	<url>
 		<loc><%= VUE_APP_FULL_PATH %>/group</loc>
 		<lastmod>2022-09-01T10:00:00.000Z</lastmod>
 		<changefreq>daily</changefreq>
