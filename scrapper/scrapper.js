@@ -285,7 +285,7 @@ const GetLinkToFiles = () => Promise.all(SCHEDULE_PAGES.map((schedulePage, sched
 
 					return Promise.resolve(scheduleNewsTargetXLSXDefinition);
 				}).catch((e) => {
-					Logging(`Error on getting ${scheduleNewsTarget.targetPageUrl}`, e);
+					// Logging(`Error on getting ${scheduleNewsTarget.targetPageUrl}`, e);
 					return Promise.resolve(null);
 				})
 			));
@@ -336,7 +336,7 @@ const GetTablesFiles = (allXLSXDefinitions) => new Promise((resolve, reject) => 
 					.replace(/[^\wа-яё_.]/gi, "_")
 				}`, fileData).catch(() => {});
 		}).catch((e) => {
-			Logging(`Error on getting ${gettingFileProps.remoteFile}`, e);
+			// Logging(`Error on getting ${gettingFileProps.remoteFile}`, e);
 		}).finally(() => setTimeout(() => LocalRecurion(iIndex + 1), 500));
 	};
 
@@ -617,7 +617,9 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 				});
 			})
 		)
-		.catch((e) => Logging(`Error on parsing xlsx (URL: ${XLSXFileData.remoteFile} | unitName: ${XLSXFileData.unitName} | unitCourse: ${XLSXFileData.unitCourse})`, e))
+		.catch((e) => {
+			// Logging(`Error on parsing xlsx (URL: ${XLSXFileData.remoteFile} | unitName: ${XLSXFileData.unitName} | unitCourse: ${XLSXFileData.unitCourse})`, e);
+		})
 		.finally(() => LocalParseSingleFile(index + 1));
 	};
 
