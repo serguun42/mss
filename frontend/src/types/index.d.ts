@@ -42,3 +42,11 @@ export type Stats = {
 	groupsCount: number;
 	scrapperUpdatedDate: Date;
 }
+
+export type AppsLinks = {
+	title: string;
+	platforms: {
+		type: "google_play" | "app_store" | "git",
+		url: string;
+	}[]
+}[]

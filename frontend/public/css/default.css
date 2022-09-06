@@ -1,5 +1,5 @@
 :root {
-	--accent-color: #00a6e2;
+	--accent-color: #00A6E2;
 	--primary-color: #03589C;
 	--primary-color-faded: rgba(0, 166, 226, 0.3);
 	--primary-color-faded10: rgba(0, 166, 226, 0.1);
@@ -26,7 +26,7 @@
 
 	--index-page-faded-title: #888;
 	--group-page-faded-title: #888;
-	--android-app-page-faded-title: #888;
+	--apps-page-faded-title: #888;
 }
 
 :root .is-dark {
@@ -34,6 +34,7 @@
 	--primary-color-faded: rgba(0, 111, 202, 0.3);
 	--primary-color-faded10: rgba(0, 111, 202, 0.1);
 	--primary-color-faded70: rgba(0, 111, 202, 0.7);
+	--dark-color: #1977DD;
 
 	--text-color: #E1E1E1;
 	--link-color: #0083EE;
@@ -45,6 +46,7 @@
 	--drawer-background-color: #333;
 
 	--card-color: #333;
+	--card-accent-color: var(--primary-color);
 
 	--search-background-color: #333;
 	--search-text-color: #E1E1E1;

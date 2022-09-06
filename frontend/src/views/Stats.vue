@@ -3,12 +3,12 @@
 		<h1>Статистика</h1>
 		<div class="stats__cards">
 			<div class="stats__card">
-				<div class="stats__card__header default-header">groupsCount</div>
-				<div class="stats__card__content">{{ apiData.groupsCount || 0 }}</div>
+				<div class="stats__card__header default-header">Количество групп</div>
+				<div class="stats__card__content">{{ apiData.groupsCount || "Много" }}</div>
 			</div>
 			<div class="stats__card">
-				<div class="stats__card__header default-header">scrapperUpdatedDate</div>
-				<div class="stats__card__content">{{ apiData.scrapperUpdatedDate ? new Date(apiData.scrapperUpdatedDate).toLocaleString() : "Словно позавчера" }}</div>
+				<div class="stats__card__header default-header">Последнее обновление</div>
+				<div class="stats__card__content">{{ updateDate || "Словно позавчера" }}</div>
 			</div>
 		</div>
 	</div>
@@ -17,6 +17,7 @@
 <script>
 import { Stats } from "@/utils/api"
 import Dispatcher from "@/utils/dispatcher";
+import UpdatedBeautiful from "@/utils/updated-beatiful";
 
 export default {
 	name: "Stats",
@@ -24,6 +25,11 @@ export default {
 		return {
 			/** @type {import("../types").Stats} */
 			apiData: {}
+		}
+	},
+	computed: {
+		updateDate() {
+			return UpdatedBeautiful(this.apiData?.scrapperUpdatedDate);
 		}
 	},
 	created() {

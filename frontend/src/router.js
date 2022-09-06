@@ -7,7 +7,7 @@ import APISwagger from "./views/APISwagger.vue";
 import AllGroups from "./views/AllGroups.vue";
 import Privacy from "./views/Privacy.vue";
 import SingleGroup from "./views/SingleGroup.vue";
-import AndroidApp from "./views/AndroidApp.vue";
+import MobileApps from "./views/MobileApps.vue";
 import Stats from "./views/Stats.vue";
 import NotFound404 from "./views/404.vue";
 import ANIMATIONS_CONFIG from "./config/animations.json";
@@ -63,10 +63,10 @@ const routes = [
 	},
 	{
 		path: "/app",
-		name: "AndroidApp",
-		component: AndroidApp,
+		name: "MobileApps",
+		component: MobileApps,
 		meta: {
-			title: "Android-приложение"
+			title: "Приложения для Android и iOS"
 		}
 	},
 	{
@@ -86,7 +86,15 @@ const routes = [
 			suffix: route.query?.suffix
 		}),
 		meta: {
-			dynamicTitle: (route) => route.query?.name ? `${route.query.name}${route.query?.suffix ? ` (${route.query?.suffix})` : ""}` : ""
+			dynamicTitle: (route) => (
+				route.query?.name
+				? `${route.query.name}${
+					route.query?.suffix
+					? ` (${route.query?.suffix})`
+					: ""
+				}`
+				: "Моя группа"
+			)
 		}
 	},
 	{
