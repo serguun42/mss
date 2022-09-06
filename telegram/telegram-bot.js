@@ -607,25 +607,19 @@ const TelegramSend = (messageData) => {
 					USERS.splice(indexOfFoundUser, 1);
 
 					mongoDispatcher.callDB()
-					.then((DB) => DB.collection("telegram-users").findOneAndDelete({ id: messageData.destination }))
-					.then((deletingResult) => {
-						if (deletingResult.ok)
-							Logging(`Successfully deleted user with id = ${messageData.destination}. They'd had index ${indexOfFoundUser} in users list but gone now.`, foundUser);
-						else
-							return Promise.reject(deletingResult);
-					})
+					.then((DB) => DB.collection("telegram-users").deleteOne({ id: messageData.destination }))
 					.catch((e) => Logging(new Error("Error on deleting user from DB", e)));
 				} else {
-					Logging(new Error(`Could not deleting user with id ${messageData.destination} because of critical bug with finding proper user. Go see PushIntoSendingImmediateQueue() function.`));
-				};
+					Logging(new Error(`Could not deleting user with id ${messageData.destination} because of critical bug with finding proper user.`), e);
+				}
 			} else {
 				Logging(new Error(`Cannot remove user with id ${messageData.destination} because they're not in out users' list!`), e);
-			};
+			}
 
 			return Promise.resolve({});
 		} else {
 			return Promise.reject(e);
-		};
+		}
 	});
 };
 
