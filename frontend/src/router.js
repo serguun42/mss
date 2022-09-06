@@ -62,7 +62,7 @@ const routes = [
 		}
 	},
 	{
-		path: "/app",
+		path: "/apps",
 		name: "MobileApps",
 		component: MobileApps,
 		meta: {
