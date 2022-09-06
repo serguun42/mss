@@ -34,9 +34,8 @@ jobs:
           cp ~/MSS_CONFIGS/scrapper.config.json ~/mss/scrapper/ &&
           cp ~/MSS_CONFIGS/backend.config.json ~/mss/backend/ &&
           cp ~/MSS_CONFIGS/telegram-bot.config.json ~/mss/telegram/
-          cp ~/MSS_CONFIGS/tag-manager.html ~/mss/frontend/src/config/tag-manager.html
-      - name: Copy Android app file
-        run: cp ~/MSS_CONFIGS/mss-app.apk ~/mss/frontend/public/
+          [[ -f ~/MSS_CONFIGS/tag-manager.html ]] && cp ~/MSS_CONFIGS/tag-manager.html ~/mss/frontend/src/config/tag-manager.html || echo "" > ~/mss/frontend/src/config/tag-manager.html
+          [[ -f ~/MSS_CONFIGS/apps-links.json ]] && cp ~/MSS_CONFIGS/apps-links.json ~/mss/frontend/src/config/apps-links.json || echo "[]" > ~/mss/frontend/src/config/apps-links.json
 
   notifier:
     name: Folder for NOTIFIER
