@@ -5,13 +5,11 @@
 		<div class="card">
 			<div class="card__header default-header">Что это</div>
 			<div class="card__content">
-				<p><a href="https://mirea.xyz/" target="_blank">mirea.xyz</a>, также известный как «MSS» (MIREA Schedule System) – совместный проект двух студентов <i>какой-то группы</i>, сделанный <i>типа</i> для задания по предмету <i>«Ознакомительная практика»</i>.</p>
+				<p><a href="https://mirea.xyz/" target="_blank">mirea.xyz</a>, также известный как «MSS» (MIREA Schedule System) – проект, сделанный <i>типа</i> для какого-то там курсача по какой-то там практике.</p>
 
-				<p>На самом деле, у одного из двух человечков шило в попе не давало спокойно сидеть на месте, и сначала он сделал standalone <a href="https://t.me/mirea_table_bot" target="_blank" rel="noopener noreferrer">Telegram-бота</a> для расписания своей группы. Ботом пользовалась часть группы, всё было ок.</p>
+				<p>На самом деле, у админа шило в попе не давало спокойно сидеть на месте, и сначала он сделал standalone <a href="https://t.me/mirea_table_bot" target="_blank" rel="noopener noreferrer">Telegram-бота</a> для расписания своей группы. Ботом кто-то пользовался, ну ок.</p>
 
-				<p>А потом наступил следующий семестр, и для практики надо было пилить какой угодно проект в группах. Было принято стратегически верное решение: совместить приятное с полезным и расширить бота до чего-то большего. В группу вошли два студента: один отвечает за бота и сайт, второй за Android-приложение. Проект стал доступен для всех групп, а не только одной.</p>
-
-				<p>Так и получился этот проект – MSS.</p>
+				<p>Потом наступил ещё один семестр, и для практики надо было пилить какой угодно проект. Было принято стратегически верное решение: совместить приятное с полезным и расширить бота до чего-то большего. Так и получился этот проект – MSS.</p>
 			</div>
 		</div>
 
@@ -22,7 +20,8 @@
 					Весь код проекта доступен на <a href="https://github.com/serguun42/mss" target="_blank" rel="noopener noreferrer">Github</a>. Ставь звёдочку, а если найдёшь баги или будут пожелания – пиши в <a href="https://github.com/serguun42/mss/issues" target="_blank" rel="noopener noreferrer">Issues</a>.
 				</p>
 				<p>
-					Сделано всё <strike>на костылях, велосипедах и непонятно чём</strike> преимущественно на JS: бэк на Node.js, фронт на Vue, бот с помощью <a href="https://www.npmjs.com/package/telegraf" target="_blank" rel="noopener noreferrer">Telegraf</a>. Android-приложение на Kotlin.
+					Сделано всё <strike>на костылях, велосипедах и непонятно чём</strike> преимущественно на JS: бэк на Node.js, фронт на Vue, бот с помощью <a href="https://www.npmjs.com/package/telegraf" target="_blank" rel="noopener noreferrer">Telegraf</a>. Android-приложение было написано на Kotlin (<a href="https://github.com/rodyapal" target="_blank" rel="noopener noreferrer">его разработчик</a>), однако больше не поддерживается – зато есть 
+					<router-link to="/app">много других нативных</router-link>.
 				</p>
 			</div>
 		</div>
@@ -97,5 +96,4 @@ export default {
 	text-align: left;
 	margin-bottom: 0.5em;
 }
-
 </style>

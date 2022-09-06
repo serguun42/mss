@@ -1,0 +1,30 @@
+[
+	{
+		"title": "Replaceable app #1",
+		"description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. A qui dolores modi officiis consectetur! Repudiandae ducimus, impedit magnam voluptatum sequi, reprehenderit, nemo qui earum aliquam magni excepturi cumque. Eveniet, eaque.",
+		"platforms": [
+			{
+				"type": "google_play",
+				"url": "https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox"
+			},
+			{
+				"type": "app_store",
+				"url": "https://apps.apple.com/ru/app/apple-wallet/id1160481993"
+			},
+			{
+				"type": "git",
+				"url": "https://github.com/serguun42/mss/?whatever_other_repo"
+			}
+		]
+	},
+	{
+		"title": "Another generic schedule app #2",
+		"description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. A qui dolores modi officiis consectetur! Repudiandae ducimus, impedit magnam voluptatum sequi, reprehenderit, nemo qui earum aliquam magni excepturi cumque. Eveniet, eaque.",
+		"platforms": [
+			{
+				"type": "google_play",
+				"url": "https://play.google.com/store/apps/details?id=com.google.android.apps.photosgo"
+			}
+		]
+	}
+]

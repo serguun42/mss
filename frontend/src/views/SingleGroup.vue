@@ -37,6 +37,7 @@
 <script>
 import store from "@/store";
 import Dispatcher from "@/utils/dispatcher";
+import UpdatedBeautiful from "@/utils/updated-beatiful";
 import { GetCurrentWeek, GetGroupsByNameAndSuffix } from "@/utils/api";
 import Day from "@/components/Day.vue";
 import router from "@/router";
@@ -51,19 +52,7 @@ export default {
 	computed: {
 		/** @returns {string | null} */
 		updateDate() {
-			if (!this.apiData) return null;
-			if (!this.apiData.updatedDate) return null;
-
-			const parsedUpdatedDate = new Date(this.apiData.updatedDate);
-			if (isNaN(parsedUpdatedDate.getTime())) return null;
-
-			if (Math.floor((parsedUpdatedDate.getTime() - new Date().getTimezoneOffset() * 60e3) / 86400e3) === Math.floor((Date.now() - new Date().getTimezoneOffset() * 60e3) / 86400e3))
-				return `сегодня, ${parsedUpdatedDate.getHours()}:${parsedUpdatedDate.getMinutes().toString().padStart(2, "0")}`;
-			
-			if (Math.floor((parsedUpdatedDate.getTime() - new Date().getTimezoneOffset() * 60e3) / 86400e3) === Math.floor((Date.now() - new Date().getTimezoneOffset() * 60e3) / 86400e3) - 1)
-				return `вчера, ${parsedUpdatedDate.getHours()}:${parsedUpdatedDate.getMinutes().toString().padStart(2, "0")}`;
-
-			return `${parsedUpdatedDate.toLocaleDateString()}, ${parsedUpdatedDate.getHours()}:${parsedUpdatedDate.getMinutes().toString().padStart(2, "0")}`;
+			return UpdatedBeautiful(this.apiData?.updatedDate);
 		}
 	},
 	data() {

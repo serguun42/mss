@@ -49,16 +49,38 @@ export default {
 			 * @param {import("vue-router/types").RouteConfig} to
 			 */
 			handler(to) {
-				const newTitle = to.meta?.title ?
-									to.meta?.title
-									:
-									to.meta?.dynamicTitle && typeof to.meta?.dynamicTitle === "function" ?
-										to.meta?.dynamicTitle(to) || process.env.VUE_APP_NAME
-										:
-										process.env.VUE_APP_NAME;
+				const newTitle = to.meta?.title
+									? to.meta?.title
+									: to.meta?.dynamicTitle && typeof to.meta?.dynamicTitle === "function"
+									? to.meta?.dynamicTitle(to) || process.env.VUE_APP_NAME
+									: process.env.VUE_APP_NAME;
 
 				this.pageTitle = newTitle;
-				document.title = newTitle === process.env.VUE_APP_NAME ? newTitle : `${newTitle} | ${process.env.VUE_APP_NAME}`;
+
+				/** @type {string} */
+				const titleToSet = newTitle === process.env.VUE_APP_NAME
+									? process.env.VUE_APP_NAME :
+									`${newTitle} | ${process.env.VUE_APP_NAME}`
+				document.title = titleToSet;
+
+				const appleTitle = document.querySelector(`meta[name="apple-mobile-web-app-title"]`);
+				if (appleTitle) appleTitle.setAttribute("content", titleToSet);
+
+				const opengraphTitle = document.querySelector(`meta[property="og:title"]`);
+				if (opengraphTitle) opengraphTitle.setAttribute("content", titleToSet);
+
+
+				/** @type {string} */
+				const descriptionToSet = newTitle === process.env.VUE_APP_NAME
+										? process.env.VUE_APP_OPENGRAPH_DESCRIPTION :
+										`${newTitle} | ${process.env.VUE_APP_OPENGRAPH_DESCRIPTION}`
+
+				const generalDescription = document.querySelector(`meta[property="description"]`);
+				if (generalDescription) generalDescription.setAttribute("content", descriptionToSet);
+
+				const opengraphDescription = document.querySelector(`meta[property="og:description"]`);
+				if (opengraphDescription) opengraphDescription.setAttribute("content", descriptionToSet);
+
 
 				store.dispatch("closeDrawer");
 			}
