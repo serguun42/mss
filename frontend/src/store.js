@@ -225,7 +225,7 @@ const store = new Store({
 		 * @param {boolean} [showMessage=false]
 		 */
 		clearCache({ dispatch }, showMessage = false) {
-			caches.delete("cache_static").then(() => {
+			caches.delete("cache_static_and_dynamic_with_api").then(() => {
 				if (showMessage)
 					dispatch("showMessage", "Кеш успешно очищен")
 			}).catch(() => {
