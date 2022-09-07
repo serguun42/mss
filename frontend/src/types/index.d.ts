@@ -46,7 +46,8 @@ export type Stats = {
 export type AppsLinks = {
 	title: string;
 	platforms: {
-		type: "google_play" | "app_store" | "git",
+		type: "google_play" | "app_store" | "git" | "web",
 		url: string;
+		custom_logo?: string;
 	}[]
 }[]
