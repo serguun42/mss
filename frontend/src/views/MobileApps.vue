@@ -5,8 +5,8 @@
 
 		<div class="card" v-for="appLink in APPS_LINKS" :key="appLink.title">
 			<div class="card__header default-header" v-text="appLink.title"></div>
-			<div class="card__content">
-				<p class="card__description" v-if="appLink.description" v-text="appLink.description"></p>
+			<p class="card__description" v-if="appLink.description" v-text="appLink.description"></p>
+			<div class="card__platforms-list">
 				<a
 					:class="`card__platform card__platform--${platform.type}`"
 					:href="platform.url"
@@ -16,10 +16,15 @@
 					:key="platform.url"
 				>
 					<img
-						:src="PLATFORMS_BADGES[platform.type]"
+						:src="platform.custom_logo || PLATFORMS_BADGES[platform.type]"
 						:alt="platform.type || ''"
 						class="card__platform__image default-no-select"
 					/>
+					<div
+						class="card__platform__custom-link"
+						v-if="platform.type === 'web' && platform.custom_logo && platfromHostname(platform.url)"
+						v-text="platfromHostname(platform.url)"
+					></div>
 				</a>
 			</div>
 		</div>
@@ -44,6 +49,20 @@ export default {
 			APPS_LINKS,
 			PLATFORMS_BADGES
 		};
+	},
+	methods: {
+		/**
+		 * @param {string} platfromURL
+		 * @returns {string}
+		 */
+		platfromHostname(platfromURL) {
+			try {
+				const parsedUrl = new URL(platfromURL);
+				return parsedUrl.hostname;
+			} catch (e) {
+				return "";
+			}
+		}
 	},
 	mounted() {
 		Dispatcher.call("preloadingDone");
@@ -104,10 +123,12 @@ export default {
 }
 
 .card__description {
+	width: 100%;
+
 	margin: 0 0 1em;
 }
 
-.card__content {
+.card__platforms-list {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
@@ -117,10 +138,12 @@ export default {
 }
 
 .card__platform {
-	display: block;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	flex-wrap: wrap;
+	align-items: center;
 	position: relative;
-
-	max-width: 140px;
 
 	margin-right: 16px;
 	margin-bottom: 16px;
@@ -134,7 +157,8 @@ export default {
 	display: block;
 	position: relative;
 
-	width: 100%;
+	max-width: 140px;
+	max-height: 42px;
 }
 
 .card__platform--git .card__platform__image {
@@ -143,5 +167,17 @@ export default {
 
 .is-dark .card__platform--git .card__platform__image {
 	filter: invert(1);
+}
+
+.card__platform__custom-link {
+	display: block;
+	position: relative;
+
+	margin-left: 12px;
+
+	font-size: 20px;
+	line-height: 1em;
+
+	white-space: nowrap;
 }
 </style>
