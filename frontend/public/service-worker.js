@@ -30,9 +30,8 @@ self.addEventListener("beforeinstallprompt", () => { });
  */
 function fromNetwork(request) {
 	const requestedURL = new URL(request.url);
-	let putToCacheChecker = false;
 
-	[
+	const putToCacheChecker = [
 		/^(\/?)$/,
 		/^\/all(\/?)$/,
 		/^\/group(\/?)$/,
@@ -44,11 +43,7 @@ function fromNetwork(request) {
 		/^\/manifest.webmanifest/gi,
 		/\.(woff2|woff|ttf|js|css)$/gi,
 		/^\/img\/icons\/(round|maskable)\/(round|maskable)_(\d+x\d+)\.png$/gi
-	].forEach((iRegExp) => {
-		if (iRegExp.test(requestedURL.pathname)) {
-			putToCacheChecker = true;
-		};
-	});
+	].some((regexp) => regexp.test(requestedURL.pathname));
 
 	if (putToCacheChecker)
 		return fetch(request)
@@ -83,7 +78,12 @@ function fromCache(request) {
 self.addEventListener("fetch", /** @param {Event & { request: Request, preloadResponse: Response }} event */ (event) => {
 	const { request } = event;
 
-	if (request.method !== "GET") return fetch(request);
+	if (request.method !== "GET")
+		return fetch(request)
+		.catch((e) => {
+			console.warn(e);
+			return new Response("");
+		});
 
 
 	let apiCalledFlag = false;
@@ -98,10 +98,20 @@ self.addEventListener("fetch", /** @param {Event & { request: Request, preloadRe
 
 	if (apiCalledFlag)
 		event.respondWith(
-			fromNetwork(request).catch(() => fromCache(request))
+			fromNetwork(request)
+			.catch(() => fromCache(request))
+			.catch((e) => {
+				console.warn(e);
+				return new Response("");
+			})
 		);
 	else
 		event.respondWith(
-			fromCache(request).catch(() => fromNetwork(request))
+			fromCache(request)
+			.catch(() => fromNetwork(request))
+			.catch((e) => {
+				console.warn(e);
+				return new Response("");
+			})
 		);
 });
