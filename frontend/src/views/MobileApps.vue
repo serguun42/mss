@@ -46,7 +46,6 @@ export default {
 		};
 	},
 	mounted() {
-		console.log(APPS_LINKS);
 		Dispatcher.call("preloadingDone");
 	}
 };
