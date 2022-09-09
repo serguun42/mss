@@ -29,16 +29,16 @@ const mongoDispatcher = new MongoDispatcher(DATABASE_NAME);
 
 
 /**
- * @typedef {Object} User
- * @property {Number} id
- * @property {String} username
- * @property {String} group
- * @property {Boolean} [waitingForTextForSettings]
- * @property {Boolean} [waitingForGroupSelection]
- * @property {String} [selectingGroupName]
- * @property {Boolean} morning
- * @property {Boolean} evening
- * @property {Boolean} late_evening
+ * @typedef {object} User
+ * @property {number} id
+ * @property {string} username
+ * @property {string} group
+ * @property {boolean} [waitingForTextForSettings]
+ * @property {boolean} [waitingForGroupSelection]
+ * @property {string} [selectingGroupName]
+ * @property {boolean} morning
+ * @property {boolean} evening
+ * @property {boolean} late_evening
  */
 /** @type {User[]} */
 const USERS = [];
@@ -59,13 +59,16 @@ mongoDispatcher.callDB() // Reading users
 })
 .catch((e) => Logging("Error on getting users", e));
 
-const SESSION = (
+/**
+ * @returns {boolean}
+ */
+const IsSession = () => (
 	(new Date().getMonth() > 4 && new Date().getMonth() < 7) ||
 	(new Date().getMonth() === 7 && new Date().getDate() < 31) ||
 	(new Date().getMonth() === 11 && new Date().getDate() >= 25) ||
 	(new Date().getMonth() === 0) ||
     (new Date().getMonth() === 1 && new Date().getDate() < 7) || 
-	(new Date().getMonth() === 4 && new Date().getDate() >= 29)
+	(new Date().getMonth() === 4 && new Date().getDate() >= 31)
 );
 
 
@@ -88,7 +91,7 @@ const GettingUserWrapper = (ctx) => new Promise((resolve, reject) => {
 		reject();
 	} else {
 		resolve(foundUser);
-	};
+	}
 });
 
 /**
@@ -97,7 +100,7 @@ const GettingUserWrapper = (ctx) => new Promise((resolve, reject) => {
  * @returns {void}
  */
 /**
- * @type {{[commandName: string]: { description: String, caller: ButtonCommandCaller } | { description: String, text: String }}}
+ * @type {{[commandName: string]: { description: string, caller: ButtonCommandCaller } | { description: string, text: string }}}
  */
 const COMMANDS = {
 	"today": {
@@ -129,8 +132,8 @@ const COMMANDS = {
 						text: `Сегодня ${today}. Пар нет!`,
 						destination: ctx.chat.id
 					});
-				};
-			};
+				}
+			}
 		}).catch(Logging)
 	},
 	"tomorrow": {
@@ -162,8 +165,8 @@ const COMMANDS = {
 						text: `Завтра ${tomorrow}. Пар нет!`,
 						destination: ctx.chat.id
 					});
-				};
-			};
+				}
+			}
 		}).catch(Logging)
 	},
 	"weekthis": {
@@ -315,10 +318,10 @@ const COMMANDS = {
 /**
  * @callback SettingsCommandButtonTextSetter
  * @param {User} foundUser
- * @returns {String}
+ * @returns {string}
  */
 /**
- * @type {{text: SettingsCommandButtonTextSetter, regexp: RegExp, caller: ButtonCommandCaller, groupSelection?: Boolean}[]}
+ * @type {{text: SettingsCommandButtonTextSetter, regexp: RegExp, caller: ButtonCommandCaller, groupSelection?: boolean}[]}
  */
 const SETTINGS_COMMANDS = [
 	{
@@ -412,7 +415,10 @@ const SETTINGS_COMMANDS = [
 		/** @type {ButtonCommandCaller} */
 		caller: async (ctx) => GettingUserWrapper(ctx).then(async (foundUser) => {
 			if (foundUser.waitingForGroupSelection) {
-				const text = ctx?.message?.text;
+				/** @type {string} */
+				const plainGroupNameOrSuffix = (ctx?.message?.text || "");
+				/** @type {string} */
+				const requestedGroupNameOrSuffix = plainGroupNameOrSuffix.replace(/[.*+?^${}()|\[\]\\]/g, "\\$&");
 
 				const LocalReject = () => {
 					PushIntoSendingImmediateQueue({
@@ -424,17 +430,23 @@ const SETTINGS_COMMANDS = [
 					});
 				}
 
-				if (!text) return LocalReject();
+				if (!requestedGroupNameOrSuffix) return LocalReject();
+				const regexpGroupNameOrSuffix = new RegExp(plainGroupNameOfSuffix, "i");
 
 
 				const searchingQuery = foundUser.selectingGroupName ? {
 					groupName: foundUser.selectingGroupName,
-					groupSuffix: text
-				} : { groupName: text };
+					groupSuffix: regexpGroupNameOrSuffix
+				} : { groupName: regexpGroupNameOrSuffix };
 
 
 				mongoDispatcher.callDB()
-				.then((DB) => DB.collection("study-groups").find(searchingQuery).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
+				.then((DB) =>
+					DB.collection("study-groups")
+					.find(searchingQuery)
+					.project({ groupName: 1, groupSuffix: 1, _id: 0 })
+					.toArray()
+				)
 				.then((foundGroups) => {
 					if (!foundGroups.length) {
 						LocalReject();
@@ -442,7 +454,9 @@ const SETTINGS_COMMANDS = [
 						delete foundUser.selectingGroupName;
 						foundUser.waitingForGroupSelection = false;
 						foundUser.waitingForTextForSettings = false;
-						foundUser.group = foundGroups[0].groupSuffix ? `${foundGroups[0].groupName}&${foundGroups[0].groupSuffix}` : foundGroups[0].groupName;
+						foundUser.group = foundGroups[0].groupSuffix
+										? `${foundGroups[0].groupName}&${foundGroups[0].groupSuffix}`
+										: foundGroups[0].groupName;
 
 						SaveUser(foundUser)
 						.then(() => {
@@ -452,7 +466,7 @@ const SETTINGS_COMMANDS = [
 							});
 						}).catch(Logging);
 					} else {
-						foundUser.selectingGroupName = foundUser.selectingGroupName || text;
+						foundUser.selectingGroupName = foundUser.selectingGroupName || plainGroupNameOrSuffix;
 						
 						SaveUser(foundUser)
 						.then(() => {
@@ -539,18 +553,18 @@ const SaveUser = foundUser => {
 };
 
 /**
- * @typedef {Object} SendingMessageType
- * @property {Number} destination
- * @property {String} text
+ * @typedef {object} SendingMessageType
+ * @property {number} destination
+ * @property {string} text
  * @property {{text: string, callback_data: string, url: string}[][]} [buttons]
- * @property {String} [photo]
+ * @property {string} [photo]
  */
 /** @type {SendingMessageType[]} */
 const IMMEDIATE_QUEUE = [];
 
 /**
  * @param {SendingMessageType} messageData
- * @returns {Number}
+ * @returns {number}
  */
 const PushIntoSendingImmediateQueue = (messageData) => IMMEDIATE_QUEUE.push(messageData);
 
@@ -559,7 +573,7 @@ const MAILING_QUEUE = [];
 
 /**
  * @param {SendingMessageType} messageData
- * @returns {Number}
+ * @returns {number}
  */
 const PushIntoSendingMailingQueue = (messageData) => MAILING_QUEUE.push(messageData);
 
@@ -679,6 +693,7 @@ telegraf.start(/** @param {import("telegraf").Context} ctx */ (ctx) => {
 	const foundUser = USERS.find((user) => user.id === ctx.chat.id);
 
 	if (!foundUser) {
+		/** @type {User} */
 		const newUser = {
 			id: ctx.chat.id,
 			username: ctx.chat.username || ctx.chat.first_name || ctx.chat.title,
@@ -703,7 +718,7 @@ telegraf.start(/** @param {import("telegraf").Context} ctx */ (ctx) => {
 				hide_keyboard: true
 			}
 		});
-	};
+	}
 
 	if (foundUser?.group) {
 		delete foundUser["selectingGroupName"];
@@ -727,80 +742,72 @@ telegraf.start(/** @param {import("telegraf").Context} ctx */ (ctx) => {
 
 telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 	const { chat } = ctx;
+	if (!chat) return false;
+
+	const text = ctx.message?.text;
+	if (!text) return false;
 
 
-	if (chat) {
-		const { message } = ctx;
-		if (!message) return false;
-
-		const { text } = message;
-		if (!text) return false;
+	const foundUser = USERS.find((user) => user.id === chat.id);
 
 
-		ctx.deleteMessage(message.id).catch(() => {});
+	if (foundUser && foundUser.waitingForGroupSelection) {
+		const settingsGroupCommandHandler = SETTINGS_COMMANDS.find((handler) => handler.groupSelection);
+
+		if (settingsGroupCommandHandler)
+			return settingsGroupCommandHandler.caller(ctx);
+		else
+			return PushIntoSendingImmediateQueue({
+				text: "Не понял тебя. Если долго ничего не получается, попробуй команду /start",
+				destination: ctx.chat.id
+			});
+	}
 
 
-		const foundUser = USERS.find((user) => user.id === chat.id);
+	if (foundUser && foundUser.waitingForTextForSettings) {
+		const settingsCommandHandler = SETTINGS_COMMANDS.find((handler) => handler.regexp.test(text));
+
+		if (settingsCommandHandler)
+			return settingsCommandHandler.caller(ctx);
+		else
+			return PushIntoSendingImmediateQueue({
+				text: "Не понял тебя. Если долго ничего не получается, попробуй команду /start",
+				destination: ctx.chat.id
+			});
+	}
 
 
-		if (foundUser && foundUser.waitingForGroupSelection) {
-			const settingsGroupCommandHandler = SETTINGS_COMMANDS.find((handler) => handler.groupSelection === true);
+	const commandAlias = Capitalize(text.replace(COMMAND_ALIAS_REGEXP, "").trim());
 
-			if (settingsGroupCommandHandler)
-				return settingsGroupCommandHandler.caller(ctx);
-			else
+	if (COMMANDS_ALIASES[commandAlias]) {
+		if (typeof COMMANDS_ALIASES[commandAlias].caller == "function")
+			return COMMANDS_ALIASES[commandAlias].caller(ctx);
+		else if (typeof COMMANDS_ALIASES[commandAlias].text == "string")
+			return PushIntoSendingImmediateQueue({
+				text: COMMANDS_ALIASES[commandAlias].text,
+				destination: ctx.chat.id
+			});
+	}
+
+
+	const commandMatch = text.match(/^\/([\w_]+)(\@mirea_table_bot)?$/i);
+
+	if (commandMatch && commandMatch[1]) {
+		if (COMMANDS[commandMatch[1]]) {
+			if (typeof COMMANDS[commandMatch[1]].caller == "function")
+				return COMMANDS[commandMatch[1]].caller(ctx);
+			else if (typeof COMMANDS[commandMatch[1]].text == "string")
 				return PushIntoSendingImmediateQueue({
-					text: "Не понял. Чего?!",
+					text: COMMANDS[commandMatch[1]].text,
 					destination: ctx.chat.id
 				});
 		}
+	}
 
-
-		if (foundUser && foundUser.waitingForTextForSettings) {
-			const settingsCommandHandler = SETTINGS_COMMANDS.find((handler) => handler.regexp.test(text));
-
-			if (settingsCommandHandler)
-				return settingsCommandHandler.caller(ctx);
-			else
-				return PushIntoSendingImmediateQueue({
-					text: "Не понял. Чего?!",
-					destination: ctx.chat.id
-				});
-		}
-
-
-		const commandAlias = Capitalize(text.replace(COMMAND_ALIAS_REGEXP, "").trim());
-
-		if (COMMANDS_ALIASES[commandAlias]) {
-			if (typeof COMMANDS_ALIASES[commandAlias].caller == "function")
-				return COMMANDS_ALIASES[commandAlias].caller(ctx);
-			else if (typeof COMMANDS_ALIASES[commandAlias].text == "string")
-				return PushIntoSendingImmediateQueue({
-					text: COMMANDS_ALIASES[commandAlias].text,
-					destination: ctx.chat.id
-				});
-		};
-
-
-		const commandMatch = text.match(/^\/([\w_]+)(\@mirea_table_bot)?$/i);
-
-		if (commandMatch && commandMatch[1]) {
-			if (COMMANDS[commandMatch[1]]) {
-				if (typeof COMMANDS[commandMatch[1]].caller == "function")
-					return COMMANDS[commandMatch[1]].caller(ctx);
-				else if (typeof COMMANDS[commandMatch[1]].text == "string")
-					return PushIntoSendingImmediateQueue({
-						text: COMMANDS[commandMatch[1]].text,
-						destination: ctx.chat.id
-					});
-			};
-		};
-
-		return PushIntoSendingImmediateQueue({
-			text: "Не понял. Чего?!",
-			destination: ctx.chat.id
-		});
-	};
+	return PushIntoSendingImmediateQueue({
+		text: "Не понял тебя. Если долго ничего не получается, попробуй команду /start",
+		destination: ctx.chat.id
+	});
 });
 
 telegraf.launch();
@@ -845,14 +852,22 @@ const GlobalSendToAllUsers = (timeOfDay, layoutFunc) => {
 	});
 };
 
-if (!DEV & !SESSION) {
-	cron.schedule("0 4 * * *", () => GlobalSendToAllUsers("morning", GetToday));
-	cron.schedule("0 16 * * *", () => GlobalSendToAllUsers("evening", GetTomorrow));
-	cron.schedule("0 19 * * *", () => GlobalSendToAllUsers("late_evening", GetTomorrow));
-};
+if (!DEV) {
+	cron.schedule("0 4 * * *", () => {
+		if (!IsSession()) GlobalSendToAllUsers("morning", GetToday);
+	});
+
+	cron.schedule("0 16 * * *", () => {
+		if (!IsSession()) GlobalSendToAllUsers("evening", GetTomorrow);
+	});
+
+	cron.schedule("0 19 * * *", () => {
+		if (!IsSession()) GlobalSendToAllUsers("late_evening", GetTomorrow);
+	});
+}
 
 if (DEV) {
 	process.on("unhandledRejection", (reason, p) => {
 		Logging("Unhandled Rejection at: Promise", p, "reason:", reason);
 	});
-};
+}
