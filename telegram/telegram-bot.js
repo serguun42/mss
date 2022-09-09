@@ -418,7 +418,7 @@ const SETTINGS_COMMANDS = [
 				/** @type {string} */
 				const plainGroupNameOrSuffix = (ctx?.message?.text || "");
 				/** @type {string} */
-				const requestedGroupNameOrSuffix = plainGroupNameOrSuffix.replace(/[.*+?^${}()|\[\]\\]/g, "\\$&");
+				const filteredGroupNameOrSuffix = plainGroupNameOrSuffix.replace(/[.*+?^${}()|\[\]\\]/g, "\\$&");
 
 				const LocalReject = () => {
 					PushIntoSendingImmediateQueue({
@@ -430,8 +430,8 @@ const SETTINGS_COMMANDS = [
 					});
 				}
 
-				if (!requestedGroupNameOrSuffix) return LocalReject();
-				const regexpGroupNameOrSuffix = new RegExp(plainGroupNameOfSuffix, "i");
+				if (!filteredGroupNameOrSuffix) return LocalReject();
+				const regexpGroupNameOrSuffix = new RegExp(filteredGroupNameOrSuffix, "i");
 
 
 				const searchingQuery = foundUser.selectingGroupName ? {
