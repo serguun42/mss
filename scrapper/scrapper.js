@@ -638,7 +638,9 @@ GetLinkToFiles()
 
 	return mongoDispatcher.callDB()
 	.then((DB) => {
+		/** @type {import("mongodb").Collection<GlobalScheduleGroup>} */
 		const STUDY_GROUPS_COLLECTION = DB.collection("study-groups");
+		const PARAMS_COLLECTION = DB.collection("params");
 
 		if (!GLOBAL_SCHEDULE.length) return Promise.resolve();
 
@@ -677,7 +679,57 @@ GetLinkToFiles()
 
 			LocalRecurionRemove(0);
 		}))
-		.then(() => DB.collection("params").findOneAndUpdate(
+		.then(() =>
+			STUDY_GROUPS_COLLECTION.aggregate([
+				{ $group: { _id: "$groupName", count: { $sum: 1 }, groupSuffix: { $push: "$groupSuffix" } } },
+				{ $match: { _id: { $ne: null }, count: { $gt: 1 } } },
+				{ $project: { groupName: "$_id", count: 1, groupSuffix: 1, _id: 0 } }
+			])
+			.toArray()
+			.then(
+				/** @param {{ count: number, groupSuffix: string[], groupName: string }[]} aggregatedGroups */
+				(aggregatedGroups) => Promise.all(aggregatedGroups.map((aggregatedGroup) => {
+					if (!aggregatedGroup?.count) return Promise.resolve();
+					if (aggregatedGroup.count < 2) return Promise.resolve();
+
+					const uniqueSuffixes = aggregatedGroup.groupSuffix.filter(
+						(suffix, index, array) => index === array.indexOf(suffix)
+					);
+
+					if (uniqueSuffixes.length === aggregatedGroup.groupSuffix.length)
+						return Promise.resolve();
+
+					return STUDY_GROUPS_COLLECTION.find({
+						groupName: aggregatedGroup.groupName,
+						groupSuffix: { $in: uniqueSuffixes }
+					})
+					.toArray()
+					.then((foundGroups) => {
+						const uniqueFoundGroups = foundGroups.filter((foundGroup, index, array) =>
+							index === array.findIndex((matchingGroup) =>
+								`${matchingGroup.groupName}${matchingGroup.groupSuffix || ""}` ===
+								`${foundGroup.groupName}${foundGroup.groupSuffix || ""}`
+							)
+						);
+
+						return STUDY_GROUPS_COLLECTION.deleteMany({
+							groupName: aggregatedGroup.groupName,
+							groupSuffix: { $in: uniqueSuffixes }
+						})
+						.then(() => STUDY_GROUPS_COLLECTION.insertMany(uniqueFoundGroups));
+					})
+					.catch((e) => {
+						Logging(`While removing duplicates for ${aggregatedGroup.groupName}`, e);
+						return Promise.resolve();
+					});
+				}))
+			)
+			.catch(() => {
+				Logging(new Error("Couldn't remove duplicating groups"));
+				return Promise.resolve();
+			})
+		)
+		.then(() => PARAMS_COLLECTION.findOneAndUpdate(
 			{ name: "scrapper_updated_date" },
 			{ $set: {
 				value: UPDATE_TIMESTAMP
