@@ -47,7 +47,7 @@ mongoDispatcher.callDB() // Reading users
 .then((DB) => DB.collection("telegram-users").find({}).toArray())
 .then((usersFromDB) => {
 	usersFromDB.forEach((user) => {
-		/** @type {User} */ 
+		/** @type {User} */
 		const copiedUser = { ...user };
 
 		delete copiedUser["waitingForGroupSelection"];
@@ -67,7 +67,7 @@ const IsSession = () => (
 	(new Date().getMonth() === 7 && new Date().getDate() < 31) ||
 	(new Date().getMonth() === 11 && new Date().getDate() >= 25) ||
 	(new Date().getMonth() === 0) ||
-    (new Date().getMonth() === 1 && new Date().getDate() < 7) || 
+    (new Date().getMonth() === 1 && new Date().getDate() < 7) ||
 	(new Date().getMonth() === 4 && new Date().getDate() >= 31)
 );
 
@@ -428,7 +428,7 @@ const SETTINGS_COMMANDS = [
 							hide_keyboard: true
 						}
 					});
-				}
+				};
 
 				if (!filteredGroupNameOrSuffix) return LocalReject();
 				const regexpGroupNameOrSuffix = new RegExp(filteredGroupNameOrSuffix, "i");
@@ -447,16 +447,21 @@ const SETTINGS_COMMANDS = [
 					.project({ groupName: 1, groupSuffix: 1, _id: 0 })
 					.toArray()
 				)
-				.then((foundGroups) => {
+				.then(/** @param {} foundGroups */ (foundGroups) => {
+					foundGroups = foundGroups.filter((group, index, array) =>
+						array.findIndex((matchingGroup) =>
+							`${matchingGroup.groupName}&${matchingGroup.groupSuffix || ""}` ===
+							`${group.groupName}&${group.groupSuffix || ""}`
+						) === index
+					);
+
 					if (!foundGroups.length) {
 						LocalReject();
 					} else if (foundGroups.length === 1) {
 						delete foundUser.selectingGroupName;
 						foundUser.waitingForGroupSelection = false;
 						foundUser.waitingForTextForSettings = false;
-						foundUser.group = foundGroups[0].groupSuffix
-										? `${foundGroups[0].groupName}&${foundGroups[0].groupSuffix}`
-										: foundGroups[0].groupName;
+						foundUser.group = `${foundGroups[0].groupName}&${foundGroups[0].groupSuffix || ""}`;
 
 						SaveUser(foundUser)
 						.then(() => {
@@ -467,11 +472,11 @@ const SETTINGS_COMMANDS = [
 						}).catch(Logging);
 					} else {
 						foundUser.selectingGroupName = foundUser.selectingGroupName || plainGroupNameOrSuffix;
-						
+
 						SaveUser(foundUser)
 						.then(() => {
 							PushIntoSendingImmediateQueue({
-								text: `Группу с названием ${TGE(foundUser.selectingGroupName)} надо уточнить. Просто отправьте мне один из следующих вариантов (скорее всего это название кафедры или направления):\n${foundGroups.map((group) => `<code>${TGE(group.groupSuffix)}</code>\n\nЕсли что-то пошло не так, вызовите команду /start ещё раз – выбор группы отменится.`).join("\n")}`,
+								text: `Группу с названием ${TGE(foundUser.selectingGroupName)} надо уточнить. Просто отправьте мне один из следующих вариантов (скорее всего это название кафедры или направления):\n${foundGroups.map((group) => `<code>${TGE(group.groupSuffix)}</code>`).join("\n")}\n\nЕсли что-то пошло не так, вызовите команду /start ещё раз – выбор группы отменится.`,
 								destination: ctx.chat.id,
 								buttons: {
 									hide_keyboard: true
@@ -519,8 +524,8 @@ const telegram = telegraf.telegram;
 
 
 /**
- * @param {import("telegraf").Context} ctx 
- * @param {User} foundUser 
+ * @param {import("telegraf").Context} ctx
+ * @param {User} foundUser
  */
 const GroupNotFound = (ctx, foundUser) => {
 	// Logging(new Error(`No group for foundUser`), foundUser);
@@ -532,7 +537,7 @@ const GroupNotFound = (ctx, foundUser) => {
 };
 
 /**
- * @param {import("telegraf").Context} ctx 
+ * @param {import("telegraf").Context} ctx
  * @param {User} foundUser
  * @returns {Promise}
  */
@@ -638,7 +643,7 @@ const TelegramSend = (messageData) => {
 };
 
 /**
- * @param {SendingMessageType} iMessageData 
+ * @param {SendingMessageType} iMessageData
  * @returns {void}
  */
 const ImmediateSendingQueueProcedure = (iMessageData) => {
@@ -662,7 +667,7 @@ const ImmediateSendingQueueProcedure = (iMessageData) => {
 setInterval(ImmediateSendingQueueProcedure, 50);
 
 /**
- * @param {SendingMessageType} iMessageData 
+ * @param {SendingMessageType} iMessageData
  * @returns {void}
  */
 const MailingSendingQueueProcedure = (iMessageData) => {
@@ -817,7 +822,7 @@ telegraf.launch();
 
 
 /**
- * @param {"morning" | "evening" | "late_evening"} timeOfDay 
+ * @param {"morning" | "evening" | "late_evening"} timeOfDay
  * @param {import("./utils/build-layout").GettingDayLayout} layoutFunc
  */
 const GlobalSendToAllUsers = (timeOfDay, layoutFunc) => {
