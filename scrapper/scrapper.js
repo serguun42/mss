@@ -652,7 +652,7 @@ GetLinkToFiles()
 				if (!studyGroupProps) return resolveClearingPrevious();
 
 				const successfullyDeletedSameButPrevious = (
-					await STUDY_GROUPS_COLLECTION.deleteOne({
+					await STUDY_GROUPS_COLLECTION.deleteMany({
 						groupName: studyGroupProps.groupName,
 						groupSuffix: studyGroupProps.groupSuffix,
 						updatedDate: {
@@ -665,7 +665,7 @@ GetLinkToFiles()
 				if (successfullyDeletedSameButPrevious)
 					return LocalRecurionRemove(clearingGroupIndex + 1);
 
-				STUDY_GROUPS_COLLECTION.deleteOne({
+				STUDY_GROUPS_COLLECTION.deleteMany({
 					groupName: studyGroupProps.groupName,
 					updatedDate: {
 						$lt: studyGroupProps.updatedDate
