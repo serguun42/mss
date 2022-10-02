@@ -477,6 +477,10 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 						const formedLesson = [];
 
 						if (splittedLesson.name && splittedLesson.name instanceof Array) {
+							splittedLesson.name = splittedLesson.name.map((optionName) =>
+								optionName.replace(/^кр\.\s17?\sн\./i, "").trim()
+							);
+
 							/** Messed up subgroups with their indices on the second line */
 							if (splittedLesson.name.length === 2 && /(\d+\s*п\/г)(,\1)*/i.test(splittedLesson.name[1]))
 								splittedLesson.name[0] = `${splittedLesson.name[0]} ${
