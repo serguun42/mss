@@ -1,55 +1,45 @@
-import API_CONFIG from "../config/api-config";
+import API_CONFIG from "../config/api-config.json";
 
 
 /**
- * @param {string} iMethod
- * @param {import("../types").QueriesForApi} iQueries
+ * @param {string} method
+ * @param {import("../types").QueriesForApi} [queries]
  * @returns {string}
  */
-const API_URL_CONSTUCTOR = (iMethod, iQueries) => {
-	const baseAndMethod = `${API_CONFIG.BASE_URL}/${API_CONFIG.VERSION}/${iMethod}`;
-	const queriesCombined = (
-		iQueries && Object.keys(iQueries).length
-		?
-			"?" +
-			Object.keys(iQueries)
-			.map((key) => {
-				const queryParamValue = iQueries[key];
+const apiUrlConstructor = (method, queries = {}) => {
+	const builtURL = new URL(`${API_CONFIG.VERSION}/${method}`, API_CONFIG.BASE_URL);
+	if (!queries) queries = {};
 
-				if (queryParamValue === true)
-					return key;
+    Object.keys(queries).forEach((queryName) => {
+      if (queries[queryName]) builtURL.searchParams.set(queryName, queries[queryName]);
+    });
 
-				if (
-					typeof queryParamValue == "object" &&
-					queryParamValue.notEncode === true &&
-					queryParamValue.value
-				)
-					return `${key}=${queryParamValue.value}`;
-
-				return`${key}=${encodeURIComponent(queryParamValue)}`;
-			})
-			.join("&")
-		:
-			""
-	);
-
-	return `${baseAndMethod}${queriesCombined}`;
+	return builtURL.href;
 };
 
 /**
- * @param {{method: String, queries: import("../types").QueriesForApi}} iURL
- * @param {RequestInit} iOptions
+ * @type {{ [requestURL: string]: Response }}
  */
-const FetchMethod = (iURL, iOptions) => {
-	const actualURL = API_URL_CONSTUCTOR((iURL.method || iURL), iURL.queries || {}),
-		  actualOptions = iOptions || {};
+const fetchCache = {};
 
-	return fetch(actualURL, actualOptions)
+/**
+ * @param {{ method: string, queries: import("../types").QueriesForApi, asText?: boolean, options?: RequestInit }} props
+ */
+const FetchMethod = ({ method, queries, asText, options }) => {
+	const actualURL = apiUrlConstructor(method, queries || {});
+	const actualOptions = options || {};
+	const cached = fetchCache[actualURL];
+
+	return (cached ? Promise.resolve(cached) : fetch(actualURL, actualOptions))
 	.then((res) => {
-		if (res.status === 200)
-			return res.json();
-		else
-			return Promise.reject(`Status code ${res.status} ${res.statusText}`);
+		if (!res.ok)
+			return Promise.reject(new Error(`${actualURL}: Status code ${res.status} ${res.statusText}`));
+
+		fetchCache[actualURL] = res.clone();
+
+		if (asText) return res.text();
+
+		return res.json();
 	});
 };
 
@@ -94,13 +84,15 @@ export const Stats = () => FetchMethod({
 /**
  * @returns {Promise<number>}
  */
-export const GetCurrentWeek = () => fetch(API_URL_CONSTUCTOR("time/week"))
-.then((res) => res.text())
-.then((week) => Promise.resolve(parseInt(week)));
+export const GetCurrentWeek = () => FetchMethod({
+	method: "time/week",
+	asText: true
+}).then((week) => Promise.resolve(parseInt(week)));
 
 /**
  * @returns {Promise<Date>}
  */
-export const GetTimeStart = () => fetch(API_URL_CONSTUCTOR("time/startTime"))
-.then((res) => res.text())
-.then((timeStart) => Promise.resolve(new Date(timeStart)));
+export const GetTimeStart = () => FetchMethod({
+	method: "time/startTime",
+	asText: true
+}).then((timeStart) => Promise.resolve(new Date(timeStart)));

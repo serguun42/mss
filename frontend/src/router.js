@@ -83,7 +83,8 @@ const routes = [
 		component: SingleGroup,
 		props: (route) => ({
 			name: route.query?.name,
-			suffix: route.query?.suffix
+			suffix: route.query?.suffix,
+			preselectedWeek: parseInt(route.query?.preselectedWeek) || undefined,
 		}),
 		meta: {
 			dynamicTitle: (route) => (

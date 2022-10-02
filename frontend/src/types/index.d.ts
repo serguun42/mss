@@ -1,8 +1,5 @@
 export type QueriesForApi = {
-    [queryName: string]: string | true | {
-        notEncode: true;
-        value: string;
-    };
+    [queryName: string]: string | true;
 };
 
 export type TinyGroup = {

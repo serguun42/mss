@@ -106,7 +106,7 @@ export default {
 	background-color: #333;
 	color: #E1E1E1;
 
-	z-index: 8;
+	z-index: 6;
 }
 
 .is-dark #site-footer {

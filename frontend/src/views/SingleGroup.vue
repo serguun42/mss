@@ -19,7 +19,7 @@
 			</div>
 		</div>
 
-		<div id="single-group-page__current-week" v-if="currentWeek">Текущая неделя – {{ currentWeek }}</div>
+		<week-switch :preselectedWeek="preselectedWeek" @weekSelected="onWeekSelected" />
 
 		<div id="single-group-page__days" v-if="apiData && apiData.schedule">
 			<day
@@ -29,6 +29,7 @@
 				:dayIndex="dayIndex"
 				:lessonsTimes="apiData.lessonsTimes"
 				:currentWeek="currentWeek"
+				:certainWeek="selectedWeek || -1"
 			></day>
 		</div>
 	</div>
@@ -41,13 +42,21 @@ import UpdatedBeautiful from "@/utils/updated-beatiful";
 import { GetCurrentWeek, GetGroupsByNameAndSuffix } from "@/utils/api";
 import Day from "@/components/Day.vue";
 import router from "@/router";
+import WeekSwitch from "@/components/WeekSwitch.vue";
 
 export default {
-  components: { Day },
+  components: {
+	WeekSwitch,
+	Day
+  },
 	name: "single-group-page",
 	props: {
 		name: String,
-		suffix: String
+		suffix: String,
+		preselectedWeek: {
+			type: Number,
+			required: false
+		}
 	},
 	computed: {
 		/** @returns {string | null} */
@@ -60,7 +69,8 @@ export default {
 			myGroupRequested: store.getters.userGroup?.name && (!this.name || store.getters.userGroup?.name === this.name),
 			/** @type {import("../types").RichGroup} */
 			apiData: {},
-			currentWeek: 0
+			currentWeek: 0,
+			selectedWeek: this.preselectedWeek || 0,
 		}
 	},
 	watch: {
@@ -70,11 +80,22 @@ export default {
 		}
 	},
 	created() {
+		if (this.preselectedWeek && this.$route.query) {
+			const replacedUrl = new URL(this.$route.path, window.location.origin);
+
+			if (typeof this.$route.query === "object") {
+				const loadedQueries = { ...this.$route.query };
+				delete loadedQueries["preselectedWeek"];
+				replacedUrl.search = new URLSearchParams(loadedQueries).toString();
+			}
+
+			history.replaceState({}, null, replacedUrl);
+		}
+		
 		Dispatcher.call("preload");
 
 		this.onload();
 		Dispatcher.link("groupViewPropsChanged", this.onload);
-
 
 		Dispatcher.link("userGroupUpdated", () => {
 			this.myGroupRequested = !!store.getters.userGroup?.name && (!this.name || store.getters.userGroup?.name === this.name);
@@ -107,6 +128,12 @@ export default {
 			.then((week) => this.currentWeek = week)
 			.catch(console.warn)
 			.finally(() => Dispatcher.call("preloadingDone"));
+		},
+		/**
+		 * @param {number} week
+		 */
+		onWeekSelected(week) {
+			this.selectedWeek = week;
 		}
 	}
 }
@@ -231,30 +258,6 @@ export default {
 .single-group-page__title__your-group-badge--altered {
 	color: var(--primary-color);
 	background-color: #FFF;
-}
-
-#single-group-page__current-week {
-	display: block;
-	position: relative;
-
-	width: calc(100% - 32px);
-	max-width: 400px;
-	height: 40px;
-
-	margin: 0 auto;
-	padding: 6px 16px;
-	box-sizing: border-box;
-
-	box-shadow: 0 1px 4px 1px rgba(100, 100, 100, 0.05);
-	border-radius: 20px;
-
-	background-color: var(--navigation-background-color);
-	color: var(--navigation-text-color);
-
-	font-weight: 700;
-	font-size: 20px;
-	line-height: 28px;
-	text-align: center;
 }
 
 #single-group-page__days {

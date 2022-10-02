@@ -56,7 +56,6 @@ export default {
 	}),
 
 	mounted() {
-		console.log(this.$route);
 		this.$nextTick(() => window.addEventListener("resize", this.onResize));
 	},
 
@@ -83,7 +82,7 @@ export default {
 
 	box-shadow: 0 0 3px 1px var(--navigation-shadow-color);
 
-	z-index: 9;
+	z-index: 7;
 }
 
 .site-navigation--small {
