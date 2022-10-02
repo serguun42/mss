@@ -93,8 +93,6 @@ const store = new Store({
 		primaryColor: process.env.VUE_APP_PRIMARY_COLOR,
 		rippleColor: process.env.VUE_APP_PRIMARY_COLOR,
 
-		drawerOpened: false,
-
 		userGroup: {
 			name: "",
 			suffix: "",
@@ -110,13 +108,6 @@ const store = new Store({
 		},
 	}),
 	mutations: {
-		/**
-		 * @param {boolean} status 
-		 */
-		setDrawerStatus(state, status) {
-			state.drawerOpened = status;
-		},
-
 		userGroup(state, payload) {
 			state.userGroup = { ...payload };	
 		},
@@ -147,15 +138,6 @@ const store = new Store({
 		}
 	},
 	actions: {
-		openDrawer({ commit }) {
-			commit("setDrawerStatus", true);
-			Dispatcher.call("drawerOpened");
-		},
-		closeDrawer({ commit }) {
-			commit("setDrawerStatus", false);
-			setTimeout(() => Dispatcher.call("drawerClosed"), ANIMATIONS_CONFIG.DRAWER_OPENING_ANIMATION_MS)
-		},
-
 		exportToIcs() {
 			ExportToIcs();
 		},
@@ -243,7 +225,6 @@ const store = new Store({
 	getters: {
 		primaryColor: (state) => state.primaryColor,
 		rippleColor: (state) => state.rippleColor,
-		drawerOpened: (state) => state.drawerOpened,
 		userGroup: (state) => state.userGroup,
 		theme: (state) => state.theme,
 

@@ -80,9 +80,6 @@ export default {
 
 				const opengraphDescription = document.querySelector(`meta[property="og:description"]`);
 				if (opengraphDescription) opengraphDescription.setAttribute("content", descriptionToSet);
-
-
-				store.dispatch("closeDrawer");
 			}
 		}
 	},
