@@ -35,7 +35,13 @@ export default {
 	},
 	methods: {
 		searchOnChoose(result) {
-			router.push({ path: `/group?name=${result.groupName}${result.groupSuffix ? `&suffix=${result.groupSuffix}` : ""}` });
+			router.push({
+				path: '/group',
+				query: {
+					name: result.groupName,
+					suffix: result.groupSuffix || null
+				}
+			});
 		}
 	},
 	created() {

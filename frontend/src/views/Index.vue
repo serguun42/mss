@@ -3,7 +3,7 @@
 		<div id="index-page__group" v-if="savedUserGroup && savedUserGroup.schedule">
 			<h1 class="index-page__title index-page__group__title">Группа {{ savedUserGroup.groupName }}</h1>
 			<h3 class="index-page__subtitle default-no-select">Расписание МИРЭА – MSS Project</h3>
-			<div id="index-page__current-week" v-if="currentWeek > -1">Текущая неделя – {{ currentWeek }}</div>
+			<week-switch @weekSelected="onWeekSelected" />
 			<div id="index-page__group__days" v-if="savedUserGroupDays.length">
 				<day
 					v-for="(day, dayIndex) in savedUserGroupDays"
@@ -26,7 +26,7 @@
 
 		<div v-else-if="loadedOnce">
 			<h1 class="index-page__header">Расписание МИРЭА</h1>
-			<div id="index-page__current-week" v-if="currentWeek > -1">Текущая неделя – {{ currentWeek }}</div>
+			<week-switch @weekSelected="onWeekSelected" />
 			<search
 			id="index-page__search"
 				:seeking="seeking"
@@ -34,7 +34,7 @@
 				:prompts="(groups || []).map((group) => ({ raw: group, stringified: group.groupSuffix ? `${group.groupName} (${group.groupSuffix})` : group.groupName }))"
 				:bigger="windowWidth > 600"
 				@search-on-choose="searchOnChoose"
-			></search>
+			/>
 			<div id="index-page__search__supporter" class="default-no-select default-bold" v-if="groups && groups.length">
 				Сейчас в базе есть {{ groupsFineCount }}
 			</div>
@@ -102,6 +102,7 @@ import router from "@/router";
 import store from "@/store";
 import Day from "@/components/Day";
 import Search from "@/components/Search.vue";
+import WeekSwitch from "@/components/WeekSwitch.vue";
 
 const LocalGetForm = (iNumber, iForms) => {
 	iNumber = iNumber.toString();
@@ -118,7 +119,8 @@ export default {
 	name: "index-page",
 	components: {
 		Day,
-		Search
+		Search,
+		WeekSwitch
 	},
 	data() {
 		return {
@@ -215,7 +217,19 @@ export default {
 		searchOnChoose(result) {
 			store.dispatch("saveGroup", { name: result.groupName, suffix: result.groupSuffix, noReload: true });
 
-			router.push({ path: `/group?name=${result.groupName}${result.groupSuffix ? `&suffix=${result.groupSuffix}` : ""}` });
+			router.push({
+				path: '/group',
+				query: {
+					name: result.groupName,
+					suffix: result.groupSuffix || null
+				}
+			});
+		},
+		/**
+		 * @param {number} week
+		 */
+		onWeekSelected(week) {
+			router.push({ path: '/group', query: { preselectedWeek: week } });
 		}
 	}
 }
@@ -237,30 +251,6 @@ export default {
 .index-page__subtitle {
 	text-align: center;
 	color: var(--index-page-faded-title);
-}
-
-#index-page__current-week {
-	display: block;
-	position: relative;
-
-	width: calc(100% - 32px);
-	max-width: 400px;
-	height: 40px;
-
-	margin: 2em auto 1em;
-	padding: 6px 16px;
-	box-sizing: border-box;
-
-	box-shadow: 0 1px 4px 1px rgba(100, 100, 100, 0.05);
-	border-radius: 20px;
-
-	background-color: var(--navigation-background-color);
-	color: var(--navigation-text-color);
-
-	font-weight: 700;
-	font-size: 20px;
-	line-height: 28px;
-	text-align: center;
 }
 
 #index-page__group {
