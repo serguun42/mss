@@ -13,8 +13,8 @@
 	--background-color: #F1F1F1;
 	--navigation-background-color: #FFF;
 	--navigation-text-color: var(--primary-color);
+	--navigation-link-color: var(--primary-color);
 	--navigation-shadow-color: rgba(50, 50, 50, 0.2);
-	--drawer-background-color: #FFF;
 
 	--card-color: #FFF;
 	--card-accent-color: var(--primary-color);
@@ -42,8 +42,8 @@
 	--background-color: #121212;
 	--navigation-background-color: #333;
 	--navigation-text-color: #E1E1E1;
+	--navigation-link-color: var(--primary-color);
 	--navigation-shadow-color: rgba(0, 0, 0, 0.3);
-	--drawer-background-color: #333;
 
 	--card-color: #333;
 	--card-accent-color: var(--primary-color);

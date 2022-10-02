@@ -42,7 +42,7 @@ const routes = [
 		name: "API",
 		component: API,
 		meta: {
-			title: "MSS project's API"
+			title: "API"
 		}
 	},
 	{
@@ -66,7 +66,7 @@ const routes = [
 		name: "MobileApps",
 		component: MobileApps,
 		meta: {
-			title: "Приложения для Android и iOS"
+			title: "Приложения"
 		}
 	},
 	{
@@ -88,11 +88,7 @@ const routes = [
 		meta: {
 			dynamicTitle: (route) => (
 				route.query?.name
-				? `${route.query.name}${
-					route.query?.suffix
-					? ` (${route.query?.suffix})`
-					: ""
-				}`
+				? "Группа"
 				: "Моя группа"
 			)
 		}

@@ -1,6 +1,6 @@
 <template>
 	<div id="mobile-apps">
-		<h2 id="header" class="default-header">Приложения для Android и iOS</h2>
+		<h2 id="header" class="default-header">Мобильные приложения и другие сервисы</h2>
 		<h3 id="sub-header" class="default-header">От наших коллег по цеху</h3>
 
 		<div class="card" v-for="appLink in APPS_LINKS" :key="appLink.title">
