@@ -1,8 +1,9 @@
 <template>
-	<div class="group-small-cards">
+	<div class="group-small-cards" ref="container">
 		<router-link
 			class="group-small-cards__card"
-			v-for="(group, groupIndex) in groups" :key="`card-${groupIndex}`"
+			v-for="(group, groupIndex) in groups"
+			:key="`card-${groupIndex}`"
 			:to="`/group?name=${group.groupName}${group.groupSuffix ? '&suffix=' + group.groupSuffix : ''}`"
 		>
 			<div class="group-small-cards__card__name">{{ group.groupName }}</div>
@@ -12,20 +13,46 @@
 </template>
 
 <script>
+import Masonry from "@/utils/masonry";
+
 export default {
 	name: "group-small-cards",
 	props: {
 		groups: Array
+	},
+	data() {
+		return {
+			/** @type {import("../types/masonry").Masonry} */
+			masonry: null
+		};
+	},
+	methods: {
+		updateMasonry() {
+			const container = this.$refs["container"];
+			if (!(container instanceof HTMLElement)) return;
+
+			this.masonry = new Masonry({
+				baseWidth: 150,
+				container,
+				minify: true,
+				gutterX: 8,
+				gutterY: 8,
+				ultimateGutter: 8
+			});
+		}
+	},
+	updated() {
+		this.$nextTick(() => this.updateMasonry());
+	},
+	beforeDestroy() {
+		if (this.masonry) this.masonry.destroy();
 	}
-}
+};
 </script>
 
 <style scoped>
 .group-small-cards {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-around;
-	flex-wrap: wrap;
+	display: block;
 	position: relative;
 
 	width: 100%;
@@ -33,13 +60,9 @@ export default {
 
 .group-small-cards__card {
 	display: block;
-	position: relative;
+	position: absolute;
 
-	display: block;
-	position: relative;
-	
-	width: fit-content;
-	margin: 8px;
+	margin: 0;
 	padding: 16px;
 	box-sizing: border-box;
 
@@ -61,7 +84,7 @@ export default {
 }
 
 .group-small-cards__card__name {
-	color: var(--card-accent-color);;
+	color: var(--card-accent-color);
 }
 
 .group-small-cards__card__suffix {

@@ -2,7 +2,8 @@
 	<div
 		:class="{
 			'day': true,
-			'day--one-line': oneLine
+			'day--one-line': oneLine,
+			'day--in-masonry': inMasonry
 		}"
 		v-if="
 			(certainWeek < 0 ?
@@ -14,6 +15,7 @@
 				).length, 0) > 0
 			)
 		"
+		:style="styles"
 	>
 		<div class="day__title">
 			<span class="day__title--uppercase">{{ customTitle || day.day }}</span>
@@ -120,6 +122,10 @@ export default {
 		showOngoingAndPlannedLesson: {
 			type: Boolean,
 			default: false
+		},
+		inMasonry: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data() {
@@ -133,7 +139,9 @@ export default {
 				even: this.day.even.map(/** @param {import("@/types").Lesson} lesson */ (lesson) =>
 					lesson.filter((option) => !option.weeks || option.weeks.includes(this.certainWeek))
 				)
-			}
+			},
+			/** @type {CSSStyleDeclaration} */
+			styles: null,
 		}
 	},
 	methods: {
@@ -215,6 +223,12 @@ export default {
 		 */
 		checkIfDistant(iOption) {
 			return CheckIfDistant(iOption);
+		},
+		/**
+		 * @param {CSSStyleDeclaration} styles
+		 */
+		saveStyle(styles) {
+			this.styles = styles;
 		}
 	}
 }
@@ -260,6 +274,11 @@ export default {
 
 .day--one-line {
 	margin: 0 auto 20px;
+}
+
+.day--in-masonry {
+	position: absolute;
+	margin: 0;
 }
 
 .day__title {

@@ -21,7 +21,7 @@
 
 		<week-switch :preselectedWeek="preselectedWeek" @weekSelected="onWeekSelected" />
 
-		<div id="single-group-page__days" v-if="apiData && apiData.schedule">
+		<div id="single-group-page__days" ref="days" v-show="apiData && apiData.schedule">
 			<day
 				v-for="(day, dayIndex) in apiData.schedule"
 				:key="`day-${dayIndex}`"
@@ -30,6 +30,7 @@
 				:lessonsTimes="apiData.lessonsTimes"
 				:currentWeek="currentWeek"
 				:certainWeek="selectedWeek || -1"
+				:inMasonry="true"
 			></day>
 		</div>
 	</div>
@@ -39,6 +40,7 @@
 import store from "@/store";
 import Dispatcher from "@/utils/dispatcher";
 import UpdatedBeautiful from "@/utils/updated-beatiful";
+import Masonry from "@/utils/masonry";
 import { GetCurrentWeek, GetGroupsByNameAndSuffix } from "@/utils/api";
 import Day from "@/components/Day.vue";
 import router from "@/router";
@@ -58,6 +60,7 @@ export default {
 			required: false
 		}
 	},
+
 	computed: {
 		/** @returns {string | null} */
 		updateDate() {
@@ -71,6 +74,8 @@ export default {
 			apiData: {},
 			currentWeek: 0,
 			selectedWeek: this.preselectedWeek || 0,
+			/** @type {import("../types/masonry").Masonry} */
+			masonry: null,
 		}
 	},
 	watch: {
@@ -79,6 +84,7 @@ export default {
 				Dispatcher.call("groupViewPropsChanged");
 		}
 	},
+
 	created() {
 		if (this.preselectedWeek && this.$route.query) {
 			const replacedUrl = new URL(this.$route.path, window.location.origin);
@@ -101,9 +107,12 @@ export default {
 			this.myGroupRequested = !!store.getters.userGroup?.name && (!this.name || store.getters.userGroup?.name === this.name);
 		});
 	},
-
+	mounted() {
+		this.buildMasonry();
+	},
 	beforeDestroy() {
 		Dispatcher.unlink("groupViewPropsChanged", this.onload);
+		if (this.masonry) this.masonry.destroy(); 
 	},
 
 	methods: {
@@ -123,6 +132,8 @@ export default {
 			.then((group) => {
 				this.apiData = group[0];
 
+				this.$nextTick(() => this.buildMasonry());
+
 				return GetCurrentWeek();
 			})
 			.then((week) => this.currentWeek = week)
@@ -134,6 +145,23 @@ export default {
 		 */
 		onWeekSelected(week) {
 			this.selectedWeek = week;
+			this.$nextTick(() => this.masonry.buildLayout());
+		},
+		buildMasonry() {
+			const container = this.$refs["days"];
+			if (!(container instanceof HTMLElement))
+				return console.warn(new Error("No container for masonry"));
+			if (!this.apiData)
+				return console.warn(new Error("No apiData"));
+
+			this.masonry = new Masonry({
+				baseWidth: window.innerWidth < 800 ? 300 : 420,
+				container,
+				minify: true,
+				gutterX: 16,
+				gutterY: window.innerWidth < 800 ? 8 : 16,
+				ultimateGutter: 8,
+			});
 		}
 	}
 }
@@ -261,16 +289,13 @@ export default {
 }
 
 #single-group-page__days {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	flex-wrap: wrap;
+	display: block;
 	position: relative;
 
 	width: 100%;
 	max-width: 1600px;
-	margin: 0 auto;
-	padding: 32px 16px;
+	margin: 32px auto;
+	padding: 0;
 	box-sizing: border-box;
 }
 </style>
