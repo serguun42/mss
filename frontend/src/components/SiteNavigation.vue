@@ -25,7 +25,7 @@
 			<div class="site-navigation__block" v-ripple>
 				<router-link :class="{
 					'site-navigation__sub-block default-pointer default-no-select': true,
-					'site-navigation__sub-block--is-active': $route.path === '/group',
+					'site-navigation__sub-block--is-active': $route.path === '/group' && !($route.query && $route.query.name),
 				}" to="/group">
 					<span class="material-icons material-icons-round">person</span>
 					<span class="site-navigation__page-title">Моя группа</span>
