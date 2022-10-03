@@ -658,9 +658,8 @@ const ImmediateSendingQueueProcedure = (iMessageData) => {
 				setTimeout(() => ImmediateSendingQueueProcedure(messageData), e.parameters?.retry_after * 1e3 + Math.random() * 2e3);
 			else
 				setTimeout(() => ImmediateSendingQueueProcedure(messageData), 2e3);
-		} else {
-			Logging(new Error(`Unknown error code`), e);
-		}
+		} else
+			Logging(new Error(`Error on sending to ${messageData.destination}`), e);
 	});
 };
 
@@ -682,9 +681,8 @@ const MailingSendingQueueProcedure = (iMessageData) => {
 				setTimeout(() => MailingSendingQueueProcedure(messageData), e.parameters?.retry_after * 1e3 + Math.random() * 5e3);
 			else
 				setTimeout(() => MailingSendingQueueProcedure(messageData), 5e3);
-		} else {
-			Logging(new Error(`Unknown error code`), e);
-		}
+		} else
+			Logging(new Error(`Error on sending to ${messageData.destination}`), e);
 	});
 };
 
@@ -830,30 +828,20 @@ const GlobalSendToAllUsers = (timeOfDay, layoutFunc) => {
 		if (!user[timeOfDay]) return;
 
 		const day = await layoutFunc(user.group);
-
 		if (!day) return;
-
 
 		/**
 		 * Deletes various `waiting…` props from users on usual sending schedule.
 		 * Users with unset group still will be asked for choosing one.
 		 */
-		const LocalDeleteWaitingStates = () => {
-			delete user["waitingForGroupSelection"];
-			delete user["waitingForTextForSettings"];
-			delete user["selectingGroupName"];
-		};
+		delete user["waitingForGroupSelection"];
+		delete user["waitingForTextForSettings"];
+		delete user["selectingGroupName"];
 
-		const LocalSendDefault = () => {
-			LocalDeleteWaitingStates();
-
-			PushIntoSendingMailingQueue({
-				text: `${LABELS_FOR_TIMES_OF_DAY[timeOfDay]} ${day.nameOfDay}. Расписание:\n\n${day.layout}`,
-				destination: user.id
-			});
-		};
-
-		LocalSendDefault();
+		PushIntoSendingMailingQueue({
+			text: `${LABELS_FOR_TIMES_OF_DAY[timeOfDay]} ${day.nameOfDay}. Расписание:\n\n${day.layout}`,
+			destination: user.id
+		});
 	});
 };
 
