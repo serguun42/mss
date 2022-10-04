@@ -151,14 +151,14 @@ export default {
 			
 			const queryRegex = new RegExp(
 				replacedByChar.toLowerCase()
-				.replace(/[^а-яёa-z\d]/g, "")
+				.replace(/[^а-яёa-z\d]/gi, "")
 				.replace(/[.*+?^${}()|\[\]\\]/g, "\\$&")
 			);
 
 			const strictlyEqual = this.floors.map((floor, floorIndex) =>
 				floor[this.colorScheme].rooms.filter((roomName) =>
-					replacedByChar.replace(/[^а-яёa-z\d]/g, "").toLowerCase() ===
-					roomName.replace(/[^а-яёa-z\d]/g, "").toLowerCase()
+					replacedByChar.replace(/[^а-яёa-z\d]/gi, "").toLowerCase() ===
+					roomName.replace(/[^а-яёa-z\d]/gi, "").toLowerCase()
 				).map((roomName) => ({
 					name: roomName,
 					id: RoomNameToId(roomName),
@@ -168,7 +168,7 @@ export default {
 
 			const vaguelyEqual = this.floors.map((floor, floorIndex) =>
 				floor[this.colorScheme].rooms.filter((roomName) =>
-					replacedByChar && queryRegex.test(roomName.toLowerCase().replace(/[^а-яёa-z\d]/g, ""))
+					replacedByChar && queryRegex.test(roomName.toLowerCase().replace(/[^а-яёa-z\d]/gi, ""))
 				).map((roomName) => ({
 					name: roomName,
 					id: RoomNameToId(roomName),
