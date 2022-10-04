@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@panzoom/panzoom": "4.5.1",
+    "@serguun42/webpack-service-worker-plugin": "^1.1.1",
     "@vue/cli-plugin-babel": "4.5.19",
     "@vue/cli-plugin-router": "4.5.19",
     "@vue/cli-plugin-vuex": "4.5.19",
@@ -15,7 +16,6 @@
     "dotenv-webpack": "6.0.0",
     "ical-generator": "3.4.3",
     "redoc-cli": "0.13.20",
-    "serguun42-webpack-service-worker-plugin": "github:serguun42/serguun42-webpack-service-worker-plugin",
     "svgo": "2.8.0",
     "swagger-ui": "4.11.1",
     "v-wave": "1.5.0",
