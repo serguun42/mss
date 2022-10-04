@@ -1,6 +1,25 @@
 <template>
 	<div id="scheme">
 		<div class="scheme__viewer default-pointer default-no-select" ref="viewer"></div>
+		<div class="scheme__search">
+			<input
+				class="scheme__search__input"
+				type="text"
+				ref="search-input"
+				placeholder="Поиск аудитории"
+				v-model="seeking"
+			>
+			<div class="scheme__search__results" v-show="found && found.length">
+				<div
+					class="scheme__search__result default-pointer"
+					v-for="result in found"
+					:key="result.id || result.name"
+					v-text="result.name"
+					v-ripple
+					@click="gotoFoundRoom(result)"
+				></div>
+			</div>
+		</div>
 		<div class="scheme__controls default-no-select">
 			<div class="scheme__controls__floors">
 				<div
@@ -17,6 +36,9 @@
 			</div>
 			<div class="scheme__controls__zooms">
 				<div class="scheme__controls__zoom default-pointer" v-ripple @click="zoomIn">+</div>
+				<div class="scheme__controls__zoom default-pointer" v-ripple @click="reset">
+					<i class="material-icons material-icons-round">restart_alt</i>
+				</div>
 				<div class="scheme__controls__zoom default-pointer" v-ripple @click="zoomOut">-</div>
 			</div>
 		</div>
@@ -25,10 +47,28 @@
 
 <script>
 import Dispatcher from "@/utils/dispatcher";
-import { LoadAssets } from "@/utils/map";
+import { LoadAssets, RoomNameToId } from "@/utils/map";
+import Panzoom from "@panzoom/panzoom";
+
+const CYRILLIC = [
+	"ё","й","ц","у","к","е","н","г","ш","щ","з","х","ъ","ф","ы","в","а","п","р","о","л","д","ж","э","я","ч","с","м","и","т","ь","б","ю",
+	"Ё","Й","Ц","У","К","Е","Н","Г","Ш","Щ","З","Х","Ъ","Ф","Ы","В","А","П","Р","О","Л","Д","Ж","Э","Я","Ч","С","М","И","Т","Ь","Б","Ю"
+];
+
+const LATIN = [
+	"`","q","w","e","r","t","y","u","i","o","p","[","]","a","s","d","f","g","h","j","k","l",";","'","z","x","c","v","b","n","m",",",".",
+	"~","Q","W","E","R","T","Y","U","I","O","P","{","}","A","S","D","F","G","H","J","K","L",":",'"',"Z","X","C","V","B","N","M","<",">"
+];
 
 export default {
 	name: "scheme",
+
+	props: {
+		seekingRoom: {
+			type: String,
+			required: false
+		}
+	},
 	data() {
 		return {
 			/** @type {import("@/types/map").Floor[]} */
@@ -41,16 +81,22 @@ export default {
 			viewer: null,
 			/** @type {SVGElement} */
 			svg: null,
-			moving: false,
-			startX: 0,
-			startY: 0,
-			transformX: 0,
-			transformY: 0,
-			SCALE_STEP: 1.5,
-			scale: 1,
-			startTransformX: 0,
-			startTransformY: 0,
+			/** @type {import("@panzoom/panzoom").PanzoomObject} */
+			panzoom: null,
+			SCALE_STEP: 0.5,
+			SCALE_MIN: 0.5,
+			SCALE_MAX: 10,
+
+			seeking: "",
+			/** @type {{ name: string, id: string, floorIndex: number }[]} */
+			found: [],
 		};
+	},
+	watch: {
+		/** @param {string} query */
+		seeking(query) {
+			this.found = this.searchByRoomName(query);
+		}
 	},
 
 	created() {
@@ -61,7 +107,16 @@ export default {
 		LoadAssets()
 			.then((floors) => {
 				this.floors = floors;
-				this.buildViewer();
+
+				if (this.seekingRoom) {
+					const replacedUrl = new URL(this.$route.path, window.location.origin);
+					replacedUrl.search = "";
+					history.replaceState({}, null, replacedUrl);
+
+					const room = this.searchByRoomName(this.seekingRoom)?.[0];
+					if (room?.id) this.gotoFoundRoom(room);
+					else this.buildViewer();
+				} else this.buildViewer();
 			})
 			.catch(console.warn)
 			.finally(() => Dispatcher.call("preloadingDone"));
@@ -81,6 +136,81 @@ export default {
 			this.buildViewer();
 		},
 
+		/**
+		 * @param {string} query
+		 * @returns {{ name: string, id: string, floorIndex: number }[]}
+		 */
+		searchByRoomName(query) {
+			if (!query) query = "";
+			
+			const replacedByChar = query.split("").map((char) => {
+				const latinIndex = LATIN.indexOf(char);
+				if (latinIndex === -1) return char;
+				return CYRILLIC[latinIndex];
+			}).join("");
+			
+			const queryRegex = new RegExp(
+				replacedByChar.toLowerCase()
+				.replace(/[^а-яёa-z\d]/g, "")
+				.replace(/[.*+?^${}()|\[\]\\]/g, "\\$&")
+			);
+
+			const strictlyEqual = this.floors.map((floor, floorIndex) =>
+				floor[this.colorScheme].rooms.filter((roomName) =>
+					replacedByChar.replace(/[^а-яёa-z\d]/g, "").toLowerCase() ===
+					roomName.replace(/[^а-яёa-z\d]/g, "").toLowerCase()
+				).map((roomName) => ({
+					name: roomName,
+					id: RoomNameToId(roomName),
+					floorIndex
+				}))
+			).flat();
+
+			const vaguelyEqual = this.floors.map((floor, floorIndex) =>
+				floor[this.colorScheme].rooms.filter((roomName) =>
+					replacedByChar && queryRegex.test(roomName.toLowerCase().replace(/[^а-яёa-z\d]/g, ""))
+				).map((roomName) => ({
+					name: roomName,
+					id: RoomNameToId(roomName),
+					floorIndex
+				}))
+			).flat();
+
+			return strictlyEqual.concat(vaguelyEqual)
+			.filter((room, index, array) => index === array.findIndex((matching) => matching.id === room.id))
+			.slice(0, 5);
+		},
+		/**
+		 * @param {{ name: string, id: string, floorIndex: number }} room
+		 * @returns {void}
+		 */
+		gotoFoundRoom(room) {
+			this.seeking = "";
+			this.selectFloor(room.floorIndex);
+			this.$nextTick(() => setTimeout(() => {
+				if (!room.id) return;
+
+				/** @type {SVGGraphicsElement} */
+				const foundPathInSVG = this.svg.querySelector(`#${room.id}`);
+				if (!foundPathInSVG) return;
+
+				const rect = foundPathInSVG.getBoundingClientRect();
+				this.panzoom.zoomToPoint(
+					this.SCALE_MAX - 2,
+					{
+						clientX: rect.x + rect.width,
+						clientY: rect.y + rect.height
+					},
+					{ animate: false }
+				);
+				foundPathInSVG.classList.add("svg-room-animating");
+			}, 50));
+		},
+
+		reset() {
+			this.selectFloor(2);
+		},
+
 		buildViewer() {
 			this.unsetListeners();
 
@@ -89,24 +219,7 @@ export default {
 
 			this.viewer.innerHTML = this.floors[this.selectedFloor][this.colorScheme].svgPlain;
 			this.$nextTick(() => {
-				if (!this.svg) {
-					this.svg = this.viewer.querySelector("svg");
-					const viewerRect = this.viewer.getBoundingClientRect();
-					const svgRect = this.svg.getBoundingClientRect();
-
-					const newScale = svgRect.height < svgRect.width
-						? viewerRect.height / svgRect.height * 0.85
-						: viewerRect.width / svgRect.width * 0.85;
-
-					this.transformX = 0;
-					this.transformY = (viewerRect.height - svgRect.height) / 2;
-					this.scale = Math.min(newScale, window.innerWidth < 800 ? 4 : 3);
-					this.applyStyle();
-				} else {
-					this.svg = this.viewer.querySelector("svg");
-					this.applyStyle();
-				}
-
+				this.svg = this.viewer.querySelector("svg");
 				this.setListeners();
 			});
 		},
@@ -114,121 +227,42 @@ export default {
 			if (!this.viewer) this.viewer = this.$refs.viewer;
 			if (!(this.viewer instanceof HTMLElement)) return;
 
-			if ("ontouchstart" in window) {
-				this.viewer.addEventListener("touchstart", this.onDown);
-				this.viewer.addEventListener("touchmove", this.onMove);
-				this.viewer.addEventListener("touchend", this.onLeave);
-				this.viewer.addEventListener("touchcancel", this.onLeave);
-			} else {
-				this.viewer.addEventListener("mousedown", this.onDown);
-				this.viewer.addEventListener("mousemove", this.onMove);
-				this.viewer.addEventListener("mouseup", this.onLeave);
-				this.viewer.addEventListener("mouseleave", this.onLeave);
-				this.viewer.addEventListener("dblclick", this.zoomIn);
-			}
+			this.panzoom = Panzoom(this.svg, {
+				transformOrigin: { x: 0.5, y: 0.5 },
+				pinchAndPan: true,
+				minScale: this.SCALE_MIN,
+				maxScale: this.SCALE_MAX,
+				step: this.SCALE_STEP
+			});
 
+			this.panzoom.setStyle("position", "absolute");
+			this.panzoom.setStyle("width", "100%");
+			this.panzoom.setStyle("height", "100%");
+			this.panzoom.setStyle("left", "0");
+			this.panzoom.setStyle("top", "0");
+
+			this.viewer.addEventListener("dblclick", this.zoomIn);
 			this.viewer.addEventListener("wheel", this.onWheel);
 		},
 		unsetListeners() {
-			if (!this.viewer) return;
+			if (this.panzoom) this.panzoom.destroy();
 
-			this.viewer.removeEventListener("touchstart", this.onDown);
-			this.viewer.removeEventListener("touchmove", this.onMove);
-			this.viewer.removeEventListener("touchend", this.onLeave);
-			this.viewer.removeEventListener("touchcancel", this.onLeave);
-			this.viewer.removeEventListener("mousedown", this.onDown);
-			this.viewer.removeEventListener("mousemove", this.onMove);
-			this.viewer.removeEventListener("mouseup", this.onLeave);
-			this.viewer.removeEventListener("mouseleave", this.onLeave);
+			if (!this.viewer) return;
 			this.viewer.removeEventListener("dblclick", this.zoomIn);
 			this.viewer.removeEventListener("wheel", this.onWheel);
 		},
 
-
-		applyStyle() {
-			requestAnimationFrame(() =>
-				this.svg.style.transform = `translate(${this.transformX}px, ${this.transformY}px) scale(${this.scale})`
-			);
-		},
-
-		/** @param {MouseEvent | TouchEvent} e */
-		onDown(e) {
-			this.moving = true;
-
-			/** @type {number} */
-			const x = e.changedTouches
-				? e.changedTouches[0].clientX
-				: e.touches
-				? e.touches[0].clientX
-				: e.clientX;
-
-			/** @type {number} */
-			const y = e.changedTouches
-				? e.changedTouches[0].clientY
-				: e.touches
-				? e.touches[0].clientY
-				: e.clientY;
-
-
-			this.startX = x;
-			this.startY = y;
-			this.startTransformX = this.transformX;
-			this.startTransformY = this.transformY;
-
-			if (!this.svg) this.svg = this.viewer.querySelector("svg");
-			this.applyStyle();
-		},
-		/** @param {MouseEvent | TouchEvent} e */
-		onMove(e) {
-			if (!this.moving) return;
-
-			/** @type {number} */
-			const x = e.changedTouches
-				? e.changedTouches[0].clientX
-				: e.touches
-				? e.touches[0].clientX
-				: e.clientX;
-
-			/** @type {number} */
-			const y = e.changedTouches
-				? e.changedTouches[0].clientY
-				: e.touches
-				? e.touches[0].clientY
-				: e.clientY;
-
-			const changingX = x - this.startX;
-			const changingY = y - this.startY;
-
-			this.transformX = this.startTransformX + changingX;
-			this.transformY = this.startTransformY + changingY;
-
-			if (!this.svg) this.svg = this.viewer.querySelector("svg");
-			this.applyStyle();
-		},
-		/** @param {MouseEvent | TouchEvent} e */
-		onLeave() {
-			this.moving = false;
-		},
 		/** @param {WheelEvent} e */
 		onWheel(e) {
-			if (e.deltaX > 0) this.transformX -= 100;
-			else if (e.deltaX < 0) this.transformX += 100;
-
 			if (e.deltaY > 0) this.zoomOut(e);
 			else if (e.deltaY < 0) this.zoomIn(e);
-
-			this.applyStyle();
 		},
 
-		/** @param {MouseEvent | WheelEvent} e */
-		zoomIn(e) {
-			this.scale = Math.max(this.scale *= this.SCALE_STEP, 0.5);
-			this.applyStyle();
+		zoomIn() {
+			this.panzoom.zoomIn();
 		},
-		/** @param {MouseEvent | WheelEvent} e */
-		zoomOut(e) {
-			this.scale = Math.max(this.scale /= this.SCALE_STEP, 0.5);
-			this.applyStyle();
+		zoomOut() {
+			this.panzoom.zoomOut();
 		}
 	}
 };
@@ -247,7 +281,6 @@ export default {
 	min-height: 100vh;
 
 	overflow: hidden;
-	background-color: #FFF;
 }
 
 .is-dark #scheme {
@@ -264,7 +297,16 @@ export default {
 	cursor: grabbing;
 }
 
-.scheme__viewer svg {
+.scheme__viewer > svg {
+	display: block;
+	position: absolute;
+
+	width: 100%;
+	height: 100%;
+
+	top: 0;
+	left: 0;
+	
 	transform-origin: center center;
 }
 
@@ -301,12 +343,12 @@ export default {
 	height: 42px;
 
 	margin: 0;
-	padding: 12px 0;
+	padding: 9px 0;
 	box-sizing: border-box;
 
 	font-weight: 400;
 	font-size: 16px;
-	line-height: 18px;
+	line-height: 24px;
 	text-align: center;
 
 	color: var(--navigation-text-color);
@@ -351,12 +393,12 @@ export default {
 	height: 42px;
 
 	margin: 0;
-	padding: 12px 0;
+	padding: 9px 0;
 	box-sizing: border-box;
 
 	font-weight: 400;
-	font-size: 16px;
-	line-height: 18px;
+	font-size: 24px;
+	line-height: 24px;
 	text-align: center;
 
 	color: var(--navigation-text-color);
@@ -375,8 +417,8 @@ export default {
 	.scheme__controls__zooms {
 		display: block;
 
-		right: 0;
-		bottom: 62px;
+		right: calc(100vw - 62px);
+		bottom: 0;
 	}
 
 	.scheme__controls__zoom:first-child {
@@ -403,5 +445,73 @@ export default {
 	.scheme__controls__floor:last-child {
 		border-radius: 0 8px 8px 0;
 	}
+}
+
+.scheme__search {
+	display: block;
+	position: fixed;
+
+	width: calc(100% - 20px);
+	max-width: 500px;
+
+	top: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+
+	color: var(--navigation-text-color);
+	background-color: var(--navigation-background-color);
+
+	border-radius: 8px;
+	box-shadow: 0 0 3px 1px var(--navigation-shadow-color);
+}
+
+.scheme__search__input {
+	display: block;
+	position: relative;
+
+	width: 100%;
+	height: 40px;
+
+	margin: 0;
+	padding: 12px 0;
+	box-sizing: border-box;
+
+	font-family: "Manrope", "Roboto", "Arial", "Helvetica", sans-serif;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1em;
+	text-align: center;
+	color: var(--navigation-text-color);
+
+	background-color: transparent;
+	border: none;
+	outline: none;
+}
+
+.scheme__search__results {
+	display: block;
+}
+
+.scheme__search__result {
+	display: block;
+	position: relative;
+
+	width: 100%;
+	height: 36px;
+
+	margin: 0;
+	padding: 10px 24px;
+	box-sizing: border-box;
+
+	font-size: 16px;
+	line-height: 16px;
+	font-weight: 700;
+	text-align: left;
+
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	color: var(--navigation-text-color);
 }
 </style>

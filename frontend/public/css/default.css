@@ -159,3 +159,30 @@ body {
 a, a:visited {
 	color: var(--link-color);
 }
+
+@keyframes room-animation {
+  0% {
+    stroke: transparent;
+  }
+  15% {
+    stroke: #cb3f3f;
+  }
+  50% {
+    stroke: transparent;
+  }
+  85% {
+    stroke: #cb3f3f;
+  }
+  100% {
+    stroke: transparent;
+  }
+}
+
+.svg-room-animating {
+  animation-name: room-animation;
+  animation-duration: 1400ms;
+  animation-timing-function: cubic-bezier(0.79, 0.51, 0.42, 1);
+  animation-delay: 0;
+  animation-iteration-count: 1;
+  stroke-width: 4px;
+}

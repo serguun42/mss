@@ -70,7 +70,17 @@
 							<a v-if="option.link" :href="option.link" target="_blank" rel="noopener noreferrer">Дистанционно</a>
 							<span v-else>Дистанционно</span>
 						</div>
-						<div class="option__info__item" v-else-if="option.place"><i class="material-icons material-icons-round default-no-select">place</i>{{ option.place }}</div>
+						<div
+							v-else-if="option.place"
+							:class="{
+								'option__info__item': true,
+								'option__info__item--wavy default-pointer': checkForPlaceSearch(option.place)
+							}"
+							@click="searchForPlace(option.place)"
+						>
+							<i class="material-icons material-icons-round default-no-select">place</i>
+							{{ option.place }}
+						</div>
 
 						<div class="option__info__item" v-if="option.tutor"><i class="material-icons material-icons-round default-no-select">person</i>{{ option.tutor }}</div>
 
@@ -229,6 +239,23 @@ export default {
 		 */
 		saveStyle(styles) {
 			this.styles = styles;
+		},
+		/**
+		 * @param {string} place
+		 */
+		checkForPlaceSearch(place) {
+			return typeof place === "string" && place.includes("(В-78)");
+		},
+		/**
+		 * @param {string} place
+		 */
+		searchForPlace(place) {
+			if (!this.checkForPlaceSearch(place)) return;
+
+			const seekingRoom = place.replace("(В-78)", "").trim();
+			if (!seekingRoom) return;
+
+			this.$router.push({ path: "/scheme", query: { seekingRoom } });
 		}
 	}
 }
@@ -442,6 +469,16 @@ export default {
 .option__info__item-time--planned .material-icons,
 .option__info__item-time--ongoing .material-icons {
 	color: inherit;
+}
+
+.option__info__item--wavy:after {
+	display: block;
+	position: absolute;
+	content: "";
+
+	width: 100%;
+	height: 1px;
+	border-bottom: 1px dashed var(--primary-color);
 }
 
 .option__info__item__weeks {

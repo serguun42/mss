@@ -61,14 +61,12 @@ const NAME_TO_ID_DICT = {
  */
 export const RoomNameToId = (roomName) => {
 	const splited = roomName.split("-");
-	if (splited.length !== 2 && splited.length !== 3) return null;
-
 	const [roomLetter, roomNumber, roomNumberSuffix] = splited;
 	const fineRoomLetter = NAME_TO_ID_DICT[roomLetter.toLowerCase()];
 	if (!fineRoomLetter) return null;
 	if (splited.length === 3 && !parseInt(roomNumberSuffix)) return null;
 
-	const roomId = `${fineRoomLetter}-${roomNumber}${roomNumberSuffix ? "-" + roomNumberSuffix : ""}`.trim();
+	const roomId = `${fineRoomLetter}${roomNumber ? '-' + roomNumber : ''}${roomNumberSuffix ? "-" + roomNumberSuffix : ""}`.trim();
 	return roomId;
 };
 

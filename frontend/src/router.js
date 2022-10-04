@@ -99,6 +99,9 @@ const routes = [
 		path: "/scheme",
 		name: "Scheme",
 		component: Scheme,
+		props: (route) => ({
+			seekingRoom: route.query?.seekingRoom
+		}),
 		meta: {
 			title: "Карта"
 		}
