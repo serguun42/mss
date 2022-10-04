@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build"
@@ -15,6 +15,7 @@
     "dotenv-webpack": "6.0.0",
     "ical-generator": "3.4.3",
     "redoc-cli": "0.13.20",
+    "serguun42-webpack-service-worker-plugin": "github:serguun42/serguun42-webpack-service-worker-plugin",
     "svgo": "2.8.0",
     "swagger-ui": "4.11.1",
     "v-wave": "1.5.0",

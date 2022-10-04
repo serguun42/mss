@@ -207,7 +207,7 @@ const store = new Store({
 		 * @param {boolean} [showMessage=false]
 		 */
 		clearCache({ dispatch }, showMessage = false) {
-			caches.delete("cache_static_and_dynamic_with_api").then(() => {
+			caches.delete(process.env.VUE_APP_CACHE_STORAGE_NAME).then(() => {
 				if (showMessage)
 					dispatch("showMessage", "Кеш успешно очищен")
 			}).catch(() => {

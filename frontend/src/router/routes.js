@@ -1,31 +1,12 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
-import Index from "./views/Index.vue";
-import About from "./views/About.vue";
-import API from "./views/API.vue";
-import APISwagger from "./views/APISwagger.vue";
-import AllGroups from "./views/AllGroups.vue";
-import Privacy from "./views/Privacy.vue";
-import SingleGroup from "./views/SingleGroup.vue";
-import MobileApps from "./views/MobileApps.vue";
-import Stats from "./views/Stats.vue";
-import Scheme from "./views/Scheme.vue";
-import NotFound404 from "./views/404.vue";
-import ANIMATIONS_CONFIG from "./config/animations.json";
-
-Vue.use(VueRouter);
-
-/** @type {import("vue-router").RouteConfig[]} */
+/** @type {Partial<import("vue-router").RouteConfig>[]} */
 const routes = [
 	{
 		path: "/",
 		name: "Index",
-		component: Index
 	},
 	{
 		path: "/about",
 		name: "About",
-		component: About,
 		meta: {
 			title: "О проекте"
 		}
@@ -33,7 +14,6 @@ const routes = [
 	{
 		path: "/privacy",
 		name: "Privacy",
-		component: Privacy,
 		meta: {
 			title: "Политика ПД"
 		}
@@ -41,7 +21,6 @@ const routes = [
 	{
 		path: "/docs/api",
 		name: "API",
-		component: API,
 		meta: {
 			title: "API"
 		}
@@ -49,7 +28,6 @@ const routes = [
 	{
 		path: "/docs/api/swagger",
 		name: "APISwagger",
-		component: APISwagger,
 		meta: {
 			title: "API – Swagger"
 		}
@@ -57,7 +35,6 @@ const routes = [
 	{
 		path: "/all",
 		name: "AllGroups",
-		component: AllGroups,
 		meta: {
 			title: "Все группы"
 		}
@@ -65,7 +42,6 @@ const routes = [
 	{
 		path: "/apps",
 		name: "MobileApps",
-		component: MobileApps,
 		meta: {
 			title: "Приложения"
 		}
@@ -73,7 +49,6 @@ const routes = [
 	{
 		path: "/stats",
 		name: "Stats",
-		component: Stats,
 		meta: {
 			title: "Статистика"
 		}
@@ -81,7 +56,6 @@ const routes = [
 	{
 		path: "/group",
 		name: "SingleGroup",
-		component: SingleGroup,
 		props: (route) => ({
 			name: route.query?.name,
 			suffix: route.query?.suffix,
@@ -98,7 +72,6 @@ const routes = [
 	{
 		path: "/scheme",
 		name: "Scheme",
-		component: Scheme,
 		props: (route) => ({
 			seekingRoom: route.query?.seekingRoom
 		}),
@@ -108,23 +81,12 @@ const routes = [
 	},
 	{
 		path: "*",
-		name: "404",
-		component: NotFound404,
+		name: "NotFound404",
 		meta: {
 			title: "Страница не найдена"
 		}
 	}
 ];
 
-const router = new VueRouter({
-	mode: "history",
-	base: process.env.BASE_URL,
-	routes,
-	scrollBehavior() {
-		return new Promise((resolve) =>
-			setTimeout(() => resolve({ x: 0, y: 0 }), ANIMATIONS_CONFIG.ROUTING_ANIMATION_MS)
-		);
-	}
-});
-
-export default router;
+if (typeof module !== "undefined") module.exports = routes;
+else exports = routes;

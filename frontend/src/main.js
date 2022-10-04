@@ -45,10 +45,8 @@ if (document.getElementById("style-block-with-animations")) {
 
 
 if (process.env.NODE_ENV !== "development") {
-	window.addEventListener("load", () => {
-		if ("serviceWorker" in navigator)
-			navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
-	});
+	if ("serviceWorker" in navigator)
+		navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
 }
 
 

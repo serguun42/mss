@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { optimize } = require("svgo");
+const WebpackSWPlugin = require("serguun42-webpack-service-worker-plugin");
 
 /**
  * @param {string[]} pathToFile
@@ -77,10 +78,12 @@ const dotenvPlugin = new DotenvWebpackPlugin({
 const BUILD_HASH = crypto.createHash("sha256").update(Date.now().toString() + "SOME_SALT_FOR_HASH").digest("hex");
 fs.writeFileSync(path.join("public", "version.txt"), `BUILD_HASH=${BUILD_HASH}`);
 const TAG_MANAGER = ReadFileSafe("src", "config", "tag-manager.html");
+const routes = require("./src/router/routes");
 
-const buildHashEnvPlugin = new webpack.DefinePlugin({
+const buildDefinePlugin = new webpack.DefinePlugin({
 	"process.env.BUILD_HASH": JSON.stringify(BUILD_HASH),
-	"process.env.TAG_MANAGER": JSON.stringify(TAG_MANAGER)
+	"process.env.TAG_MANAGER": JSON.stringify(TAG_MANAGER),
+	"process.env.ROUTES": JSON.stringify(routes.map((route) => route.path)),
 });
 
 const BASE_MANIFEST = require("./src/config/manifest.base.json");
@@ -121,7 +124,7 @@ module.exports = MODE === "development" ? {
 		},
 		plugins: [
 			dotenvPlugin,
-			buildHashEnvPlugin
+			buildDefinePlugin
 		],
 		devServer: WIN ? {
 			host: "localhost",
@@ -141,7 +144,11 @@ module.exports = MODE === "development" ? {
 		},
 		plugins: [
 			dotenvPlugin,
-			buildHashEnvPlugin
+			buildDefinePlugin,
+			new WebpackSWPlugin({
+				source: "src/service-worker.js",
+				output: "service-worker.js",
+			})
 		],
 	},
 
