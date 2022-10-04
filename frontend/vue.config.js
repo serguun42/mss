@@ -3,7 +3,7 @@ const WIN = require("os").platform() === "win32";
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-
+const { optimize } = require("svgo");
 
 /**
  * @param {string[]} pathToFile
@@ -94,6 +94,20 @@ fs.writeFileSync(path.join("public", "sitemap.xml"), ReplaceWithEnvVariables(BAS
 const BASE_ROBOTS = ReadFileSafe("src", "config", "robots.base.txt");
 fs.writeFileSync(path.join("public", "robots.txt"), ReplaceWithEnvVariables(BASE_ROBOTS));
 
+const MAP_FLOORS = Array.from({ length: 5 }, (_, idx) =>
+		[idx.toString(), `${idx}_dark`]
+	).flat().map((floorName) => ({
+		floorName,
+		svgPlain: optimize(ReadFileSafe("src", "map", `${floorName}.svg`), {
+			plugins: [
+				{
+					name: 'cleanupIDs',
+					active: false
+				}
+			]
+		}).data
+	}));
+fs.writeFileSync(path.join("public", "maps.json"), JSON.stringify(MAP_FLOORS));
 
 /** @type {"development" | "production"} */
 const MODE = process.env.NODE_ENV;

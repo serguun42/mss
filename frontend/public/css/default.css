@@ -12,7 +12,7 @@
 
 	--background-color: #F1F1F1;
 	--navigation-background-color: #FFF;
-	--navigation-text-color: var(--primary-color);
+	--navigation-text-color: #555;
 	--navigation-link-color: var(--primary-color);
 	--navigation-shadow-color: rgba(50, 50, 50, 0.2);
 
@@ -142,6 +142,7 @@ body {
 
 	.global-scroll::-webkit-scrollbar-track {
 		-webkit-box-shadow: inset 0 0 6px transparent;
+		box-shadow: inset 0 0 6px transparent;
 		background-color: transparent;
 	}
 
@@ -157,4 +158,31 @@ body {
 
 a, a:visited {
 	color: var(--link-color);
+}
+
+@keyframes room-animation {
+  0% {
+    stroke: transparent;
+  }
+  15% {
+    stroke: #cb3f3f;
+  }
+  50% {
+    stroke: transparent;
+  }
+  85% {
+    stroke: #cb3f3f;
+  }
+  100% {
+    stroke: transparent;
+  }
+}
+
+.svg-room-animating {
+  animation-name: room-animation;
+  animation-duration: 1400ms;
+  animation-timing-function: cubic-bezier(0.79, 0.51, 0.42, 1);
+  animation-delay: 0;
+  animation-iteration-count: 1;
+  stroke-width: 4px;
 }

@@ -60,6 +60,16 @@
 					</div>
 				</a>
 
+				<router-link to="/scheme" class="index-page__choice__card">
+					<div class="index-page__choice__card__header default-header">
+						<i class="material-icons material-icons-round">map</i>
+						<router-link to="/scheme">Удобная карта</router-link>
+					</div>
+					<div class="index-page__choice__card__content">
+						<p>У нас есть актуальная карта главного кампуса (<i>пр. Вернадского, 78</i>) с поиском по аудиториям.</p>
+					</div>
+				</router-link>
+
 				<div class="index-page__choice__card">
 					<div class="index-page__choice__card__header default-header">
 						<i class="material-icons material-icons-round">calendar_month</i>

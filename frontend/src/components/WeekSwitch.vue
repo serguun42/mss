@@ -105,7 +105,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .week-switch {
 	display: block;
 	position: relative;

@@ -1,5 +1,5 @@
 <template>
-	<footer id="site-footer">
+	<footer id="site-footer" :class="{ 'site-footer--for-map': $route.path === '/scheme' }">
 		<section class="site-footer__section" id="site-footer__section--logo">
 			<img id="site-footer__logo-img" src="/img/icons/round/round_512x512.png" draggable="false" oncontextmenu="return false"
 				alt="MSS">
@@ -107,6 +107,10 @@ export default {
 	color: #E1E1E1;
 
 	z-index: 6;
+}
+
+#site-footer.site-footer--for-map {
+	display: none;
 }
 
 .is-dark #site-footer {
