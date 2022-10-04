@@ -6,7 +6,7 @@
  * @license MIT
  */
 
-/** @type {import("../types/masonry").MasonryConfig} */
+/** @type {import("../types/masonry").Masonry} */
 class Masonry {
 	/** @type {import("../types/masonry").MasonryConfig} */
 	static DEFAULT_CONFIG = Object.freeze({

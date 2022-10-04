@@ -34,6 +34,15 @@
 			<div class="site-navigation__block" v-ripple>
 				<router-link :class="{
 					'site-navigation__sub-block default-pointer default-no-select': true,
+					'site-navigation__sub-block--is-active': $route.path === '/scheme',
+				}" to="/scheme">
+					<span class="material-icons material-icons-round">map</span>
+					<span class="site-navigation__page-title">Карта</span>
+				</router-link>
+			</div>
+			<div class="site-navigation__block" v-ripple>
+				<router-link :class="{
+					'site-navigation__sub-block default-pointer default-no-select': true,
 					'site-navigation__sub-block--is-active': $route.path === '/all',
 				}" to="/all">
 					<span class="material-icons material-icons-round">groups</span>
@@ -179,6 +188,7 @@ export default {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 
+	color: var(--navigation-text-color);
 	text-decoration: none;
 }
 
@@ -191,11 +201,9 @@ export default {
 	position: relative;
 
 	height: unset;
-
-	color: var(--navigation-text-color);
 }
 
-.site-navigation--small .site-navigation__sub-block--is-active {
+.site-navigation__sub-block--is-active {
 	color: var(--navigation-link-color);
 }
 

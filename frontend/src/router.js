@@ -9,6 +9,7 @@ import Privacy from "./views/Privacy.vue";
 import SingleGroup from "./views/SingleGroup.vue";
 import MobileApps from "./views/MobileApps.vue";
 import Stats from "./views/Stats.vue";
+import Scheme from "./views/Scheme.vue";
 import NotFound404 from "./views/404.vue";
 import ANIMATIONS_CONFIG from "./config/animations.json";
 
@@ -92,6 +93,14 @@ const routes = [
 				? "Группа"
 				: "Моя группа"
 			)
+		}
+	},
+	{
+		path: "/scheme",
+		name: "Scheme",
+		component: Scheme,
+		meta: {
+			title: "Карта"
 		}
 	},
 	{

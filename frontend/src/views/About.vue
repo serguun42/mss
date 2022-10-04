@@ -38,6 +38,9 @@
 				<p>
 					<router-link to="/privacy">Политика в отношении обработки персональных данных</router-link>
 				</p>
+				<p>
+					Ресурсы карт взяты из приложения «MIREA Assistant» по разрешению разработчика приложения. (<a href="https://play.google.com/store/apps/details?id=radonsoft.mireaassistant" target="_blank" rel="noopener noreferrer">Google Play</a>, <a href="https://apps.apple.com/ru/app/mirea-app/id1542812536" target="_blank" rel="noopener noreferrer">App Store</a>)
+				</p>
 			</div>
 		</div>
 	</div>
