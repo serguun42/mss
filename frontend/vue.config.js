@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { optimize } = require("svgo");
-const WebpackSWPlugin = require("serguun42-webpack-service-worker-plugin");
+const WebpackSWPlugin = require("@serguun42/webpack-service-worker-plugin");
 
 /**
  * @param {string[]} pathToFile
