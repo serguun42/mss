@@ -76,7 +76,7 @@ const dotenvPlugin = new DotenvWebpackPlugin({
 });
 
 const BUILD_HASH = crypto.createHash("sha256").update(Date.now().toString() + "SOME_SALT_FOR_HASH").digest("hex");
-fs.writeFileSync(path.join("public", "version.txt"), `BUILD_HASH=${BUILD_HASH}`);
+fs.writeFileSync(path.join("public", "build_hash"), BUILD_HASH);
 const TAG_MANAGER = ReadFileSafe("src", "config", "tag-manager.html");
 const routes = require("./src/router/routes");
 
