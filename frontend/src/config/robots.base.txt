@@ -5,8 +5,9 @@ Allow: /
 Disallow: /api/
 Disallow: /css/
 Disallow: /js/
-Disallow: /app/
-Disallow: /apps/
+Disallow: /app
+Disallow: /apps
+Disallow: /privacy
 Disallow: /manifest.json
 Disallow: /manifest.webmanifest
 
