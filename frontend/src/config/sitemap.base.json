@@ -1,0 +1,4 @@
+{
+	"WRAP": "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">\n__ITEMS__\n</urlset>",
+	"ITEM": "\t<url>\n\t\t<loc><%= VUE_APP_FULL_PATH %>__ROUTE__</loc>\n\t\t<lastmod>__DATE__</lastmod>\n\t\t<changefreq>daily</changefreq>\n\t</url>"
+}

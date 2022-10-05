@@ -15,7 +15,8 @@ const routes = [
 		path: "/privacy",
 		name: "Privacy",
 		meta: {
-			title: "Политика ПД"
+			title: "Политика ПД",
+			noIndex: true
 		}
 	},
 	{
@@ -66,7 +67,8 @@ const routes = [
 				route.query?.name
 				? "Группа"
 				: "Моя группа"
-			)
+			),
+			noIndex: true
 		}
 	},
 	{

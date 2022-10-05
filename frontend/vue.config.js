@@ -36,7 +36,7 @@ const ReplaceWithEnvVariables = (plain) => plain.replace(/<%= ([\w\.]+) %>/gi, (
 			return dotenvPlugin.definitions[group];
 		}
 	}
-	
+
 	try {
 		return JSON.parse(dotenvPlugin?.definitions?.[`process.env.${group}`]);
 	} catch (e) {
@@ -46,7 +46,7 @@ const ReplaceWithEnvVariables = (plain) => plain.replace(/<%= ([\w\.]+) %>/gi, (
 
 /**
  * @typedef {{[prop: string]: string | number | null | ManifesType}} ManifesType
- * 
+ *
  * @param {ManifesType} iManifestLevel
  */
 const ManifestTemplateHandler = (iManifestLevel) => {
@@ -91,8 +91,20 @@ const OUTPUT_MANIFEST = ManifestTemplateHandler(BASE_MANIFEST);
 fs.writeFileSync(path.join("public", "manifest.json"), JSON.stringify(OUTPUT_MANIFEST, false, "\t"));
 fs.writeFileSync(path.join("public", "manifest.webmanifest"), JSON.stringify(OUTPUT_MANIFEST, false, "\t"));
 
-const BASE_SITEMAP = ReadFileSafe("src", "config", "sitemap.base.xml");
-fs.writeFileSync(path.join("public", "sitemap.xml"), ReplaceWithEnvVariables(BASE_SITEMAP));
+
+const BASE_SITEMAP = require("./src/config/sitemap.base.json");
+const DATE_SITEMAP = new Date().toISOString();
+const OUTPUT_SITEMAP = BASE_SITEMAP.WRAP.replace(
+	"__ITEMS__",
+	[""].concat(
+		routes
+		.filter((route) => route.path?.length > 1 && !route.meta?.noIndex)
+		.map((route) => route.path)
+	).concat("/docs/api/redoc")
+	.map((path) => BASE_SITEMAP.ITEM.replace("__ROUTE__", path).replace("__DATE__", DATE_SITEMAP))
+	.join("\n")
+);
+fs.writeFileSync(path.join("public", "sitemap.xml"), ReplaceWithEnvVariables(OUTPUT_SITEMAP));
 
 const BASE_ROBOTS = ReadFileSafe("src", "config", "robots.base.txt");
 fs.writeFileSync(path.join("public", "robots.txt"), ReplaceWithEnvVariables(BASE_ROBOTS));
