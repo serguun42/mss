@@ -34,6 +34,7 @@ public/manifest.webmanifest
 public/robots.txt
 public/sitemap.xml
 public/version.txt
+public/build_hash
 public/docs/api/*.html
 public/maps.json
 public/service-worker.js

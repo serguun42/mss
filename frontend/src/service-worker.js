@@ -57,19 +57,20 @@ self.addEventListener(
 		const { request } = event;
 
 		if (request.method !== "GET")
-			return fetch(request).catch((e) => {
-				console.warn(e);
-				return new Response("");
-			});
+			return fetch(request);
 
-		let apiCalledFlag = false;
+		let isApiCalled = false;
+		let isBuildHashCalled = false;
 
 		try {
 			const parsedURL = new URL(request.url || "", process.env.VUE_APP_FULL_PATH);
-			apiCalledFlag = /^\/api\//i.test(parsedURL.pathname);
+			isApiCalled = /^\/api\//i.test(parsedURL.pathname);
+			isBuildHashCalled = /^\/build_hash/i.test(parsedURL.pathname);
 		} catch (e) {}
 
-		if (apiCalledFlag)
+		if (isBuildHashCalled) return fetch(request);
+
+		if (isApiCalled)
 			return event.respondWith(
 				fromNetwork(request)
 					.catch(() => fromCache(request))
