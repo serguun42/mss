@@ -1,0 +1,20 @@
+name: Notify on merge
+
+on:
+  pull_request:
+    branches:
+      - '*'
+      - '*/*'
+      - '**'
+
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: self-hosted
+    steps:
+      - name: Send notification
+        run: |
+          [ -f ~/mss/cicd/ci-notify.js ] &&
+          node ~/mss/cicd/ci-notify.js "User $GITHUB_ACTOR made a pull request" "From branch: $GITHUB_HEAD_REF" "To branch: $GITHUB_BASE_REF" ||
+          echo "User $GITHUB_ACTOR made a pull request" "From branch: $GITHUB_HEAD_REF" "To branch: $GITHUB_BASE_REF"
