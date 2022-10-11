@@ -242,7 +242,7 @@ const COMMANDS = {
 
 
 			PushIntoSendingImmediateQueue({
-				text: `Вы можете настроить:
+				text: `Ты можешь настроить:
 
 🔹 Название своей группы 🏭
 
@@ -264,16 +264,16 @@ const COMMANDS = {
 		}
 	},
 	"map": {
-		description: "🗺 Карта",
+		description: "🗺 Схема",
 		/** @type {ButtonCommandCaller} */
 		caller: async (ctx) => {
 			PushIntoSendingImmediateQueue({
-				text: "Карта МИРЭА по этажам",
+				text: "Интерактивная карта/схема с поиском по аудиториям",
 				destination: ctx.chat.id,
 				buttons: Markup.inlineKeyboard([
 					{
-						text: "🗺 Карта",
-						url: "https://vk.com/album-144300510_243095650"
+						text: "🗺 Схема вуза",
+						url: "https://mirea.xyz/scheme"
 					}
 				]).reply_markup
 			});
@@ -281,18 +281,11 @@ const COMMANDS = {
 	},
 	"help": {
 		description: "❓ Помощь",
-		text: `Я бот, который умеет делать многое с расписанием. Все группы уже доступны, но фича пока в beta-версии!
+		text: `Я бот с расписанием МИРЭА. Я умею показывать пары твоей группы по дням и неделям и рассылать расписание на дни, когда есть пары.
 
-Мои доступные команды – в списке команд! (Кнопка «/» или «🎲» рядом с полем ввода)
+Больше информации о рассылке – в настройках (/settings). Все доступные команды – кнопки «☰» или «🎲» рядом с полем ввода.
 
-Также я буду присылать тебе
-🔹 расписание на текущий день один раз утром
-🔸🔸 <b>(только в те дни, когда есть пары)</b>
-
-🔹 расписание на следующий день два раза вечером
-🔸🔸 <b>(только на те дни, когда есть пары)</b>
-
-В общем, смотри настройки (/settings) и помощь (/help), если надо 🧐`
+Как добавить бота в групповые чаты – /aboutgroups`
 	},
 	"table": {
 		description: "📋 Файл расписания",
@@ -306,12 +299,23 @@ const COMMANDS = {
 				destination: ctx.chat.id,
 				buttons: Markup.inlineKeyboard([
 					{
-						text: "XLSX файл с расписанием",
+						text: "Оригинальный XLSX-файл",
 						url: encodeURI(group.remoteFile)
 					}
 				]).reply_markup
 			});
 		}).catch(Logging)
+	},
+	"aboutgroups": {
+		description: "👬 Помощь c групповыми чатами",
+		text: `Бот доступен для работы в группах. Вот как можно его активировать и настроить:
+
+1. Добавьте бота в группу – @mirea_table_bot
+2. Напишите в группе команду <code>/start@mirea_table_bot</code>
+3. На отправленное ботом сообщение ответьте номером группы, которую хотите прикрепить (позже её можно поменять)
+4. После установки группы вы сможете настроить рассылку (или отключить её).
+
+<b>Важно</b>: все взаимодействия с ботом в группе совершайте через кнопки (под полем ввода) или отвечая на сообщения бота. У бота активирован <a href="https://core.telegram.org/bots/features#privacy-mode">режим приватности</a> – т.е. ему доступны только те сообщения, что отправлены через его же кнопки, или реплаи ему.`
 	}
 };
 
@@ -751,21 +755,34 @@ telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 	if (!text) return false;
 
 
+	const commandMatch = text.match(/^\/([\w_]+)(\@mirea_table_bot)?$/i);
+
+	if (commandMatch && commandMatch[1]) {
+		if (COMMANDS[commandMatch[1]]) {
+			if (typeof COMMANDS[commandMatch[1]].caller == "function")
+				return COMMANDS[commandMatch[1]].caller(ctx);
+			else if (typeof COMMANDS[commandMatch[1]].text == "string")
+				return PushIntoSendingImmediateQueue({
+					text: COMMANDS[commandMatch[1]].text,
+					destination: ctx.chat.id
+				});
+		}
+	}
+
+
 	const foundUser = USERS.find((user) => user.id === chat.id);
 
-
 	if (foundUser && foundUser.waitingForGroupSelection) {
-		const settingsGroupCommandHandler = SETTINGS_COMMANDS.find((handler) => handler.groupSelection);
+		const groupCommandHandler = SETTINGS_COMMANDS.find((handler) => handler.groupSelection);
 
-		if (settingsGroupCommandHandler)
-			return settingsGroupCommandHandler.caller(ctx);
+		if (groupCommandHandler)
+			return groupCommandHandler.caller(ctx);
 		else
 			return PushIntoSendingImmediateQueue({
-				text: "Не понял тебя. Если долго ничего не получается, попробуй команду /start",
+				text: "Не понял тебя. Если долго ничего не получается, попробуй команду /start. Или посмотри описание бота.",
 				destination: ctx.chat.id
 			});
 	}
-
 
 	if (foundUser && foundUser.waitingForTextForSettings) {
 		const settingsCommandHandler = SETTINGS_COMMANDS.find((handler) => handler.regexp.test(text));
@@ -774,7 +791,7 @@ telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 			return settingsCommandHandler.caller(ctx);
 		else
 			return PushIntoSendingImmediateQueue({
-				text: "Не понял тебя. Если долго ничего не получается, попробуй команду /start",
+				text: "Не понял тебя. Если долго ничего не получается, попробуй команду /start. Или посмотри описание бота.",
 				destination: ctx.chat.id
 			});
 	}
@@ -793,22 +810,8 @@ telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 	}
 
 
-	const commandMatch = text.match(/^\/([\w_]+)(\@mirea_table_bot)?$/i);
-
-	if (commandMatch && commandMatch[1]) {
-		if (COMMANDS[commandMatch[1]]) {
-			if (typeof COMMANDS[commandMatch[1]].caller == "function")
-				return COMMANDS[commandMatch[1]].caller(ctx);
-			else if (typeof COMMANDS[commandMatch[1]].text == "string")
-				return PushIntoSendingImmediateQueue({
-					text: COMMANDS[commandMatch[1]].text,
-					destination: ctx.chat.id
-				});
-		}
-	}
-
 	return PushIntoSendingImmediateQueue({
-		text: "Не понял тебя. Если долго ничего не получается, попробуй команду /start",
+		text: "Не понял тебя. Если долго ничего не получается, попробуй команду /start. Или посмотри описание бота.",
 		destination: ctx.chat.id
 	});
 });
