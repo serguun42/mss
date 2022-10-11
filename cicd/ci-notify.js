@@ -20,12 +20,8 @@ const LoggingCIStuffToNotifier = (...args) => {
 			tag: LOGGING_TAG
 		})
 	}).then((res) => {
-		if (res.status !== 200)
-			return res.text().then((text) => {
-				console.warn(new Date());
-				console.warn(`Status code = ${res.status}`);
-				console.warn(text);
-			});
+		if (!res.ok)
+			return Promise.reject(new Error(`Notified status code ${res.status} ${res.statusCode}`));
 	}).catch((e) => {
 		console.warn(new Date());
 		console.warn(e);

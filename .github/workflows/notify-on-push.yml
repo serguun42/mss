@@ -1,0 +1,21 @@
+name: Notify on push
+
+on:
+  push:
+    branches:
+      - '*'
+      - '*/*'
+      - '**'
+      - '!master'
+
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: self-hosted
+    steps:
+      - name: Send notification
+        run: |
+          [ -f ~/mss/cicd/ci-notify.js ] &&
+          node ~/mss/cicd/ci-notify.js "User $GITHUB_ACTOR pushed to branch ${GITHUB_REF#refs/heads/}" ||
+          echo "User $GITHUB_ACTOR pushed to branch ${GITHUB_REF#refs/heads/}"

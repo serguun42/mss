@@ -8,38 +8,43 @@ on:
   workflow_dispatch:
 
 jobs:
-  
+
   copy:
-    name: Remove old project folder and copy to its place new one
+    name: Delete old and copy new
     runs-on: self-hosted
 
     steps:
-      - name: Clear old workdir
+      - name: Clear old Github Actions workspace
         run: rm -rf $GITHUB_WORKSPACE/*
-      - uses: actions/checkout@v2
-      - name: Move old mss dir
+      - uses: actions/checkout@v3
+      - name: Backup old deployment
         run: |
           cd ~ &&
           rm -rf mss_old/ &&
           [ -d mss ] &&
           mv mss mss_old &&
-          figlet "Moved old ~/mss" ||
-          echo "No old folder so not deleting it"
-      - name: Copy fresh project into ~/mss folder
+          echo "Moved old folder" ||
+          echo "Cannot move old folder"
+      - name: Copy fresh project
         run: cd .. && cp -r mss ~/mss
-      - name: Copy configs to each folder
+      - name: Copy production configs
         run: |
           cp ~/MSS_CONFIGS/notifier-and-logger.config.json ~/mss/notifier/;
           cp ~/MSS_CONFIGS/ci.config.json ~/mss/cicd/;
           cp ~/MSS_CONFIGS/scrapper.config.json ~/mss/scrapper/;
           cp ~/MSS_CONFIGS/backend.config.json ~/mss/backend/;
           cp ~/MSS_CONFIGS/telegram-bot.config.json ~/mss/telegram/
-          [[ -f ~/MSS_CONFIGS/tag-manager.html ]] && cp ~/MSS_CONFIGS/tag-manager.html ~/mss/frontend/src/config/tag-manager.html || echo "" > ~/mss/frontend/src/config/tag-manager.html;
-          [[ -f ~/MSS_CONFIGS/apps-links.json ]] && cp ~/MSS_CONFIGS/apps-links.json ~/mss/frontend/src/config/apps-links.json || echo "[]" > ~/mss/frontend/src/config/apps-links.json;
-          [[ -d ~/MSS_CONFIGS/platforms/ ]] && cp -r ~/MSS_CONFIGS/platforms ~/mss/frontend/public/img/
+          [[ -f ~/MSS_CONFIGS/tag-manager.html ]] &&
+          cp ~/MSS_CONFIGS/tag-manager.html ~/mss/frontend/src/config/tag-manager.html ||
+          echo "" > ~/mss/frontend/src/config/tag-manager.html;
+          [[ -f ~/MSS_CONFIGS/apps-links.json ]] &&
+          cp ~/MSS_CONFIGS/apps-links.json ~/mss/frontend/src/config/apps-links.json ||
+          echo "[]" > ~/mss/frontend/src/config/apps-links.json;
+          [[ -d ~/MSS_CONFIGS/platforms/ ]] &&
+          cp -r ~/MSS_CONFIGS/platforms ~/mss/frontend/public/img/
 
   notifier:
-    name: Folder for NOTIFIER
+    name: Deploy «notifier»
     runs-on: self-hosted
     needs: copy
 
@@ -50,14 +55,14 @@ jobs:
         run: |
           pm2 delete notifier-and-logger 2> /dev/null &&
           echo "Process <notifier-and-logger> exited successfully" ||
-          echo "Process <notifier-and-logger> did not run on PM2"
+          echo "Process <notifier-and-logger> wasn't running"
       - name: Start new PM2 instance
         run: cd ~/mss/notifier/ && pm2 start notifier-and-logger.js
       - name: Delete previous PM2 logs
         run: pm2 flush notifier-and-logger
 
   cicd:
-    name: Folder for CI/CD
+    name: Deploy «ci/cd»
     runs-on: self-hosted
     needs: notifier
 
@@ -66,7 +71,7 @@ jobs:
         run: cd ~/mss/cicd/ && npm i --progress=false --omit=dev
 
   scrapper:
-    name: Folder for SCRAPPER
+    name: Deploy «scrapper»
     runs-on: self-hosted
     needs: notifier
 
@@ -75,7 +80,7 @@ jobs:
         run: cd ~/mss/scrapper/ && npm i --progress=false --omit=dev
 
   backend:
-    name: Folder for BACKEND
+    name: Deploy «backend»
     runs-on: self-hosted
     needs: notifier
 
@@ -86,14 +91,14 @@ jobs:
         run: |
           pm2 delete backend-server 2> /dev/null &&
           echo "Process <backend-server> exited successfully" ||
-          echo "Process <backend-server> did not run on PM2"
+          echo "Process <backend-server> wasn't running"
       - name: Start new PM2 instance
         run: cd ~/mss/backend/ && pm2 start backend-server.js
       - name: Delete previous PM2 logs
         run: pm2 flush backend-server
 
   telegram:
-    name: Folder for TELEGRAM
+    name: Deploy «telegram»
     runs-on: self-hosted
     needs: notifier
 
@@ -104,14 +109,14 @@ jobs:
         run: |
           pm2 delete telegram-bot 2> /dev/null &&
           echo "Process <telegram-bot> exited successfully" ||
-          echo "Process <telegram-bot> did not run on PM2"
+          echo "Process <telegram-bot> wasn't running"
       - name: Start new PM2 instance
         run: cd ~/mss/telegram/ && pm2 start telegram-bot.js
       - name: Delete previous PM2 logs
         run: pm2 flush telegram-bot
 
   frontend:
-    name: Folder for FRONTEND
+    name: Deploy «frontend»
     runs-on: self-hosted
     needs:
       - cicd
@@ -124,28 +129,21 @@ jobs:
         run: cd ~/mss/frontend/ && npm i --progress=false --omit=dev
       - name: npm run build
         run: cd ~/mss/frontend/ && npm run build
+      - name: Generate Redoc bundle file
+        run: cd ~/mss/frontend/ && npm exec -- redoc-cli bundle public/docs/api/latest.yml -o dist/docs/api/redoc.html
       - name: clear node_modules
         run: cd ~/mss/frontend/ && rm -rf node_modules
 
-  redoc:
-    name: Generate Redoc
+  final:
+    name: Send final logs
     runs-on: self-hosted
     needs: frontend
 
     steps:
-      - name: Generate file
-        run: cd ~/mss/frontend/ && npm exec -- redoc-cli bundle public/docs/api/latest.yml -o dist/docs/api/redoc.html
-
-  final:
-    name: Showing and sending final logs
-    runs-on: self-hosted
-    needs: redoc
-
-    steps:
       - name: Show PM2 processes list
         run: pm2 list
-      - name: Send notification in Telegram
+      - name: Send via notifier
         run: |
           [ -f ~/mss/cicd/ci-notify.js ] &&
-          node ~/mss/cicd/ci-notify.js "Done merge into master | Actor: $GITHUB_ACTOR" ||
-          echo "No CI notifier (Done merge into master | Actor: $GITHUB_ACTOR)"
+          node ~/mss/cicd/ci-notify.js "Done merge into master, initiator – $GITHUB_ACTOR" ||
+          echo "Done merge into master, initiator – $GITHUB_ACTOR"
