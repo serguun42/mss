@@ -5,16 +5,7 @@
 			'day--one-line': oneLine,
 			'day--in-masonry': inMasonry
 		}"
-		v-if="
-			(certainWeek < 0 ?
-				day.odd.reduce((accum, lesson) => accum + lesson.length, 0) > 0 ||
-				day.even.reduce((accum, lesson) => accum + lesson.length, 0) > 0
-				:
-				day[[ 'odd', 'even' ][ (certainWeek + 1) % 2 ]].reduce((accum, lesson) => accum + lesson.filter((option) =>
-					!option.weeks || option.weeks.includes(certainWeek)
-				).length, 0) > 0
-			)
-		"
+		v-if="checkIfDayVisible()"
 		:style="styles"
 	>
 		<div class="day__title">
@@ -104,8 +95,10 @@
 </template>
 
 <script>
-import CheckIfDistant from "../utils/chech-if-distant";
+import CheckIfDayVisible from "../utils/check-if-day-visible";
+import CheckIfDistant from "../utils/check-if-distant";
 import LessonNameByType from "../utils/lesson-type";
+
 
 export default {
 	name: "day",
@@ -226,6 +219,12 @@ export default {
 			if (/^ин(остранный)?(\.)?\s*яз(ык)?(\.)?$/i.test(iName.trim())) return "Иностранный язык";
 
 			return iName;
+		},
+		/**
+		 * @returns {boolean}
+		 */
+		checkIfDayVisible() {
+			return CheckIfDayVisible(this.certainWeek, this.day);
 		},
 		/**
 		 * @param {import("../types").Option} iOption

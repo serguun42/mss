@@ -49,28 +49,27 @@ const LATIN = [
 
 
 /**
- * @param {string} iString
+ * @param {string} raw
+ * @returns {string}
  */
-const LocalParse = iString => {
-	if (typeof iString !== "string") return iString;
+const SmartReplace = (raw) => {
+	if (typeof raw !== "string") return raw;
 
-	const splitted = iString.split("");
+	const replacedByChar = raw
+		.split("")
+		.map((char) => {
+			const latinIndex = LATIN.indexOf(char);
+			if (latinIndex === -1) return char;
 
-	const replacedByChar = splitted.map((char) => {
-		const latinIndex = LATIN.indexOf(char);
+			return CYRILLIC[latinIndex];
+		})
+		.join("");
 
-		if (latinIndex === -1) return char;
-
-		return CYRILLIC[latinIndex];
-	}).join("");
-
-	const loweredTrimmedAndAllTheStuff = replacedByChar
-										.replace(/[\-\_\(\)]/g, "")
-										.replace(/(\s)+/g, "$1")
-										.trim()
-										.toLowerCase();
-
-	return loweredTrimmedAndAllTheStuff;
+	return replacedByChar
+		.replace(/[\-_\()]/g, "")
+		.replace(/\s+/g, " ")
+		.trim()
+		.toLowerCase();
 }
 
 
@@ -90,10 +89,12 @@ export default {
 	},
 	watch: {
 		"seeking.raw": function (newRaw) {
-			this.seeking.parsed = LocalParse(newRaw || "");
-			this.showingPrompts = this.seeking.parsed ? this.prompts.filter((prompting) =>
-				LocalParse(prompting.stringified).indexOf(this.seeking.parsed) > -1
-			).slice(0, 6) : [];
+			this.seeking.parsed = SmartReplace(newRaw || "");
+			this.showingPrompts = this.seeking.parsed
+				? this.prompts.filter((prompting) =>
+					SmartReplace(prompting.stringified).indexOf(this.seeking.parsed) > -1
+				).slice(0, 6) 
+				: [];
 		}
 	},
 
