@@ -2,7 +2,7 @@ import ical from "ical-generator";
 import router from "../router";
 import store from "../store";
 import { GetGroupsByNameAndSuffix, GetTimeStart } from "./api";
-import CheckIfDistant from "./chech-if-distant";
+import CheckIfDistant from "./check-if-distant";
 import LessonNameByType from "./lesson-type";
 
 /** @typedef {import("ical-generator").ICalEvent | import("ical-generator").ICalEventData} CalEvent */

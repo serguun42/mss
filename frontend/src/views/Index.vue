@@ -17,10 +17,11 @@
 					:showOngoingAndPlannedLesson="day.showOngoingAndPlannedLesson"
 				></day>
 			</div>
-			<h2 class="index-page__subtitle default-no-select" v-else>
-				<span>Нет расписания на следующих два дня</span>
-				<br>
-				<router-link to="/group">Всё расписание</router-link>
+			<h2 class="index-page__no-lessons-in-days" v-else>
+				<p>
+					Нет пар в ближайшие дни –
+					<router-link to="/group">расписание&nbsp;на&nbsp;все&nbsp;недели</router-link>
+				</p>
 			</h2>
 		</div>
 
@@ -113,6 +114,7 @@ import store from "@/store";
 import Day from "@/components/Day";
 import Search from "@/components/Search.vue";
 import WeekSwitch from "@/components/WeekSwitch.vue";
+import CheckIfDayVisible from "@/utils/check-if-day-visible";
 
 const LocalGetForm = (iNumber, iForms) => {
 	iNumber = iNumber.toString();
@@ -163,36 +165,46 @@ export default {
 						:
 						GetGroupsByNameAndSuffix(store.getters.userGroup?.name, store.getters.userGroup?.suffix)
 				).then((groups) => {
-					if (!(groups && groups[0]))
-						return Promise.reject("No groups!");
+					if (!groups?.[0]) return Promise.reject("No group");
 
 					this.savedUserGroup = groups[0];
 
-					/** @type {CustomDay} */
-					const today = this.savedUserGroup.schedule[new Date().getDay() - 1 < 0 ? 7 + (new Date().getDay() - 1) : new Date().getDay() - 1];
-					if (today) today.customTitle = "Сегодня";
-					if (today) today.certainWeek = this.currentWeek;
-					if (today) today.showOngoingAndPlannedLesson = true;
+					const dayOfWeek = new Date().getDay();
+					const hours = new Date().getHours();
+					const minutes = new Date().getMinutes();
 
 					/** @type {CustomDay} */
-					const tomorrow = this.savedUserGroup.schedule[new Date().getDay() % 7];
-					if (tomorrow) tomorrow.customTitle = "Завтра";
-					if (tomorrow) tomorrow.certainWeek = this.currentWeek + (new Date().getDay() === 0);
-					if (tomorrow) tomorrow.showOngoingAndPlannedLesson = false;
+					const today = this.savedUserGroup.schedule[dayOfWeek - 1 < 0 ? 7 + (dayOfWeek - 1) : dayOfWeek - 1];
+					if (today) {
+						today.customTitle = "Сегодня";
+						today.certainWeek = this.currentWeek;
+						today.showOngoingAndPlannedLesson = true;
+					}
 
 					/** @type {CustomDay} */
-					const dayAfterTomorrow = this.savedUserGroup.schedule[(new Date().getDay() + 1) % 7];
-					if (dayAfterTomorrow) dayAfterTomorrow.customTitle = "Послезавтра";
-					if (dayAfterTomorrow) dayAfterTomorrow.certainWeek = this.currentWeek + (new Date().getDay() === 6);
-					if (dayAfterTomorrow) dayAfterTomorrow.showOngoingAndPlannedLesson = false;
+					const tomorrow = this.savedUserGroup.schedule[dayOfWeek % 7];
+					if (tomorrow) {
+						tomorrow.customTitle = "Завтра";
+						tomorrow.certainWeek = this.currentWeek + (dayOfWeek === 0);
+						tomorrow.showOngoingAndPlannedLesson = false;
+					}
+
+					/** @type {CustomDay} */
+					const dayAfterTomorrow = this.savedUserGroup.schedule[(dayOfWeek + 1) % 7];
+					if (dayAfterTomorrow) {
+						dayAfterTomorrow.customTitle = "Послезавтра";
+						dayAfterTomorrow.certainWeek = this.currentWeek + (dayOfWeek === 6 || dayOfWeek === 0);
+						dayAfterTomorrow.showOngoingAndPlannedLesson = false;
+					}
 
 
 					this.savedUserGroupDays = (
-						(new Date().getHours() > 19 || (new Date().getHours() === 19 && new Date().getMinutes() >= 30)) ?
-							[ tomorrow, dayAfterTomorrow ]
-							:
-							[ today, tomorrow ]
-					).filter((day) => !!day);
+						(hours > 19 || (hours === 19 && minutes >= 30))
+							? [ tomorrow, dayAfterTomorrow ]
+							: [ today, tomorrow ]
+					)
+					.filter(Boolean)
+					.filter((day) => CheckIfDayVisible(day.certainWeek, day));
 				})
 				.catch(console.warn)
 			} else {
@@ -259,6 +271,13 @@ export default {
 }
 
 .index-page__subtitle {
+	text-align: center;
+	color: var(--index-page-faded-title);
+}
+
+.index-page__no-lessons-in-days {
+	margin: 64px 0 16px;
+	
 	text-align: center;
 	color: var(--index-page-faded-title);
 }

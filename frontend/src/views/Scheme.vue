@@ -9,6 +9,9 @@
 				placeholder="Поиск аудитории"
 				v-model="seeking"
 			>
+			<div class="scheme__search__clear default-no-select default-pointer" v-ripple @click="clearInput">
+				<i class="material-icons material-icons-round">close</i>
+			</div>
 			<div class="scheme__search__results" v-show="found && found.length">
 				<div
 					class="scheme__search__result default-pointer"
@@ -142,13 +145,14 @@ export default {
 		 */
 		searchByRoomName(query) {
 			if (!query) query = "";
-			
+
 			const replacedByChar = query.split("").map((char) => {
 				const latinIndex = LATIN.indexOf(char);
 				if (latinIndex === -1) return char;
+
 				return CYRILLIC[latinIndex];
 			}).join("");
-			
+
 			const queryRegex = new RegExp(
 				replacedByChar.toLowerCase()
 				.replace(/[^а-яёa-z\d]/gi, "")
@@ -180,6 +184,11 @@ export default {
 			.filter((room, index, array) => index === array.findIndex((matching) => matching.id === room.id))
 			.slice(0, 5);
 		},
+		clearInput() {
+			this.seeking = "";
+			this.$refs["search-input"].value = "";
+		},
+
 		/**
 		 * @param {{ name: string, id: string, floorIndex: number }} room
 		 * @returns {void}
@@ -306,7 +315,7 @@ export default {
 
 	top: 0;
 	left: 0;
-	
+
 	transform-origin: center center;
 }
 
@@ -461,7 +470,7 @@ export default {
 	color: var(--navigation-text-color);
 	background-color: var(--navigation-background-color);
 
-	border-radius: 8px;
+	border-radius: 20px;
 	box-shadow: 0 0 3px 1px var(--navigation-shadow-color);
 }
 
@@ -486,6 +495,35 @@ export default {
 	background-color: transparent;
 	border: none;
 	outline: none;
+}
+
+.scheme__search__clear {
+	display: block;
+	position: absolute;
+
+	width: 36px;
+	height: 36px;
+
+	top: 2px;
+	right: 8px;
+
+	margin: 0;
+	padding: 6px;
+	box-sizing: border-box;
+
+	border-radius: 18px;
+
+	color: var(--navigation-text-color);
+	transition: color 150ms ease-in-out;
+}
+
+.scheme__search__clear:hover {
+	color: var(--accent-color);
+}
+
+.scheme__search__clear:focus,
+.scheme__search__clear:active {
+	color: var(--primary-color);
 }
 
 .scheme__search__results {
