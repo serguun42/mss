@@ -14,6 +14,7 @@ const
 		DAYS_OF_WEEK,
 		SCHEDULE_PAGES,
 		INDEX_OF_LINE_WITH_GROUPS_NAMES,
+		DEFAULT_HEIGHT_OF_GROUP,
 		PROXY_PORT
 	} = DEV ? require("../../DEV_CONFIGS/scrapper.config.json") : require("./scrapper.config.json"),
 	FIXES = require("./scrapper.fixes.json"),
@@ -380,7 +381,11 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 				}).filter((index) => index !== null);
 
 
-				let finalRowIndex = INDEX_OF_LINE_WITH_GROUPS_NAMES + 2 + 72;
+				/**
+				 * DEFAULT_HEIGHT_OF_GROUP – 7 lessons in day (with pairity) for 6 days 
+				 * 7 * 2 * 6 = 84
+				 */
+				let finalRowIndex = INDEX_OF_LINE_WITH_GROUPS_NAMES + 2 + DEFAULT_HEIGHT_OF_GROUP;
 
 				tableData.forEach((row, rowIndex) => {
 					if (/Начальник\s+УМУ/gi.test(row[2])) finalRowIndex = rowIndex;
@@ -391,33 +396,29 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 				const daysByLessonsNumber = new Array(6).fill(0);
 
 				let currentDay = -1;
-				tableData
-					.slice(INDEX_OF_LINE_WITH_GROUPS_NAMES + 2, finalRowIndex)
-					.forEach((row) => {
-						if (row[0]) ++currentDay;
+				tableData.slice(INDEX_OF_LINE_WITH_GROUPS_NAMES + 2, finalRowIndex).forEach((row) => {
+					if (row[0]) ++currentDay;
 
-						++daysByLessonsNumber[currentDay];
-					});
+					++daysByLessonsNumber[currentDay];
+				});
 
 
 				/** @type {string[][]} */
 				const lessonsTimes = daysByLessonsNumber.map((day, dayIndex) => {
 					const skipLines = GlobalReduceArrayToIndex(daysByLessonsNumber, dayIndex);
 
-					const timesForDay = new Array(day).fill(true).map((lessonTime, indexOfLessonTime) => {
-						const currentLessonRowIndex = INDEX_OF_LINE_WITH_GROUPS_NAMES + 2 + skipLines + indexOfLessonTime,
-							currentRowLessonStart = tableData[currentLessonRowIndex][2],
-							currentRowLessonEnd = tableData[currentLessonRowIndex][3];
+					const timesForDay = new Array(day).fill(true).map((_lessonTime, indexOfLessonTime) => {
+						const currentLessonRowIndex = INDEX_OF_LINE_WITH_GROUPS_NAMES + 2 + skipLines + indexOfLessonTime;
+						const currentRowLessonStart = tableData[currentLessonRowIndex][2];
+						const currentRowLessonEnd = tableData[currentLessonRowIndex][3];
 
 						if (
-							currentRowLessonStart &&
-							typeof currentRowLessonStart == "string" &&
-							currentRowLessonEnd &&
-							typeof currentRowLessonEnd == "string"
+							currentRowLessonStart && typeof currentRowLessonStart == "string" &&
+							currentRowLessonEnd && typeof currentRowLessonEnd == "string"
 						)
 							return `${currentRowLessonStart.replace(/(\d+)(:|-)(\d+)/, "$1:$3")} – ${currentRowLessonEnd.replace(/(\d+)(:|-)(\d+)/, "$1:$3")}`;
-						else
-							return null;
+
+						return null;
 					}).filter((lessonTimes) => lessonTimes !== null);
 
 					return timesForDay;
@@ -427,7 +428,7 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 				indexesOfCellsWithGroupNames.forEach((indexOfCertainGroup) => {
 					const certainGroupTable = tableData
 											.slice(INDEX_OF_LINE_WITH_GROUPS_NAMES + 2, finalRowIndex)
-											.map(row => row.slice(indexOfCertainGroup, indexOfCertainGroup + 5));
+											.map((row) => row.slice(indexOfCertainGroup, indexOfCertainGroup + 5));
 
 					/** @type {string} */
 					const certainGroupName = (tableData[INDEX_OF_LINE_WITH_GROUPS_NAMES][indexOfCertainGroup] || "")
@@ -632,7 +633,7 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 
 
 GetLinkToFiles()
-.then((allXLSXDefinitions) => GetTablesFiles(allXLSXDefinitions.flat()))
+.then((allXLSXDefinitions) => GetTablesFiles(allXLSXDefinitions.flat().filter(Boolean)))
 .then((allXLSXFilesData) => BuildGlobalSchedule(allXLSXFilesData))
 .then(() => {
 	if (DEV) {
