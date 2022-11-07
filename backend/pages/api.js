@@ -35,36 +35,6 @@ const LogTooManyRequests = (req) => {
 	Logging(`Too many requests from ${typeof cIP === "string" ? cIP.replace("::ffff:", "") : cIP} to ${req.url}`);
 };
 
-/**
- * @param {import("http").IncomingMessage} req
- * @param {"text" | "json"} [type="text"]
- * @returns {Promise<string>}
- */
-const ReadPost = (req, type = "text") => new Promise((resolve, reject) => {
-	const chunks = [];
-
-	req.on("data", (chunk) => chunks.push(chunk));
-
-	req.on("error", (e) => reject(e));
-
-	req.on("end", () => resolve(Buffer.concat(chunks).toString()));
-}).then((readPostBody) => {
-	if (type !== "json" && type !== "text")
-		type = "text";
-		
-	if (type === "json")
-		return new Promise((resolve, reject) => {
-			try {
-				const parsedJSON = JSON.parse(readPostBody);
-				resolve(parsedJSON);
-			} catch (e) {
-				return reject(e);
-			}
-		});
-
-	return Promise.resolve(readPostBody);
-});
-
 
 const mongoDispatcher = new MongoDispatcher(DATABASE_NAME);
 
@@ -289,17 +259,7 @@ module.exports = (iModuleDataObject) => {
 			case "logs":
 				switch (path[3]) {
 					case "post":
-						if (req.method !== "POST")
-							return GlobalSendCustom(405, {error: true, message: "Method not allowed"});
-
-						const source = queries["source"];
-						const allowerSources = ["app"];
-						if (!allowerSources.includes(source))
-							return GlobalSendCustom(406, {error: true, message: "Not acceptable source"});
-
-						ReadPost(req)
-						.then((logsString) => Logging.WithCustomTag(logsString))
-						.catch(() => GlobalSendCustom(406, {error: true, message: "Not acceptable format"}));
+						GlobalSend(201);
 					break;
 
 					default: GlobalSendCustom(404, {error: true, message: "No such method"}); break;
@@ -397,17 +357,7 @@ module.exports = (iModuleDataObject) => {
 			case "logs":
 				switch (path[3]) {
 					case "post":
-						if (req.method !== "POST")
-							return GlobalSendCustom(405, {error: true, message: "Method not allowed"});
-
-						const source = queries["source"];
-						const allowerSources = ["app"];
-						if (!allowerSources.includes(source))
-							return GlobalSendCustom(406, {error: true, message: "Not acceptable source"});
-
-						ReadPost(req)
-						.then((logsString) => Logging.WithCustomTag(logsString))
-						.catch(() => GlobalSendCustom(406, {error: true, message: "Not acceptable format"}));
+						GlobalSend(201);
 					break;
 
 					default: GlobalSendCustom(404, {error: true, message: "No such method"}); break;
