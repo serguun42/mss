@@ -8,7 +8,7 @@ self.addEventListener("install", (e) => {
 				cache.addAll([
 					"/",
 					"/favicon.ico",
-					...(process.env.ROUTES || []).filter((path) => path.length > 1)
+					...(DEFINED_ROUTES || []).filter((path) => path.length > 1)
 				])
 			)
 	);

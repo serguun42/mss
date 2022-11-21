@@ -68,7 +68,7 @@ window.addEventListener("load", () => {
 		/**
 		 * Clear cache and SW because of build hash difference
 		 */
-		if (buildHashFromFile !== process.env.BUILD_HASH)
+		if (buildHashFromFile !== process.env.VUE_APP_BUILD_HASH)
 			store.dispatch("clearCache", true);
 	})
 	.catch(console.warn);
