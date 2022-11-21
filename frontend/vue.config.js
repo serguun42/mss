@@ -47,26 +47,19 @@ const ReplaceWithEnvVariables = (plain) => plain
 		(_match, variableName) => process.env[variableName] || variableName
 	);
 
-/**
- * @param {string} variableName
- * @param {any} variableValue
- */
-const SaveVariableToEnv = (variableName, variableValue) => process.env[variableName] = variableValue;
-
 
 /** Environment variables */
 const BUILD_HASH = createHash("md5").update(`BUILDSALT-${Date.now()}`).digest("hex");
 const TAG_MANAGER = ReadFileSafe(resolve("src", "config", "tag-manager.html"));
 const ROUTES = require("./src/router/routes");
 
-WriteFileSafe(resolve("public", "build_hash"), BUILD_HASH);
-
 /** Saving as `VUE_APP_…` so it'd be accessible from within Vue code */
-SaveVariableToEnv("VUE_APP_BUILD_HASH", BUILD_HASH);
+process.env.VUE_APP_BUILD_HASH = BUILD_HASH;
+WriteFileSafe(resolve("public", "build_hash"), BUILD_HASH);
 
 const IS_DEV = (process.env.NODE_ENV === "development");
 const DOT_ENV_PATH = resolve("src", "config", `${IS_DEV ? "local" : "production"}.env`);
-const ENVIRONMENT_FILE = ReadFileSafe(DOT_ENV_PATH);
+const ENVIRONMENT_FILE = ReplaceWithEnvVariables(ReadFileSafe(DOT_ENV_PATH));
 
 ENVIRONMENT_FILE.split("\n").forEach((line) => {
 	if (line.search("=") < 0) return;
@@ -75,6 +68,9 @@ ENVIRONMENT_FILE.split("\n").forEach((line) => {
 
 	process.env[name] = value.join("=");
 });
+
+if (IS_DEV && !process.env.GITHUB_RUN_NUMBER) process.env.GITHUB_RUN_NUMBER = "DEV";
+process.env.VUE_APP_RUN_NUMBER = process.env.GITHUB_RUN_NUMBER;
 
 const definePlugin = new DefinePlugin({
 	'DEFINED_TAG_MANAGER': JSON.stringify(TAG_MANAGER),

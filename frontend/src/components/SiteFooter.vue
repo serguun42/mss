@@ -48,6 +48,10 @@
 			<div class="site-footer__section__item default-no-select default-pointer" @click="clearCache">
 				<i class="material-icons material-icons-round">delete_outline</i> Очистить кэш
 			</div>
+			<div class="site-footer__section__item default-no-select">
+				<i class="material-icons material-icons-round default-no-select">code</i>
+				<span>Версия {{ version }}</span><span v-if="runNumber"> (#{{ runNumber }})</span>
+			</div>
 		</section>
 
 		<section class="site-footer__section">
@@ -72,6 +76,12 @@ import store from "@/store"
 
 export default {
 	name: "site-footer",
+	data() {
+		return {
+			version: process.env.VUE_APP_VERSION,
+			runNumber: process.env.VUE_APP_RUN_NUMBER,
+		}
+	},
 	methods: {
 		changeTheme() {
 			store.dispatch("changeTheme");
