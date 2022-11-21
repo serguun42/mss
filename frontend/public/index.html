@@ -50,10 +50,10 @@
 	<meta name="twitter:site" content="@serguun42">
 	<meta name="twitter:creator" content="@serguun42">
 
-	<link rel="stylesheet" href="<%= BASE_URL %>css/default.css?<%= process.env.BUILD_HASH %>">
+	<link rel="stylesheet" href="<%= BASE_URL %>css/default.css?<%= process.env.VUE_APP_BUILD_HASH %>">
 	<title><%= process.env.VUE_APP_NAME %></title>
 
-	<%= process.env.TAG_MANAGER %>
+	<%= DEFINED_TAG_MANAGER %>
 </head>
 
 <body class="global-scroll">
