@@ -10,7 +10,7 @@
 				v-model="seeking"
 			>
 			<div class="scheme__search__clear default-no-select default-pointer" v-ripple @click="clearInput">
-				<i class="material-icons material-icons-round">close</i>
+				<span data-nosnippet class="material-icons material-icons-round">close</span>
 			</div>
 			<div class="scheme__search__results" v-show="found && found.length">
 				<div
@@ -40,7 +40,7 @@
 			<div class="scheme__controls__zooms">
 				<div class="scheme__controls__zoom default-pointer" v-ripple @click="zoomIn">+</div>
 				<div class="scheme__controls__zoom default-pointer" v-ripple @click="reset">
-					<i class="material-icons material-icons-round">restart_alt</i>
+					<span data-nosnippet class="material-icons material-icons-round">restart_alt</span>
 				</div>
 				<div class="scheme__controls__zoom default-pointer" v-ripple @click="zoomOut">-</div>
 			</div>

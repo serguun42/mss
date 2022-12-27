@@ -12,7 +12,7 @@
 				<div class="single-group-page__title__additional-info__item" v-if="updateDate">Обновлено {{ updateDate }}</div>
 				<div class="single-group-page__title__additional-info__item" v-if="apiData && apiData.remoteFile">
 					<a :href="apiData.remoteFile" target="_blank" rel="noopener noreferrer">
-						<i class="material-icons material-icons-round">file_download</i>
+						<span data-nosnippet class="material-icons material-icons-round">file_download</span>
 						<span>.XSLX-файл</span>
 					</a>
 				</div>

@@ -3,7 +3,7 @@
 		<div class="week-switch__title default-no-select default-pointer" @click="showPopup">
 			<span v-if="!selectedWeek">Текущая неделя – {{ currentWeek }}</span>
 			<span v-else>Выбранная неделя – {{ selectedWeek }}</span>
-			<span class="week-switch__icon material-icons material-icons-round">expand_more</span>
+			<span data-nosnippet class="material-icons material-icons-round">expand_more</span>
 		</div>
 
 		<div class="week-switch__popup default-no-select" ref="popup">
@@ -143,7 +143,7 @@ export default {
 	color: var(--navigation-text-color);
 }
 
-.week-switch__icon {
+.week-switch__title .material-icons {
 	display: block;
 	position: absolute;
 
