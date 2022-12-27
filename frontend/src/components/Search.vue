@@ -13,7 +13,7 @@
 				v-model="seeking.raw"
 			>
 			<div class="search-container__textfield__clear-button default-no-select default-pointer" v-ripple @click="clearInput">
-				<i class="material-icons material-icons-round">close</i>
+				<span data-nosnippet class="material-icons material-icons-round">close</span>
 			</div>
 		</div>
 		<div

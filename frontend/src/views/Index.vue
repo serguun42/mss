@@ -43,7 +43,7 @@
 			<div id="index-page__choice">
 				<div class="index-page__choice__card">
 					<div class="index-page__choice__card__header default-header">
-						<i class="material-icons material-icons-round">language</i>
+						<span data-nosnippet class="material-icons material-icons-round">language</span>
 						<span>mirea.xyz</span>
 					</div>
 					<div class="index-page__choice__card__content">
@@ -53,7 +53,7 @@
 
 				<a href="https://t.me/mirea_table_bot" target="_blank" rel="noopener noreferrer" class="index-page__choice__card">
 					<div class="index-page__choice__card__header default-header">
-						<i class="material-icons material-icons-round">smart_toy</i>
+						<span data-nosnippet class="material-icons material-icons-round">smart_toy</span>
 						<a href="https://t.me/mirea_table_bot" target="_blank" rel="noopener noreferrer">Telegram-бот</a>
 					</div>
 					<div class="index-page__choice__card__content">
@@ -63,7 +63,7 @@
 
 				<router-link to="/scheme" class="index-page__choice__card">
 					<div class="index-page__choice__card__header default-header">
-						<i class="material-icons material-icons-round">map</i>
+						<span data-nosnippet class="material-icons material-icons-round">map</span>
 						<router-link to="/scheme">Удобная карта</router-link>
 					</div>
 					<div class="index-page__choice__card__content">
@@ -73,7 +73,7 @@
 
 				<div class="index-page__choice__card">
 					<div class="index-page__choice__card__header default-header">
-						<i class="material-icons material-icons-round">calendar_month</i>
+						<span data-nosnippet class="material-icons material-icons-round">calendar_month</span>
 						<span>Экспорт в календарь</span>
 					</div>
 					<div class="index-page__choice__card__content">
@@ -83,7 +83,7 @@
 
 				<router-link to="/docs/api" class="index-page__choice__card">
 					<div class="index-page__choice__card__header default-header">
-						<i class="material-icons material-icons-round">api</i>
+						<span data-nosnippet class="material-icons material-icons-round">api</span>
 						<router-link to="/docs/api">У нас есть API</router-link>
 					</div>
 					<div class="index-page__choice__card__content">

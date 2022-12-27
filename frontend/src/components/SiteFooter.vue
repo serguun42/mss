@@ -4,26 +4,29 @@
 			<img id="site-footer__logo-img" src="/img/icons/round/round_512x512.png" draggable="false" oncontextmenu="return false"
 				alt="MSS">
 			<div id="site-footer__logo-desc">
-				<div id="site-footer__logo-desc__title">MSS</div><br><i
-					class="material-icons material-icons-round">copyright</i> {{ new Date().getFullYear() }}
+				<div id="site-footer__logo-desc__title">MSS</div>
+				<div>
+					<span data-nosnippet class="material-icons material-icons-round">copyright</span>&nbsp;
+					<span v-text="new Date().getFullYear()"></span>
+				</div>
 			</div>
 		</section>
 
 		<section class="site-footer__section">
 			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">smart_toy</i> <a href="https://t.me/mirea_table_bot" target="_blank" rel="noopener noreferrer">Telegram-бот</a>
+				<span data-nosnippet class="material-icons material-icons-round">smart_toy</span> <a href="https://t.me/mirea_table_bot" target="_blank" rel="noopener noreferrer">Telegram-бот</a>
 			</div>
 			<div class="site-footer__section__item default-no-select default-pointer" @click="exportToIcs">
-				<i class="material-icons material-icons-round">calendar_month</i> <span>Экспортировать в .ics</span>
+				<span data-nosnippet class="material-icons material-icons-round">calendar_month</span> <span>Экспортировать в .ics</span>
 			</div>
 			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">android</i> <router-link to="/apps">Мобильные приложения и другие сервисы</router-link>
+				<span data-nosnippet class="material-icons material-icons-round">android</span> <router-link to="/apps">Мобильные приложения и другие сервисы</router-link>
 			</div>
 		</section>
 
 		<section class="site-footer__section">
 			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">api</i> <router-link to="/docs/api">Наше API</router-link>
+				<span data-nosnippet class="material-icons material-icons-round">api</span> <router-link to="/docs/api">Наше API</router-link>
 			</div>
 			<div class="site-footer__section__item">
 				<svg class="octicon" height="32" viewBox="0 0 16 16" version="1.1" width="32" aria-hidden="true">
@@ -31,41 +34,41 @@
 				</svg> <a href="https://github.com/serguun42/mss" target="_blank" rel="noopener noreferrer">Github</a>
 			</div>
 			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">insights</i> <router-link to="/stats">Статистика</router-link>
+				<span data-nosnippet class="material-icons material-icons-round">insights</span> <router-link to="/stats">Статистика</router-link>
 			</div>
 		</section>
 
 		<section class="site-footer__section">
 			<div class="site-footer__section__item default-no-select default-pointer" @click="changeTheme">
-				<i class="material-icons material-icons-round" ref="theme-icon" :key="`theme-icon-${$store.getters.theme.icon}`">{{ $store.getters.theme.icon }}</i> Выбрана <span ref="theme-name" :key="`theme-name-${$store.getters.theme.name}`">{{ $store.getters.theme.name }}</span>
+				<span data-nosnippet class="material-icons material-icons-round" ref="theme-icon" :key="`theme-icon-${$store.getters.theme.icon}`">{{ $store.getters.theme.icon }}</span> Выбрана <span ref="theme-name" :key="`theme-name-${$store.getters.theme.name}`">{{ $store.getters.theme.name }}</span>
 			</div>
 		</section>
 
 		<section class="site-footer__section">
 			<div class="site-footer__section__item default-no-select default-pointer" @click="clearGroup">
-				<i class="material-icons material-icons-round">restart_alt</i> Сбросить группу
+				<span data-nosnippet class="material-icons material-icons-round">restart_alt</span> Сбросить группу
 			</div>
 			<div class="site-footer__section__item default-no-select default-pointer" @click="clearCache">
-				<i class="material-icons material-icons-round">delete_outline</i> Очистить кэш
+				<span data-nosnippet class="material-icons material-icons-round">delete_outline</span> Очистить кэш
 			</div>
 			<div class="site-footer__section__item default-no-select">
-				<i class="material-icons material-icons-round default-no-select">code</i>
+				<span data-nosnippet class="material-icons material-icons-round default-no-select">code</span>
 				<span>Версия {{ version }}</span><span v-if="runNumber"> (#{{ runNumber }})</span>
 			</div>
 		</section>
 
 		<section class="site-footer__section">
 			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">info</i> <router-link to="/about">О проекте</router-link>
+				<span data-nosnippet class="material-icons material-icons-round">info</span> <router-link to="/about">О проекте</router-link>
 			</div>
 			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">contact_mail</i> <a href="https://github.com/serguun42/mss/issues" target="_blank" rel="noopener noreferrer">Баги и пожелания</a>
+				<span data-nosnippet class="material-icons material-icons-round">contact_mail</span> <a href="https://github.com/serguun42/mss/issues" target="_blank" rel="noopener noreferrer">Баги и пожелания</a>
 			</div>
 			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">policy</i> <router-link to="/privacy">Политика в отношении обработки персональных данных</router-link>
+				<span data-nosnippet class="material-icons material-icons-round">policy</span> <router-link to="/privacy">Политика в отношении обработки персональных данных</router-link>
 			</div>
 			<div class="site-footer__section__item">
-				<i class="material-icons material-icons-round">rule</i> <a href="https://github.com/serguun42/mss/blob/master/LICENSE" target="_blank" rel="noopener noreferrer">Лицензия</a>
+				<span data-nosnippet class="material-icons material-icons-round">rule</span> <a href="https://github.com/serguun42/mss/blob/master/LICENSE" target="_blank" rel="noopener noreferrer">Лицензия</a>
 			</div>
 		</section>
 	</footer>

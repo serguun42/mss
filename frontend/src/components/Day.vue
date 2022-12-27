@@ -24,8 +24,6 @@
 									dayForCertrainWeek[
 										[ 'odd', 'even' ][ ([ 'odd', 'even' ].indexOf(oddity) + 1) % 2 ]
 									].reduce((accum, lesson) => accum + lesson.length, 0) === 0
-
-									
 			}"
 			v-for="(oddity) in (certainWeek < 0 ? [ 'odd', 'even' ] : [[ 'odd', 'even' ][ (certainWeek + 1) % 2 ]])"
 			:key="`day-${dayIndex}-${oddity}`"
@@ -52,12 +50,12 @@
 								'option__info__item-time--ongoing': showOngoingAndPlannedLesson && lessonStarted(lessonsTimes[dayIndex][lessonIndex]),
 								'option__info__item-time--planned': showOngoingAndPlannedLesson && lessonPlanned(lessonsTimes[dayIndex][lessonIndex])
 							}">
-							<i class="material-icons material-icons-round default-no-select">schedule</i>
+							<span data-nosnippet class="material-icons material-icons-round default-no-select">schedule</span>
 							<span>{{ lessonsTimes[dayIndex][lessonIndex] }}</span>
-							<i v-if="showOngoingAndPlannedLesson && lessonStarted(lessonsTimes[dayIndex][lessonIndex])">(сейчас)</i>
+							<span v-if="showOngoingAndPlannedLesson && lessonStarted(lessonsTimes[dayIndex][lessonIndex])">(сейчас)</span>
 						</div>
 
-						<div class="option__info__item" v-if="checkIfDistant(option)"><i class="material-icons material-icons-round default-no-select">alternate_email</i>
+						<div class="option__info__item" v-if="checkIfDistant(option)"><span data-nosnippet class="material-icons material-icons-round default-no-select">alternate_email</span>
 							<a v-if="option.link" :href="option.link" target="_blank" rel="noopener noreferrer">Дистанционно</a>
 							<span v-else>Дистанционно</span>
 						</div>
@@ -69,15 +67,15 @@
 							}"
 							@click="searchForPlace(option.place)"
 						>
-							<i class="material-icons material-icons-round default-no-select">place</i>
+							<span data-nosnippet class="material-icons material-icons-round default-no-select">place</span>
 							{{ option.place }}
 						</div>
 
-						<div class="option__info__item" v-if="option.tutor"><i class="material-icons material-icons-round default-no-select">person</i>{{ option.tutor }}</div>
+						<div class="option__info__item" v-if="option.tutor"><span data-nosnippet class="material-icons material-icons-round default-no-select">person</span>{{ option.tutor }}</div>
 
-						<div class="option__info__item" v-if="option.type"><i class="material-icons material-icons-round default-no-select">info</i>{{ lessonType(option.type) }}</div>
+						<div class="option__info__item" v-if="option.type"><span data-nosnippet class="material-icons material-icons-round default-no-select">info</span>{{ lessonType(option.type) }}</div>
 
-						<div class="option__info__item" v-if="certainWeek < 0 && option.weeks && option.weeks.length"><i class="material-icons material-icons-round default-no-select">date_range</i>
+						<div class="option__info__item" v-if="certainWeek < 0 && option.weeks && option.weeks.length"><span data-nosnippet class="material-icons material-icons-round default-no-select">date_range</span>
 							<span>Недели: </span>
 							<span
 								:class="{

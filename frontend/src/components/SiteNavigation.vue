@@ -18,7 +18,7 @@
 					'site-navigation__sub-block default-pointer default-no-select': true,
 					'site-navigation__sub-block--is-active': $route.path === '/',
 				}" to="/">
-					<span class="material-icons material-icons-round">home</span>
+					<span data-nosnippet class="material-icons material-icons-round">home</span>
 					<span class="site-navigation__page-title">Главная</span>
 				</router-link>
 			</div>
@@ -27,7 +27,7 @@
 					'site-navigation__sub-block default-pointer default-no-select': true,
 					'site-navigation__sub-block--is-active': $route.path === '/group' && !($route.query && $route.query.name),
 				}" to="/group">
-					<span class="material-icons material-icons-round">person</span>
+					<span data-nosnippet class="material-icons material-icons-round">person</span>
 					<span class="site-navigation__page-title">Моя группа</span>
 				</router-link>
 			</div>
@@ -36,7 +36,7 @@
 					'site-navigation__sub-block default-pointer default-no-select': true,
 					'site-navigation__sub-block--is-active': $route.path === '/scheme',
 				}" to="/scheme">
-					<span class="material-icons material-icons-round">map</span>
+					<span data-nosnippet class="material-icons material-icons-round">map</span>
 					<span class="site-navigation__page-title">Карта</span>
 				</router-link>
 			</div>
@@ -45,7 +45,7 @@
 					'site-navigation__sub-block default-pointer default-no-select': true,
 					'site-navigation__sub-block--is-active': $route.path === '/all',
 				}" to="/all">
-					<span class="material-icons material-icons-round">groups</span>
+					<span data-nosnippet class="material-icons material-icons-round">groups</span>
 					<span class="site-navigation__page-title">Все группы</span>
 				</router-link>
 			</div>
