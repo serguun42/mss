@@ -1,7 +1,7 @@
 <template>
-	<div class="week-switch" v-if="currentWeek > 0 || selectedWeek">
+	<div class="week-switch" v-if="currentWeek >= 0 || selectedWeek">
 		<div class="week-switch__title default-no-select default-pointer" @click="showPopup">
-			<span v-if="!selectedWeek">Текущая неделя – {{ currentWeek }}</span>
+			<span v-if="!selectedWeek">Текущая неделя – {{ currentWeek || 'каникулы' }}</span>
 			<span v-else>Выбранная неделя – {{ selectedWeek }}</span>
 			<span data-nosnippet class="material-icons material-icons-round">expand_more</span>
 		</div>
@@ -53,14 +53,14 @@ export default {
 	},
 	data() {
 		return {
-			currentWeek: 0,
+			currentWeek: -1,
 			selectedWeek: this.preselectedWeek || this.knownCurrenWeek || 0,
 			/** @type {number[]} */
 			weeks: []
 		};
 	},
 	created() {
-		if (!this.currentWeek)
+		if (!this.currentWeek || this.currentWeek < 0)
 			GetCurrentWeek()
 				.then((currentWeek) => {
 					this.currentWeek = currentWeek;
