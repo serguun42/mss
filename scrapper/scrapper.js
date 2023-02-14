@@ -393,33 +393,37 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 
 
 				/** @type {number[]} */
-				const daysByLessonsNumber = new Array(6).fill(0);
+				const lessonsByDays = Array.from({ length: 6 }, () => 0);
 
 				let currentDay = -1;
 				tableData.slice(INDEX_OF_LINE_WITH_GROUPS_NAMES + 2, finalRowIndex).forEach((row) => {
 					if (row[0]) ++currentDay;
-
-					++daysByLessonsNumber[currentDay];
+					++lessonsByDays[currentDay];
 				});
 
 
 				/** @type {string[][]} */
-				const lessonsTimes = daysByLessonsNumber.map((day, dayIndex) => {
-					const skipLines = GlobalReduceArrayToIndex(daysByLessonsNumber, dayIndex);
+				const lessonsTimes = lessonsByDays.map((lessonsInDay, dayIndex) => {
+					const skipFromFirstLessonOnWeek = GlobalReduceArrayToIndex(lessonsByDays, dayIndex);
 
-					const timesForDay = new Array(day).fill(true).map((_lessonTime, indexOfLessonTime) => {
-						const currentLessonRowIndex = INDEX_OF_LINE_WITH_GROUPS_NAMES + 2 + skipLines + indexOfLessonTime;
-						const currentRowLessonStart = tableData[currentLessonRowIndex][2];
-						const currentRowLessonEnd = tableData[currentLessonRowIndex][3];
+					const timesForDay = Array.from({ length: lessonsInDay }, (_, lessonTimeIndexInDay) => {
+						const lessonIndex = INDEX_OF_LINE_WITH_GROUPS_NAMES + 2 +
+											skipFromFirstLessonOnWeek + lessonTimeIndexInDay;
+						const lessonTimeStart = tableData[lessonIndex][2];
+						const lessonTimeEnd = tableData[lessonIndex][3];
 
 						if (
-							currentRowLessonStart && typeof currentRowLessonStart == "string" &&
-							currentRowLessonEnd && typeof currentRowLessonEnd == "string"
+							lessonTimeStart && typeof lessonTimeStart == "string" &&
+							lessonTimeEnd && typeof lessonTimeEnd == "string"
 						)
-							return `${currentRowLessonStart.replace(/(\d+)(:|-)(\d+)/, "$1:$3")} – ${currentRowLessonEnd.replace(/(\d+)(:|-)(\d+)/, "$1:$3")}`;
+							return `${lessonTimeStart.replace(/(\d+)(:|-)(\d+)/, "$1:$3")} – ${
+								lessonTimeEnd.replace(/(\d+)(:|-)(\d+)/, "$1:$3")
+							}`;
 
 						return null;
-					}).filter((lessonTimes) => lessonTimes !== null);
+					})
+					.filter((value, index, array) => index === array.indexOf(value))
+					.filter(Boolean);
 
 					return timesForDay;
 				});
@@ -456,7 +460,7 @@ const BuildGlobalSchedule = (iXLSXFilesData) => new Promise((resolve) => {
 
 					certainGroupTable.forEach((lessonOption, lessonOptionIndex) => {
 						let dayOfWeek = 0;
-						while (GlobalReduceArrayToIndex(daysByLessonsNumber, dayOfWeek + 1) <= lessonOptionIndex) {
+						while (GlobalReduceArrayToIndex(lessonsByDays, dayOfWeek + 1) <= lessonOptionIndex) {
 							++dayOfWeek;
 						}
 
