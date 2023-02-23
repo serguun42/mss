@@ -1,21 +1,21 @@
 {
   "name": "telegram",
   "version": "1.0.0",
-  "description": "Parses schedule page, gets links to `.xlsx`-files, parses them then, builds table models for each and every possible study group, updates DB schedule for each group of those ones.\r <br>",
-  "main": "index.js",
+  "description": "",
+  "main": "telegram-bot.js",
   "scripts": {
-    "telegram": "node telegram-bot.js"
+    "run-bot": "node telegram-bot.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "serguun42",
+  "license": "BSL-1.0",
   "devDependencies": {
-    "typescript": "^4.8.2"
+    "typescript": "^4.9.5"
   },
   "dependencies": {
-    "mongodb": "4.9.0",
-    "node-cron": "3.0.2",
-    "node-fetch": "2.6.7",
-    "telegraf": "4.9.1"
+    "mongodb": "^4.14.0",
+    "node-cron": "^3.0.2",
+    "node-fetch": "^2.6.9",
+    "telegraf": "^4.11.2"
   }
 }

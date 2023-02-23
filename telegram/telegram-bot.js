@@ -23,6 +23,7 @@ const Logging = require("./utils/logging");
 const MongoDispatcher = require("./utils/database");
 const { Capitalize, Chunkify, TGE } = require("./utils/common-utils");
 const { GetScheduleByGroup, GetWeek, GetDay, BuildDay, BuildWeek, GetToday, GetTomorrow } = require("./utils/build-layout");
+const GetChat = require("./utils/get-chat");
 const mongoDispatcher = new MongoDispatcher(DATABASE_NAME);
 
 
@@ -31,6 +32,7 @@ const mongoDispatcher = new MongoDispatcher(DATABASE_NAME);
 /**
  * @typedef {object} User
  * @property {number} id
+ * @property {number} [thread]
  * @property {string} username
  * @property {string} group
  * @property {boolean} [waitingForTextForSettings]
@@ -74,21 +76,19 @@ const IsSession = () => (
 
 
 /**
- * @param {import("telegraf").Context} ctx
+ * @param {import("./utils/get-chat").DefaultContext} ctx
  * @returns {Promise<User>}
  */
 const GettingUserWrapper = (ctx) => new Promise((resolve, reject) => {
-	const { chat } = ctx;
-
-	const foundUser = USERS.find((user) => user.id === chat.id);
+	const foundUser = USERS.find((user) => user.id === GetChat(ctx).id);
 
 	if (!foundUser) {
 		PushIntoSendingImmediateQueue({
 			text: "Произошла ошибка. Пожалуйста, выполните команду /start",
-			destination: chat.id,
+			destination: GetChat(ctx),
 		});
 
-		reject();
+		reject(new Error(`User not found – ${JSON.stringify(GetChat(ctx))}`));
 	} else {
 		resolve(foundUser);
 	}
@@ -96,7 +96,7 @@ const GettingUserWrapper = (ctx) => new Promise((resolve, reject) => {
 
 /**
  * @callback ButtonCommandCaller
- * @param {import("telegraf").Context} ctx
+ * @param {import("./utils/get-chat").DefaultContext} ctx
  * @returns {void}
  */
 /**
@@ -117,7 +117,7 @@ const COMMANDS = {
 			if (!today) {
 				PushIntoSendingImmediateQueue({
 					text: "Сегодня неучебный день!",
-					destination: ctx.chat.id
+					destination: GetChat(ctx)
 				});
 			} else {
 				const todayLayout = await BuildDay(group, GetDay() - 1, GetWeek());
@@ -125,12 +125,12 @@ const COMMANDS = {
 				if (todayLayout) {
 					PushIntoSendingImmediateQueue({
 						text: `Сегодня ${today}. Расписание:\n\n${todayLayout}`,
-						destination: ctx.chat.id
+						destination: GetChat(ctx)
 					});
 				} else {
 					PushIntoSendingImmediateQueue({
 						text: `Сегодня ${today}. Пар нет!`,
-						destination: ctx.chat.id
+						destination: GetChat(ctx)
 					});
 				}
 			}
@@ -150,7 +150,7 @@ const COMMANDS = {
 			if (!tomorrow) {
 				PushIntoSendingImmediateQueue({
 					text: "Завтра неучебный день!",
-					destination: ctx.chat.id
+					destination: GetChat(ctx)
 				});
 			} else {
 				const tomorrowLayout = await BuildDay(group, GetDay(), GetWeek() + (GetDay() === 0));
@@ -158,12 +158,12 @@ const COMMANDS = {
 				if (tomorrowLayout) {
 					PushIntoSendingImmediateQueue({
 						text: `Завтра ${tomorrow}. Расписание:\n\n${tomorrowLayout}`,
-						destination: ctx.chat.id
+						destination: GetChat(ctx)
 					});
 				} else {
 					PushIntoSendingImmediateQueue({
 						text: `Завтра ${tomorrow}. Пар нет!`,
-						destination: ctx.chat.id
+						destination: GetChat(ctx)
 					});
 				}
 			}
@@ -179,7 +179,7 @@ const COMMANDS = {
 
 			PushIntoSendingImmediateQueue({
 				text: `Расписание на текущую неделю (№${GetWeek()}):\n\n${await BuildWeek(group, GetWeek())}`,
-				destination: ctx.chat.id
+				destination: GetChat(ctx)
 			});
 		}).catch(Logging)
 	},
@@ -193,7 +193,7 @@ const COMMANDS = {
 
 			PushIntoSendingImmediateQueue({
 				text: `Расписание на следующую неделю (№${GetWeek() + 1}):\n\n${await BuildWeek(group, GetWeek() + 1)}`,
-				destination: ctx.chat.id
+				destination: GetChat(ctx)
 			});
 		}).catch(Logging)
 	},
@@ -207,7 +207,7 @@ const COMMANDS = {
 
 			PushIntoSendingImmediateQueue({
 				text: `Расписание на неделю №${GetWeek() + 2}:\n\n${await BuildWeek(group, GetWeek() + 2)}`,
-				destination: ctx.chat.id
+				destination: GetChat(ctx)
 			});
 		}).catch(Logging)
 	},
@@ -221,7 +221,7 @@ const COMMANDS = {
 
 			PushIntoSendingImmediateQueue({
 				text: `Расписание на неделю №${GetWeek() + 3}:\n\n${await BuildWeek(group, GetWeek() + 3)}`,
-				destination: ctx.chat.id
+				destination: GetChat(ctx)
 			});
 		}).catch(Logging)
 	},
@@ -229,13 +229,11 @@ const COMMANDS = {
 		description: "⚙ Настройки",
 		/** @type {ButtonCommandCaller} */
 		caller: async (ctx) => {
-			const { chat } = ctx;
-
-			const foundUser = USERS.find((user) => user.id === chat.id);
+			const foundUser = USERS.find((user) => user.id === GetChat(ctx).id);
 
 			if (!foundUser) return PushIntoSendingImmediateQueue({
 				text: "Произошла ошибка. Пожалуйста, выполните команду /start",
-				destination: chat.id,
+				destination: GetChat(ctx),
 			});
 
 			foundUser.waitingForTextForSettings = true;
@@ -254,7 +252,7 @@ const COMMANDS = {
 
 🔹 Присылать ли расписание на следующий день в 22:00.
 🔸🔸 <b>(только на те дни, когда есть пары)</b>`,
-				destination: chat.id,
+				destination: GetChat(ctx),
 				buttons: Markup.keyboard(
 					SETTINGS_COMMANDS.map((settingCommand) =>
 						[({text: settingCommand.text(foundUser)})]
@@ -269,7 +267,7 @@ const COMMANDS = {
 		caller: async (ctx) => {
 			PushIntoSendingImmediateQueue({
 				text: "Интерактивная карта/схема с поиском по аудиториям",
-				destination: ctx.chat.id,
+				destination: GetChat(ctx),
 				buttons: Markup.inlineKeyboard([
 					{
 						text: "🗺 Схема вуза",
@@ -296,7 +294,7 @@ const COMMANDS = {
 
 			PushIntoSendingImmediateQueue({
 				text: `<a href="${encodeURI(group.remoteFile)}">${TGE(group.remoteFile)}</a>`,
-				destination: ctx.chat.id,
+				destination: GetChat(ctx),
 				buttons: Markup.inlineKeyboard([
 					{
 						text: "Оригинальный XLSX-файл",
@@ -314,8 +312,9 @@ const COMMANDS = {
 2. Напишите в группе команду <code>/start@mirea_table_bot</code>
 3. На отправленное ботом сообщение ответьте номером группы, которую хотите прикрепить (позже её можно поменять)
 4. После установки группы вы сможете настроить рассылку (или отключить её).
+5. Если вы добавляете бота в группу с тредами (топиками, форумами), то при включённой рассылке бот будет отправлять её в тот тред, где была впервые вызвана команда <code>/start</code>, или в тред, где настройки были изменены в последний раз.
 
-<b>Важно</b>: все взаимодействия с ботом в группе совершайте через кнопки (под полем ввода) или отвечая на сообщения бота. У бота активирован <a href="https://core.telegram.org/bots/features#privacy-mode">режим приватности</a> – т.е. ему доступны только те сообщения, что отправлены через его же кнопки, или реплаи ему.`
+<b>Важно</b>: все взаимодействия с ботом в группе совершайте через кнопки (под полем ввода) или отвечая на сообщения бота. У бота активирован <a href="https://core.telegram.org/bots/features#privacy-mode">режим приватности</a> – т.е. ему доступны только те сообщения, что отправлены через его же кнопки, или реплаи ему. По этой же причине выдача админских прав боту не рекомендуется.`
 	}
 };
 
@@ -336,11 +335,11 @@ const SETTINGS_COMMANDS = [
 		caller: async (ctx) => GettingUserWrapper(ctx).then((foundUser) => {
 			foundUser.waitingForTextForSettings = false;
 
-			SaveUser(foundUser)
+			SaveUser(foundUser, ctx)
 			.then(() => {
 				PushIntoSendingImmediateQueue({
 					text: "Настройки закрыты (и, естественно, применены ✅)",
-					destination: ctx.chat.id,
+					destination: GetChat(ctx),
 				});
 			}).catch(Logging);
 		}).catch(Logging)
@@ -353,11 +352,11 @@ const SETTINGS_COMMANDS = [
 		caller: async (ctx) => GettingUserWrapper(ctx).then((foundUser) => {
 			foundUser.morning = !foundUser.morning;
 
-			SaveUser(foundUser)
+			SaveUser(foundUser, ctx)
 			.then(() => {
 				PushIntoSendingImmediateQueue({
 					text: `🕖 Рассылка утром – ${foundUser.morning ? "включена" : "выключена"}`,
-					destination: ctx.chat.id,
+					destination: GetChat(ctx),
 					buttons: Markup.keyboard(
 						SETTINGS_COMMANDS.map((settingCommand) =>
 							[({text: settingCommand.text(foundUser)})]
@@ -375,11 +374,11 @@ const SETTINGS_COMMANDS = [
 		caller: async (ctx) => GettingUserWrapper(ctx).then((foundUser) => {
 			foundUser.evening = !foundUser.evening;
 
-			SaveUser(foundUser)
+			SaveUser(foundUser, ctx)
 			.then(() => {
 				PushIntoSendingImmediateQueue({
 					text: `🕖 Рассылка вечером – ${foundUser.evening ? "включена" : "выключена"}`,
-					destination: ctx.chat.id,
+					destination: GetChat(ctx),
 					buttons: Markup.keyboard(
 						SETTINGS_COMMANDS.map((settingCommand) =>
 							[({text: settingCommand.text(foundUser)})]
@@ -397,11 +396,11 @@ const SETTINGS_COMMANDS = [
 		caller: async (ctx) => GettingUserWrapper(ctx).then((foundUser) => {
 			foundUser.late_evening = !foundUser.late_evening;
 
-			SaveUser(foundUser)
+			SaveUser(foundUser, ctx)
 			.then(() => {
 				PushIntoSendingImmediateQueue({
 					text: `🕖 Рассылка поздним вечером – ${foundUser.late_evening ? "включена" : "выключена"}`,
-					destination: ctx.chat.id,
+					destination: GetChat(ctx),
 					buttons: Markup.keyboard(
 						SETTINGS_COMMANDS.map((settingCommand) =>
 							[({text: settingCommand.text(foundUser)})]
@@ -427,7 +426,7 @@ const SETTINGS_COMMANDS = [
 				const LocalReject = () => {
 					PushIntoSendingImmediateQueue({
 						text: `Такая группа не найдена попробуйте ещё раз.\n\nЕсли что-то пошло не так, вызовите команду /start ещё раз – выбор группы отменится.`,
-						destination: ctx.chat.id,
+						destination: GetChat(ctx),
 						buttons: {
 							hide_keyboard: true
 						}
@@ -467,21 +466,21 @@ const SETTINGS_COMMANDS = [
 						foundUser.waitingForTextForSettings = false;
 						foundUser.group = `${foundGroups[0].groupName}&${foundGroups[0].groupSuffix || ""}`;
 
-						SaveUser(foundUser)
+						SaveUser(foundUser, ctx)
 						.then(() => {
 							PushIntoSendingImmediateQueue({
 								text: `Ваша группа успешно установлена: <code>${TGE(foundUser.group.replace(/\&/g, ", "))}</code>`,
-								destination: ctx.chat.id
+								destination: GetChat(ctx)
 							});
 						}).catch(Logging);
 					} else {
 						foundUser.selectingGroupName = foundUser.selectingGroupName || plainGroupNameOrSuffix;
 
-						SaveUser(foundUser)
+						SaveUser(foundUser, ctx)
 						.then(() => {
 							PushIntoSendingImmediateQueue({
 								text: `Группу с названием ${TGE(foundUser.selectingGroupName)} надо уточнить. Просто отправьте мне один из следующих вариантов (скорее всего это название кафедры или направления):\n${foundGroups.map((group) => `<code>${TGE(group.groupSuffix)}</code>`).join("\n")}\n\nЕсли что-то пошло не так, вызовите команду /start ещё раз – выбор группы отменится.`,
-								destination: ctx.chat.id,
+								destination: GetChat(ctx),
 								buttons: {
 									hide_keyboard: true
 								}
@@ -498,7 +497,7 @@ const SETTINGS_COMMANDS = [
 
 				PushIntoSendingImmediateQueue({
 					text: `Давайте поменяем группу! Напишите её название точно. Если необходимо, надо будет уточнить группу (по названию кафедры).\n\nЕсли что-то пойдёт не так, вызовите команду /start ещё раз – выбор группы отменится.`,
-					destination: ctx.chat.id,
+					destination: GetChat(ctx),
 					buttons: {
 						hide_keyboard: true
 					}
@@ -536,17 +535,19 @@ const GroupNotFound = (ctx, foundUser) => {
 
 	PushIntoSendingImmediateQueue({
 		text: `Ваша группа не найдена. Попробуйте задать её заново в настройках (команда /settings).`,
-		destination: ctx.chat.id
+		destination: GetChat(ctx)
 	});
 };
 
 /**
- * @param {import("telegraf").Context} ctx
  * @param {User} foundUser
+ * @param {import("./utils/get-chat").DefaultContext} ctx
  * @returns {Promise}
  */
-const SaveUser = foundUser => {
+const SaveUser = (foundUser, ctx) => {
 	if (!foundUser.id) return Promise.reject(`No such user`);
+
+	if (ctx?.message?.message_thread_id) foundUser.thread = ctx.message.message_thread_id;
 
 	return new Promise((resolve, reject) => {
 		mongoDispatcher.callDB()
@@ -563,7 +564,7 @@ const SaveUser = foundUser => {
 
 /**
  * @typedef {object} SendingMessageType
- * @property {number} destination
+ * @property {{ id: number, thread?: number }} destination
  * @property {string} text
  * @property {{text: string, callback_data: string, url: string}[][]} [buttons]
  * @property {string} [photo]
@@ -602,16 +603,18 @@ const TelegramSend = (messageData) => {
 
 
 	const sendingPromise = (messageData.photo ?
-		telegram.sendPhoto(messageData.destination, {
+		telegram.sendPhoto(messageData.destination.id, {
 			source: createReadStream(messageData.photo)
 		}, {
+			message_thread_id: messageData.destination.thread,
 			caption: messageData.text,
 			parse_mode: "HTML",
 			disable_web_page_preview: true,
 			reply_markup: messageData.buttons || replyKeyboard
 		})
 	:
-		telegram.sendMessage(messageData.destination, messageData.text, {
+		telegram.sendMessage(messageData.destination.id, messageData.text, {
+			message_thread_id: messageData.destination.thread,
 			parse_mode: "HTML",
 			disable_web_page_preview: true,
 			reply_markup: messageData.buttons || replyKeyboard
@@ -620,23 +623,38 @@ const TelegramSend = (messageData) => {
 
 
 	return sendingPromise.catch(/** @param {TelegramError} e */ (e) => {
-		if (e && e.code === 403) {
-			const foundUser = USERS.find((user) => user.id === messageData.destination);
+		if (e?.code === 403) {
+			const foundUser = USERS.find((user) => user.id === messageData.destination.id);
 
 			if (foundUser) {
-				const indexOfFoundUser = USERS.findIndex((user) => user.id === messageData.destination);
+				const indexOfFoundUser = USERS.findIndex((user) => user.id === messageData.destination.id);
 
 				if (indexOfFoundUser) {
 					USERS.splice(indexOfFoundUser, 1);
 
 					mongoDispatcher.callDB()
-					.then((DB) => DB.collection("telegram-users").deleteOne({ id: messageData.destination }))
+					.then((DB) => DB.collection("telegram-users").deleteOne({ id: messageData.destination.id }))
 					.catch((e) => Logging(new Error("Error on deleting user from DB", e)));
 				} else {
-					Logging(new Error(`Could not deleting user with id ${messageData.destination} because of critical bug with finding proper user.`), e);
+					Logging(new Error(`Could not deleting user with id ${messageData.destination.id} because of critical bug with finding proper user.`), e);
 				}
 			} else {
-				Logging(new Error(`Cannot remove user with id ${messageData.destination} because they're not in out users' list!`), e);
+				Logging(new Error(`Cannot remove user with id ${messageData.destination.id} because they're not in out users' list!`), e);
+			}
+
+			return Promise.resolve({});
+		} else if (!!e?.parameters?.migrate_to_chat_id) {
+			const foundUser = USERS.find((user) => user.id === messageData.destination.id);
+
+			if (foundUser) {
+				mongoDispatcher.callDB()
+				.then((DB) => DB.collection("telegram-users").updateOne(
+					{ id: messageData.destination.id },
+					{ $set: { id: e.parameters.migrate_to_chat_id } }
+				))
+				.catch((e) => Logging(new Error("Error on updating user from DB", e)));
+			} else {
+				Logging(new Error(`Cannot update user with id ${messageData.destination.id} because they're not in out users' list!`), e);
 			}
 
 			return Promise.resolve({});
@@ -653,7 +671,7 @@ const TelegramSend = (messageData) => {
 const ImmediateSendingQueueProcedure = (iMessageData) => {
 	const messageData = iMessageData || IMMEDIATE_QUEUE.shift();
 
-	if (!(messageData && messageData.destination)) return;
+	if (!messageData?.destination?.id) return;
 
 	TelegramSend(messageData)
 	.catch(/** @param {TelegramError} e */ (e) => {
@@ -663,7 +681,7 @@ const ImmediateSendingQueueProcedure = (iMessageData) => {
 			else
 				setTimeout(() => ImmediateSendingQueueProcedure(messageData), 2e3);
 		} else
-			Logging(new Error(`Error on sending to ${messageData.destination}`), e);
+			Logging(new Error(`Error on sending to ${messageData.destination.id}`), e);
 	});
 };
 
@@ -676,7 +694,7 @@ setInterval(ImmediateSendingQueueProcedure, 50);
 const MailingSendingQueueProcedure = (iMessageData) => {
 	const messageData = iMessageData || MAILING_QUEUE.shift();
 
-	if (!(messageData && messageData.destination)) return;
+	if (!messageData?.destination?.id) return;
 
 	TelegramSend(messageData)
 	.catch(/** @param {TelegramError} e */ (e) => {
@@ -686,7 +704,7 @@ const MailingSendingQueueProcedure = (iMessageData) => {
 			else
 				setTimeout(() => MailingSendingQueueProcedure(messageData), 5e3);
 		} else
-			Logging(new Error(`Error on sending to ${messageData.destination}`), e);
+			Logging(new Error(`Error on sending to ${messageData.destination.id}`), e);
 	});
 };
 
@@ -697,12 +715,13 @@ setInterval(MailingSendingQueueProcedure, 500);
 
 
 telegraf.start(/** @param {import("telegraf").Context} ctx */ (ctx) => {
-	const foundUser = USERS.find((user) => user.id === ctx.chat.id);
+	const foundUser = USERS.find((user) => user.id === GetChat(ctx).id);
 
 	if (!foundUser) {
 		/** @type {User} */
 		const newUser = {
-			id: ctx.chat.id,
+			id: GetChat(ctx).id,
+			thread: GetChat(ctx).thread,
 			username: ctx.chat.username || ctx.chat.first_name || ctx.chat.title,
 			group: "",
 			morning: true,
@@ -720,7 +739,7 @@ telegraf.start(/** @param {import("telegraf").Context} ctx */ (ctx) => {
 
 		PushIntoSendingImmediateQueue({
 			text: COMMANDS["help"].text,
-			destination: ctx.chat.id,
+			destination: GetChat(ctx),
 			buttons: {
 				hide_keyboard: true
 			}
@@ -734,12 +753,12 @@ telegraf.start(/** @param {import("telegraf").Context} ctx */ (ctx) => {
 
 		PushIntoSendingImmediateQueue({
 			text: `Начали почти с нуля – ваши прежние настройки на месте.`,
-			destination: ctx.chat.id
+			destination: GetChat(ctx)
 		});
 	} else {
 		PushIntoSendingImmediateQueue({
 			text: `Выберите вашу учебную группу. Для этого точно напишите её название. Если необходимо, надо будет уточнить по названию кафедры или направлению (но я скажу, если надо).\n\nЕсли что-то пойдёт не так, вызовите команду /start ещё раз – выбор группы начнётся заново.`,
-			destination: ctx.chat.id,
+			destination: GetChat(ctx),
 			buttons: {
 				hide_keyboard: true
 			}
@@ -747,13 +766,9 @@ telegraf.start(/** @param {import("telegraf").Context} ctx */ (ctx) => {
 	}
 });
 
-telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
-	const { chat } = ctx;
-	if (!chat) return false;
-
+telegraf.on("text", (ctx) => {
 	const text = ctx.message?.text;
 	if (!text) return false;
-
 
 	const commandMatch = text.match(/^\/([\w_]+)(\@mirea_table_bot)?$/i);
 
@@ -764,13 +779,13 @@ telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 			else if (typeof COMMANDS[commandMatch[1]].text == "string")
 				return PushIntoSendingImmediateQueue({
 					text: COMMANDS[commandMatch[1]].text,
-					destination: ctx.chat.id
+					destination: GetChat(ctx)
 				});
 		}
 	}
 
 
-	const foundUser = USERS.find((user) => user.id === chat.id);
+	const foundUser = USERS.find((user) => user.id === GetChat(ctx).id);
 
 	if (foundUser && foundUser.waitingForGroupSelection) {
 		const groupCommandHandler = SETTINGS_COMMANDS.find((handler) => handler.groupSelection);
@@ -780,7 +795,7 @@ telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 		else
 			return PushIntoSendingImmediateQueue({
 				text: "Не понял тебя. Если долго ничего не получается, попробуй команду /start. Или посмотри описание бота.",
-				destination: ctx.chat.id
+				destination: GetChat(ctx)
 			});
 	}
 
@@ -792,7 +807,7 @@ telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 		else
 			return PushIntoSendingImmediateQueue({
 				text: "Не понял тебя. Если долго ничего не получается, попробуй команду /start. Или посмотри описание бота.",
-				destination: ctx.chat.id
+				destination: GetChat(ctx)
 			});
 	}
 
@@ -805,14 +820,14 @@ telegraf.on("text", /** @param {import("telegraf").Context} ctx */ (ctx) => {
 		else if (typeof COMMANDS_ALIASES[commandAlias].text == "string")
 			return PushIntoSendingImmediateQueue({
 				text: COMMANDS_ALIASES[commandAlias].text,
-				destination: ctx.chat.id
+				destination: GetChat(ctx)
 			});
 	}
 
 
 	return PushIntoSendingImmediateQueue({
 		text: "Не понял тебя. Если долго ничего не получается, попробуй команду /start. Или посмотри описание бота.",
-		destination: ctx.chat.id
+		destination: GetChat(ctx)
 	});
 });
 
@@ -843,7 +858,7 @@ const GlobalSendToAllUsers = (timeOfDay, layoutFunc) => {
 
 		PushIntoSendingMailingQueue({
 			text: `${LABELS_FOR_TIMES_OF_DAY[timeOfDay]} ${day.nameOfDay}. Расписание:\n\n${day.layout}`,
-			destination: user.id
+			destination: user
 		});
 	});
 };
