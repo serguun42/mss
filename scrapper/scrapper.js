@@ -648,7 +648,7 @@ GetLinkToFiles()
 	return mongoDispatcher.callDB()
 	.then((DB) => {
 		/** @type {import("mongodb").Collection<GlobalScheduleGroup>} */
-		const STUDY_GROUPS_COLLECTION = DB.collection("study-groups");
+		const STUDY_GROUPS_COLLECTION = DB.collection("study_groups");
 		const PARAMS_COLLECTION = DB.collection("params");
 
 		if (!GLOBAL_SCHEDULE.length) return Promise.resolve();

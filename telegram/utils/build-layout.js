@@ -79,7 +79,7 @@ const GetScheduleByGroup = iGroup => {
 
 	return new Promise((resolveGettingGroup) =>
 		mongoDispatcher.callDB()
-		.then((DB) => DB.collection("study-groups").findOne(searchingQuery))
+		.then((DB) => DB.collection("study_groups").findOne(searchingQuery))
 		.then(/** @param {GlobalScheduleGroup} foundGroup */ (foundGroup) => {
 			if (foundGroup?.groupName)
 				resolveGettingGroup(foundGroup);

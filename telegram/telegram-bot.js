@@ -46,7 +46,7 @@ const mongoDispatcher = new MongoDispatcher(DATABASE_NAME);
 const USERS = [];
 
 mongoDispatcher.callDB() // Reading users
-.then((DB) => DB.collection("telegram-users").find({}).toArray())
+.then((DB) => DB.collection("telegram_users").find({}).toArray())
 .then((usersFromDB) => {
 	usersFromDB.forEach((user) => {
 		/** @type {User} */
@@ -445,7 +445,7 @@ const SETTINGS_COMMANDS = [
 
 				mongoDispatcher.callDB()
 				.then((DB) =>
-					DB.collection("study-groups")
+					DB.collection("study_groups")
 					.find(searchingQuery)
 					.project({ groupName: 1, groupSuffix: 1, _id: 0 })
 					.toArray()
@@ -551,7 +551,7 @@ const SaveUser = (foundUser, ctx) => {
 
 	return new Promise((resolve, reject) => {
 		mongoDispatcher.callDB()
-		.then((DB) => DB.collection("telegram-users").findOneAndReplace({ id: foundUser.id }, foundUser))
+		.then((DB) => DB.collection("telegram_users").findOneAndReplace({ id: foundUser.id }, foundUser))
 		.then((updatingResult) => {
 			if (updatingResult.ok)
 				resolve();
@@ -633,7 +633,7 @@ const TelegramSend = (messageData) => {
 					USERS.splice(indexOfFoundUser, 1);
 
 					mongoDispatcher.callDB()
-					.then((DB) => DB.collection("telegram-users").deleteOne({ id: messageData.destination.id }))
+					.then((DB) => DB.collection("telegram_users").deleteOne({ id: messageData.destination.id }))
 					.catch((e) => Logging(new Error("Error on deleting user from DB", e)));
 				} else {
 					Logging(new Error(`Could not deleting user with id ${messageData.destination.id} because of critical bug with finding proper user.`), e);
@@ -648,7 +648,7 @@ const TelegramSend = (messageData) => {
 
 			if (foundUser) {
 				mongoDispatcher.callDB()
-				.then((DB) => DB.collection("telegram-users").updateOne(
+				.then((DB) => DB.collection("telegram_users").updateOne(
 					{ id: messageData.destination.id },
 					{ $set: { id: e.parameters.migrate_to_chat_id } }
 				))
@@ -733,7 +733,7 @@ telegraf.start(/** @param {import("telegraf").Context} ctx */ (ctx) => {
 		USERS.push(newUser);
 
 		mongoDispatcher.callDB()
-		.then((DB) => DB.collection("telegram-users").insertOne(newUser))
+		.then((DB) => DB.collection("telegram_users").insertOne(newUser))
 		.catch(Logging);
 
 
