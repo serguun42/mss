@@ -1,8 +1,8 @@
 const
 	Logging = require("./logging"),
 	mongoClient = require("mongodb").MongoClient,
-	MONGO_CONNECTION_OPTIONS = { useNewUrlParser: true, useUnifiedTopology: true },
-	MONGO_URL = "mongodb://localhost:27017/";
+	MONGO_CONNECTION_OPTIONS = { directConnection: true, replicaSet: "mssrs", useNewUrlParser: true, useUnifiedTopology: true },
+	MONGO_URL = "mongodb://127.0.0.1:27017/";
 
 /**
  * @typedef {import("mongodb").Db} DB
