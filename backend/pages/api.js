@@ -60,7 +60,13 @@ module.exports = (iModuleDataObject) => {
 			case "groups":
 				if (queries["getAll"]) {
 					mongoDispatcher.callDB()
-					.then((DB) => DB.collection("study_groups").find({}).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
+					.then((DB) =>
+						DB.collection("study_groups")
+						.find()
+						.sort({ groupName: 1, groupSuffix: 1 })
+						.project({ groupName: 1, groupSuffix: 1, _id: 0 })
+						.toArray()
+					)
 					.then((names) => GlobalSendCustom(200, names))
 					.catch(Logging);
 				} else if (queries["get"]) {
@@ -72,7 +78,13 @@ module.exports = (iModuleDataObject) => {
 						selector["groupSuffix"] = queries["suffix"];
 
 					mongoDispatcher.callDB()
-					.then((DB) => DB.collection("study_groups").find(selector).project({ _id: 0 }).toArray())
+					.then((DB) =>
+						DB.collection("study_groups")
+						.find(selector)
+						.sort({ groupName: 1, groupSuffix: 1 })
+						.project({ _id: 0 })
+						.toArray()
+					)
 					.then((groups) => {
 						if (!groups.length)
 							GlobalSendCustom(404, []);
@@ -126,7 +138,13 @@ module.exports = (iModuleDataObject) => {
 				switch (path[3]) {
 					case "all":
 						mongoDispatcher.callDB()
-						.then((DB) => DB.collection("study_groups").find({}).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
+						.then((DB) =>
+							DB.collection("study_groups")
+							.find()
+							.sort({ groupName: 1, groupSuffix: 1 })
+							.project({ groupName: 1, groupSuffix: 1, _id: 0 })
+							.toArray()
+						)
 						.then((names) => GlobalSendCustom(200, names))
 						.catch(Logging);
 					break;
@@ -143,7 +161,13 @@ module.exports = (iModuleDataObject) => {
 							selector["groupSuffix"] = queries["suffix"];
 
 						mongoDispatcher.callDB()
-						.then((DB) => DB.collection("study_groups").find(selector).project({ _id: 0 }).toArray())
+						.then((DB) =>
+							DB.collection("study_groups")
+							.find(selector)
+							.sort({ groupName: 1, groupSuffix: 1 })
+							.project({ _id: 0 })
+							.toArray()
+						)
 						.then((groups) => {
 							if (!groups.length)
 								GlobalSendCustom(404, []);
@@ -195,7 +219,13 @@ module.exports = (iModuleDataObject) => {
 				switch (path[3]) {
 					case "all":
 						mongoDispatcher.callDB()
-						.then((DB) => DB.collection("study_groups").find({}).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
+						.then((DB) =>
+							DB.collection("study_groups")
+							.find()
+							.sort({ groupName: 1, groupSuffix: 1 })
+							.project({ groupName: 1, groupSuffix: 1, _id: 0 })
+							.toArray()
+						)
 						.then((names) => GlobalSendCustom(200, names))
 						.catch(Logging);
 					break;
@@ -212,7 +242,13 @@ module.exports = (iModuleDataObject) => {
 							selector["groupSuffix"] = queries["suffix"];
 
 						mongoDispatcher.callDB()
-						.then((DB) => DB.collection("study_groups").find(selector).project({ _id: 0 }).toArray())
+						.then((DB) =>
+							DB.collection("study_groups")
+							.find(selector)
+							.sort({ groupName: 1, groupSuffix: 1 })
+							.project({ _id: 0 })
+							.toArray()
+						)
 						.then((groups) => {
 							if (!groups.length)
 								GlobalSendCustom(404, []);
@@ -274,7 +310,13 @@ module.exports = (iModuleDataObject) => {
 				switch (path[3]) {
 					case "all":
 						mongoDispatcher.callDB()
-						.then((DB) => DB.collection("study_groups").find({}).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
+						.then((DB) =>
+							DB.collection("study_groups")
+							.find()
+							.sort({ groupName: 1, groupSuffix: 1 })
+							.project({ groupName: 1, groupSuffix: 1, _id: 0 })
+							.toArray()
+						)
 						.then((names) => GlobalSendCustom(200, names))
 						.catch(Logging);
 					break;
@@ -291,7 +333,13 @@ module.exports = (iModuleDataObject) => {
 							selector["groupSuffix"] = queries["suffix"];
 
 						mongoDispatcher.callDB()
-						.then((DB) => DB.collection("study_groups").find(selector).project({ _id: 0 }).toArray())
+						.then((DB) =>
+							DB.collection("study_groups")
+							.find(selector)
+							.sort({ groupName: 1, groupSuffix: 1 })
+							.project({ _id: 0 })
+							.toArray()
+						)
 						.then((groups) => {
 							if (!groups.length)
 								GlobalSendCustom(404, []);
