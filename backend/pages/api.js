@@ -60,7 +60,7 @@ module.exports = (iModuleDataObject) => {
 			case "groups":
 				if (queries["getAll"]) {
 					mongoDispatcher.callDB()
-					.then((DB) => DB.collection("study-groups").find({}).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
+					.then((DB) => DB.collection("study_groups").find({}).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
 					.then((names) => GlobalSendCustom(200, names))
 					.catch(Logging);
 				} else if (queries["get"]) {
@@ -72,7 +72,7 @@ module.exports = (iModuleDataObject) => {
 						selector["groupSuffix"] = queries["suffix"];
 
 					mongoDispatcher.callDB()
-					.then((DB) => DB.collection("study-groups").find(selector).project({ _id: 0 }).toArray())
+					.then((DB) => DB.collection("study_groups").find(selector).project({ _id: 0 }).toArray())
 					.then((groups) => {
 						if (!groups.length)
 							GlobalSendCustom(404, []);
@@ -126,7 +126,7 @@ module.exports = (iModuleDataObject) => {
 				switch (path[3]) {
 					case "all":
 						mongoDispatcher.callDB()
-						.then((DB) => DB.collection("study-groups").find({}).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
+						.then((DB) => DB.collection("study_groups").find({}).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
 						.then((names) => GlobalSendCustom(200, names))
 						.catch(Logging);
 					break;
@@ -143,7 +143,7 @@ module.exports = (iModuleDataObject) => {
 							selector["groupSuffix"] = queries["suffix"];
 
 						mongoDispatcher.callDB()
-						.then((DB) => DB.collection("study-groups").find(selector).project({ _id: 0 }).toArray())
+						.then((DB) => DB.collection("study_groups").find(selector).project({ _id: 0 }).toArray())
 						.then((groups) => {
 							if (!groups.length)
 								GlobalSendCustom(404, []);
@@ -195,7 +195,7 @@ module.exports = (iModuleDataObject) => {
 				switch (path[3]) {
 					case "all":
 						mongoDispatcher.callDB()
-						.then((DB) => DB.collection("study-groups").find({}).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
+						.then((DB) => DB.collection("study_groups").find({}).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
 						.then((names) => GlobalSendCustom(200, names))
 						.catch(Logging);
 					break;
@@ -212,7 +212,7 @@ module.exports = (iModuleDataObject) => {
 							selector["groupSuffix"] = queries["suffix"];
 
 						mongoDispatcher.callDB()
-						.then((DB) => DB.collection("study-groups").find(selector).project({ _id: 0 }).toArray())
+						.then((DB) => DB.collection("study_groups").find(selector).project({ _id: 0 }).toArray())
 						.then((groups) => {
 							if (!groups.length)
 								GlobalSendCustom(404, []);
@@ -274,7 +274,7 @@ module.exports = (iModuleDataObject) => {
 				switch (path[3]) {
 					case "all":
 						mongoDispatcher.callDB()
-						.then((DB) => DB.collection("study-groups").find({}).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
+						.then((DB) => DB.collection("study_groups").find({}).project({ groupName: 1, groupSuffix: 1, _id: 0 }).toArray())
 						.then((names) => GlobalSendCustom(200, names))
 						.catch(Logging);
 					break;
@@ -291,7 +291,7 @@ module.exports = (iModuleDataObject) => {
 							selector["groupSuffix"] = queries["suffix"];
 
 						mongoDispatcher.callDB()
-						.then((DB) => DB.collection("study-groups").find(selector).project({ _id: 0 }).toArray())
+						.then((DB) => DB.collection("study_groups").find(selector).project({ _id: 0 }).toArray())
 						.then((groups) => {
 							if (!groups.length)
 								GlobalSendCustom(404, []);
@@ -341,7 +341,7 @@ module.exports = (iModuleDataObject) => {
 					DB.collection("params").findOne({ name: "scrapper_updated_date" })
 					.then((scrapperUpdatedDate) => {
 						if (scrapperUpdatedDate)
-							return DB.collection("study-groups").countDocuments().then((groupsCount) => {
+							return DB.collection("study_groups").countDocuments().then((groupsCount) => {
 								GlobalSendCustom(200, {
 									scrapperUpdatedDate: new Date(scrapperUpdatedDate.value || 0).toISOString(),
 									groupsCount
