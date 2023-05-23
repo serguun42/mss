@@ -1,5 +1,6 @@
 {
 	"DATABASE_NAME": "mss",
+	"DATABASE_CONNECTION_URI": "mongodb://host1:27017,host2:27017,host3:27017/?replicaSet=myRs&readPreference=primaryPreferred",
 	"DAYS_OF_WEEK": [
 		"понедельник",
 		"вторник",

@@ -1,8 +1,9 @@
 const
 	Logging = require("./logging"),
+	{ DATABASE_CONNECTION_URI } = DEV ? require("../../../DEV_CONFIGS/telegram-bot.config.json") : require("../telegram-bot.config.json"),
 	mongoClient = require("mongodb").MongoClient,
-	MONGO_CONNECTION_OPTIONS = { directConnection: true, replicaSet: "mssrs", useNewUrlParser: true, useUnifiedTopology: true },
-	MONGO_URL = "mongodb://127.0.0.1:27017/";
+	MONGO_CONNECTION_OPTIONS = {},
+	MONGO_URL = DATABASE_CONNECTION_URI || "mongodb://127.0.0.1:27017/";
 
 /**
  * @typedef {import("mongodb").Db} DB

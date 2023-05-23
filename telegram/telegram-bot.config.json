@@ -19,6 +19,7 @@
 		"late_evening": "Завтра"
 	},
 	"DATABASE_NAME": "mss",
+	"DATABASE_CONNECTION_URI": "mongodb://host1:27017,host2:27017,host3:27017/?replicaSet=myRs&readPreference=primaryPreferred",
 	"LOGGING_TAG": "telegram_bot",
 	"LOGGING_PORT": 5050
 }
