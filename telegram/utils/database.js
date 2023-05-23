@@ -1,5 +1,6 @@
 const
 	Logging = require("./logging"),
+	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
 	{ DATABASE_CONNECTION_URI } = DEV ? require("../../../DEV_CONFIGS/telegram-bot.config.json") : require("../telegram-bot.config.json"),
 	mongoClient = require("mongodb").MongoClient,
 	MONGO_CONNECTION_OPTIONS = {},

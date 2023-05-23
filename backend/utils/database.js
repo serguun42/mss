@@ -1,5 +1,6 @@
 const
 	Logging = require("./logging"),
+	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
 	{ DATABASE_CONNECTION_URI } = DEV ? require("../../../DEV_CONFIGS/backend.config.json") : require("../backend.config.json"),
 	mongoClient = require("mongodb").MongoClient,
 	MONGO_CONNECTION_OPTIONS = {},
