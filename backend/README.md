@@ -11,7 +11,7 @@ Uses nginx as server for static and as reverse-proxy for API. See [nginxconfig.i
 ## Commands
 
 1. Install all dependencies `npm i --only=prod`
-2. Run backend for first time `npm run backend-start`
+2. Run backend with PM2 `npm run production`
 
 ## Some folders
 

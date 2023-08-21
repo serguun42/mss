@@ -4,7 +4,7 @@
   "description": "",
   "main": "backend-server.js",
   "scripts": {
-    "backend-start": "node backend-server.js"
+    "production": "pm2 start pm2.production.json"
   },
   "author": "",
   "license": "ISC",

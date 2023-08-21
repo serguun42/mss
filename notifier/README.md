@@ -11,7 +11,7 @@ HTTP server runs on port, defined in `notifier-and-logger.config.json`;
 ## Commands
 
 1. Install all dependencies `npm install`
-2. Run notifier for first time `npm run notifier`
+2. Run notifier with PM2 `npm run production`
 
 
 ## Some other files
