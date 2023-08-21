@@ -12,7 +12,7 @@ Notifies via [notifier](https://github.com/serguun42/mss/tree/master/notifier), 
 ## Commands
 
 1. Install all dependencies `npm i --only=prod`
-2. Start Telegram bot `npm run telegram`
+2. Start Telegram bot with PM2 `npm run production`
 
 
 ## Folders

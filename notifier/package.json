@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "notifier": "node ./notifier-and-logger.js"
+    "production": "pm2 start pm2.production.json"
   },
   "author": "",
   "license": "ISC",

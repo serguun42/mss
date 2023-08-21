@@ -17,14 +17,6 @@ jobs:
       - name: Clear old Github Actions workspace
         run: rm -rf $GITHUB_WORKSPACE/*
       - uses: actions/checkout@v3
-      - name: Backup old deployment
-        run: |
-          cd ~ &&
-          rm -rf mss_old/ &&
-          [ -d mss ] &&
-          mv mss mss_old &&
-          echo "Moved old folder" ||
-          echo "Cannot move old folder"
       - name: Copy fresh project
         run: cd .. && cp -r mss ~/mss
       - name: Copy production configs
@@ -57,9 +49,9 @@ jobs:
           echo "Process <notifier-and-logger> exited successfully" ||
           echo "Process <notifier-and-logger> wasn't running"
       - name: Start new PM2 instance
-        run: cd ~/mss/notifier/ && pm2 start notifier-and-logger.js
+        run: cd ~/mss/notifier/ && npm run production
       - name: Delete previous PM2 logs
-        run: pm2 flush notifier-and-logger
+        run: pm2 flush mss-notifier
 
   cicd:
     name: Deploy «ci/cd»
@@ -93,9 +85,9 @@ jobs:
           echo "Process <backend-server> exited successfully" ||
           echo "Process <backend-server> wasn't running"
       - name: Start new PM2 instance
-        run: cd ~/mss/backend/ && pm2 start backend-server.js
+        run: cd ~/mss/backend/ && npm run production
       - name: Delete previous PM2 logs
-        run: pm2 flush backend-server
+        run: pm2 flush mss-backend-server
 
   telegram:
     name: Deploy «telegram»
@@ -111,9 +103,9 @@ jobs:
           echo "Process <telegram-bot> exited successfully" ||
           echo "Process <telegram-bot> wasn't running"
       - name: Start new PM2 instance
-        run: cd ~/mss/telegram/ && pm2 start telegram-bot.js
+        run: cd ~/mss/telegram/ && npm run production
       - name: Delete previous PM2 logs
-        run: pm2 flush telegram-bot
+        run: pm2 flush mss-telegram-bot
 
   frontend:
     name: Deploy «frontend»
@@ -131,8 +123,10 @@ jobs:
         run: cd ~/mss/frontend/ && npm run build
       - name: Generate Redoc bundle file
         run: cd ~/mss/frontend/ && npm exec -- redoc-cli bundle public/docs/api/latest.yml -o dist/docs/api/redoc.html
-      - name: clear node_modules
+      - name: Clear node_modules
         run: cd ~/mss/frontend/ && rm -rf node_modules
+      - name: Copy to NGINX
+        run: cp -r ~/mss/frontend/dist/* /usr/share/nginx/mss/
 
   final:
     name: Send final logs

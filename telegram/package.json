@@ -4,7 +4,7 @@
   "description": "",
   "main": "telegram-bot.js",
   "scripts": {
-    "run-bot": "node telegram-bot.js"
+    "production": "pm2 start pm2.production.json"
   },
   "keywords": [],
   "author": "serguun42",
