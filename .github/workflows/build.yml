@@ -14,11 +14,9 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Clear old Github Actions workspace
-        run: rm -rf $GITHUB_WORKSPACE/*
       - uses: actions/checkout@v3
       - name: Copy fresh project
-        run: cd .. && cp -r mss ~/mss
+        run: rm -rf ~/mss && cd .. && cp -r mss ~/mss
       - name: Copy production configs
         run: |
           cp ~/MSS_CONFIGS/notifier-and-logger.config.json ~/mss/notifier/;
