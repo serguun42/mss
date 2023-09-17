@@ -680,8 +680,8 @@ const ImmediateSendingQueueProcedure = (iMessageData) => {
 				setTimeout(() => ImmediateSendingQueueProcedure(messageData), e.parameters?.retry_after * 1e3 + Math.random() * 2e3);
 			else
 				setTimeout(() => ImmediateSendingQueueProcedure(messageData), 2e3);
-		} else
-			Logging(new Error(`Error on sending to ${messageData.destination.id}`), e);
+		} /* else
+			Logging(new Error(`Error on sending to ${messageData.destination.id}`), e); */
 	});
 };
 
@@ -703,8 +703,8 @@ const MailingSendingQueueProcedure = (iMessageData) => {
 				setTimeout(() => MailingSendingQueueProcedure(messageData), e.parameters?.retry_after * 1e3 + Math.random() * 5e3);
 			else
 				setTimeout(() => MailingSendingQueueProcedure(messageData), 5e3);
-		} else
-			Logging(new Error(`Error on sending to ${messageData.destination.id}`), e);
+		} /* else 
+			Logging(new Error(`Error on sending to ${messageData.destination.id}`), e); */
 	});
 };
 
