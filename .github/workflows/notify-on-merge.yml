@@ -18,5 +18,5 @@ jobs:
           CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
         run: |
           source $CONFIGS_LOCATION_BASE/docker.env;
-          curl http://127.0.0.1:$NOTIFIER_PUBLISH_PORT -d "{\"error\":false,\"args\":[\"User $GITHUB_ACTOR made a pull request\",\"From branch: $GITHUB_HEAD_REF\",\"To branch: $GITHUB_BASE_REF\"],\"tag\":\"ci\"}" ||
+          curl http://127.0.0.1:$NOTIFIER_PUBLISH_PORT -d "{\"error\":false,\"args\":[\"User $GITHUB_ACTOR made a pull request\\nFrom branch: $GITHUB_HEAD_REF\\nTo branch: $GITHUB_BASE_REF\"],\"tag\":\"ci\"}" ||
           echo "Error while sending notification"
