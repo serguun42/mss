@@ -402,6 +402,10 @@ module.exports = (iModuleDataObject) => {
 				.catch(Logging);
 			break;
 
+			case "ping":
+				GlobalSendCustom(200, "pong");
+			break;
+
 			case "logs":
 				switch (path[3]) {
 					case "post":
