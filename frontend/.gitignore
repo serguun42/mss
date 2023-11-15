@@ -28,7 +28,6 @@ pnpm-debug.log*
 jsconfig.json
 tsconfig.json
 tsconfig.create.bat
-package-lock.json
 src/config/local.env
 public/manifest.json
 public/manifest.webmanifest

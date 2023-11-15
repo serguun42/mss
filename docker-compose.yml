@@ -1,0 +1,59 @@
+# Docker Compose for running on stage and production
+
+version: "3.8"
+
+name: mss
+
+services:
+  mss-backend:
+    container_name: mss-backend
+    image: mss-backend:latest
+    build:
+      context: ./backend
+    restart: always
+    ports:
+      - ${BACKEND_PUBLISH_PORT}:80
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  mss-notifier:
+    container_name: mss-notifier
+    image: mss-notifier:latest
+    build:
+      context: ./notifier
+    restart: always
+    ports:
+      - ${NOTIFIER_PUBLISH_PORT}:80
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  mss-telegram:
+    container_name: mss-telegram
+    image: mss-telegram:latest
+    build:
+      context: ./telegram
+    restart: always
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  mss-scrapper:
+    container_name: mss-scrapper
+    image: mss-scrapper:latest
+    build:
+      context: ./scrapper
+    restart: always
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  mss-frontend:
+    container_name: mss-frontend
+    image: mss-frontend:latest
+    build:
+      context: ./frontend
+    restart: always
+    volumes:
+      - ${FRONTEND_PUBLISH_PATH}:/usr/src/app/mount
+
+networks:
+  default:
+    name: mss-network

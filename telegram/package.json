@@ -2,20 +2,20 @@
   "name": "telegram",
   "version": "1.0.0",
   "description": "",
-  "main": "telegram-bot.js",
+  "main": "telegram.js",
   "scripts": {
-    "production": "pm2 start pm2.production.json"
+    "production": "node telegram.js"
   },
   "keywords": [],
   "author": "serguun42",
   "license": "BSL-1.0",
-  "devDependencies": {
-    "typescript": "^4.9.5"
-  },
   "dependencies": {
     "mongodb": "^4.14.0",
     "node-cron": "^3.0.2",
     "node-fetch": "^2.6.9",
     "telegraf": "^4.11.2"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5"
   }
 }

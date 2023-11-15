@@ -3,9 +3,9 @@ name: Notify on merge
 on:
   pull_request:
     branches:
-      - '*'
-      - '*/*'
-      - '**'
+      - "*"
+      - "*/*"
+      - "**"
 
   workflow_dispatch:
 
@@ -14,7 +14,9 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Send notification
+        env:
+          CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
         run: |
-          [ -f ~/mss/cicd/ci-notify.js ] &&
-          node ~/mss/cicd/ci-notify.js "User $GITHUB_ACTOR made a pull request" "From branch: $GITHUB_HEAD_REF" "To branch: $GITHUB_BASE_REF" ||
-          echo "User $GITHUB_ACTOR made a pull request" "From branch: $GITHUB_HEAD_REF" "To branch: $GITHUB_BASE_REF"
+          source $CONFIGS_LOCATION_BASE/docker.env;
+          curl http://127.0.0.1:$NOTIFIER_PUBLISH_PORT -d "{\"error\":false,\"args\":[\"User $GITHUB_ACTOR made a pull request\",\"From branch: $GITHUB_HEAD_REF\",\"To branch: $GITHUB_BASE_REF\"],\"tag\":\"ci\"}" ||
+          echo "Error while sending notification"

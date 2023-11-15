@@ -1,5 +1,6 @@
 {
 	"TELEGRAM_BOT_TOKEN": "0000000000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+	"TELEGRAM_API_SERVER_HOST": "host.docker.internal",
 	"TELEGRAM_API_SERVER_PORT": 8081,
 	"ADMIN_TELEGRAM_DATA": {
 		"id": 123456789,
@@ -21,5 +22,6 @@
 	"DATABASE_NAME": "mss",
 	"DATABASE_CONNECTION_URI": "mongodb://host1:27017,host2:27017,host3:27017/?replicaSet=myRs&readPreference=primaryPreferred",
 	"LOGGING_TAG": "telegram_bot",
-	"LOGGING_PORT": 5050
+	"LOGGING_HOST": "mss-notifier",
+	"LOGGING_PORT": 80
 }
