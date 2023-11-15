@@ -1,19 +1,15 @@
 const http = require("http");
 
-const
-	DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
-	{ NODE_PORT } = DEV ? require("../../DEV_CONFIGS/backend.config.json") : require("./backend.config.json");
-
 /**
  * @param {{[code: string]: string}} iStatusCodes
  * @returns {{[code: number]: string}}
  */
 const GetStatusCodes = (iStatusCodes) => {
-	const newCodes = {};
+  const newCodes = {};
 
-	Object.keys(iStatusCodes).forEach((code) => newCodes[code] = `${code} ${iStatusCodes[code]}`)
+  Object.keys(iStatusCodes).forEach((code) => (newCodes[code] = `${code} ${iStatusCodes[code]}`));
 
-	return newCodes;
+  return newCodes;
 };
 
 /**
@@ -24,63 +20,60 @@ const STATUSES = GetStatusCodes(http.STATUS_CODES);
 
 const UTIL = require("./utils/urls-and-cookies");
 
+http
+  .createServer((req, res) => {
+    const pathname = UTIL.SafeDecode(UTIL.SafeURL(req.url).pathname),
+      path = UTIL.ParsePath(pathname),
+      queries = UTIL.ParseQuery(UTIL.SafeURL(req.url).search),
+      cookies = UTIL.ParseCookie(req.headers);
 
-http.createServer((req, res) => {
-	const pathname = UTIL.SafeDecode(UTIL.SafeURL(req.url).pathname),
-		  path = UTIL.ParsePath(pathname),
-		  queries = UTIL.ParseQuery(UTIL.SafeURL(req.url).search),
-		  cookies = UTIL.ParseCookie(req.headers);
+    res.setHeader("Content-Type", "charset=UTF-8");
 
-	res.setHeader("Content-Type", "charset=UTF-8");
+    /**
+     * @param {number} iCode
+     * @param {string | Buffer | ReadStream | Object} iData
+     * @returns {false}
+     */
+    const GlobalSendCustom = (iCode, iData) => {
+      res.statusCode = iCode;
 
-	/**
-	 * @param {number} iCode
-	 * @param {string | Buffer | ReadStream | Object} iData 
-	 * @returns {false}
-	 */
-	const GlobalSendCustom = (iCode, iData) => {
-		res.statusCode = iCode;
+      if (iData instanceof Buffer || typeof iData == "string") {
+        const dataToSend = iData.toString();
 
-		if (iData instanceof Buffer || typeof iData == "string") {
-			const dataToSend = iData.toString();
+        res.end(dataToSend);
+      } else {
+        const dataToSend = JSON.stringify(iData);
+        res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".json"));
 
-			res.end(dataToSend);
-		} else {
-			const dataToSend = JSON.stringify(iData);
-			res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".json"));
+        res.end(dataToSend);
+      }
 
-			res.end(dataToSend);
-		}
+      return false;
+    };
 
-		return false;
-	};
+    /**
+     * @param {number} iCode
+     * @returns {false}
+     */
+    const GlobalSend = (iCode) => {
+      res.statusCode = iCode || 200;
+      res.end(STATUSES[iCode || 500]);
+      return false;
+    };
 
-	/**
-	 * @param {number} iCode
-	 * @returns {false}
-	 */
-	const GlobalSend = iCode => {
-		res.statusCode = iCode || 200;
-		res.end(STATUSES[iCode || 500]);
-		return false;
-	};
+    /** @type {import("./types").ModuleCallingObjectType} */
+    const CALLING_PROPS = {
+      req,
+      res,
+      pathname,
+      path,
+      queries,
+      cookies,
+      GlobalSend,
+      GlobalSendCustom
+    };
 
-
-
-	/** @type {import("./types").ModuleCallingObjectType} */
-	const CALLING_PROPS = {
-		req, res,
-		pathname,
-		path,
-		queries,
-		cookies,
-		GlobalSend,
-		GlobalSendCustom
-	};
-
-
-	if (path[0] === "api")
-		return require("./pages/api")(CALLING_PROPS);
-	else
-		return GlobalSend(404);
-}).listen(NODE_PORT);
+    if (path[0] === "api") return require("./pages/api")(CALLING_PROPS);
+    else return GlobalSend(404);
+  })
+  .listen(80);

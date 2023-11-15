@@ -25,5 +25,6 @@
 	"DEFAULT_HEIGHT_OF_GROUP": 84,
 	"PROXY_PORT": 8050,
 	"LOGGING_TAG": "scrapper",
-	"LOGGING_PORT": 5050
+	"LOGGING_HOST": "mss-notifier",
+	"LOGGING_PORT": 80
 }

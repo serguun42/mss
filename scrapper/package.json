@@ -10,15 +10,15 @@
     "type": "git",
     "url": "git+https://github.com/serguun42/mss.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "serguun42",
+  "license": "BSL-1.0",
   "bugs": {
     "url": "https://github.com/serguun42/mss/issues"
   },
   "homepage": "https://github.com/serguun42/mss#readme",
   "dependencies": {
     "mongodb": "^4.9.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^2.7.0",
     "node-html-parser": "^4.1.5",
     "node-xlsx": "^0.21.0",
     "socks-proxy-agent": "^7.0.0"

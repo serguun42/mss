@@ -2,12 +2,12 @@
   "name": "notifier",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "notifier.js",
   "scripts": {
-    "production": "pm2 start pm2.production.json"
+    "production": "node notifier.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "serguun42",
+  "license": "BSL-1.0",
   "dependencies": {
     "telegraf": "^4.1.2"
   }

@@ -4,12 +4,12 @@
   "description": "",
   "main": "backend-server.js",
   "scripts": {
-    "production": "pm2 start pm2.production.json"
+    "production": "node backend-server.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "serguun42",
+  "license": "BSL-1.0",
   "dependencies": {
     "mongodb": "^4.1.2",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.7.0"
   }
 }

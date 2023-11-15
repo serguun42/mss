@@ -3,10 +3,10 @@ name: Notify on push
 on:
   push:
     branches:
-      - '*'
-      - '*/*'
-      - '**'
-      - '!master'
+      - "*"
+      - "*/*"
+      - "**"
+      - "!master"
 
   workflow_dispatch:
 
@@ -15,7 +15,9 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Send notification
+        env:
+          CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
         run: |
-          [ -f ~/mss/cicd/ci-notify.js ] &&
-          node ~/mss/cicd/ci-notify.js "User $GITHUB_ACTOR pushed to branch ${GITHUB_REF#refs/heads/}" ||
-          echo "User $GITHUB_ACTOR pushed to branch ${GITHUB_REF#refs/heads/}"
+          source $CONFIGS_LOCATION_BASE/docker.env;
+          curl http://127.0.0.1:$NOTIFIER_PUBLISH_PORT -d "{\"error\":false,\"args\":[\"User $GITHUB_ACTOR pushed to branch ${GITHUB_REF#refs/heads/}\"],\"tag\":\"ci\"}" ||
+          echo "Error while sending notification"

@@ -8,134 +8,72 @@ on:
   workflow_dispatch:
 
 jobs:
-
-  copy:
-    name: Delete old and copy new
+  configure:
+    name: Configure
     runs-on: self-hosted
 
     steps:
       - uses: actions/checkout@v3
-      - name: Copy fresh project
-        run: rm -rf ~/mss && cd .. && cp -r mss ~/mss
-      - name: Copy production configs
+      - name: Copy configs
+        env:
+          CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
         run: |
-          cp ~/MSS_CONFIGS/notifier-and-logger.config.json ~/mss/notifier/;
-          cp ~/MSS_CONFIGS/ci.config.json ~/mss/cicd/;
-          cp ~/MSS_CONFIGS/scrapper.config.json ~/mss/scrapper/;
-          cp ~/MSS_CONFIGS/backend.config.json ~/mss/backend/;
-          cp ~/MSS_CONFIGS/telegram-bot.config.json ~/mss/telegram/
-          [[ -f ~/MSS_CONFIGS/tag-manager.html ]] &&
-          cp ~/MSS_CONFIGS/tag-manager.html ~/mss/frontend/src/config/tag-manager.html ||
-          echo "" > ~/mss/frontend/src/config/tag-manager.html;
-          [[ -f ~/MSS_CONFIGS/apps-links.json ]] &&
-          cp ~/MSS_CONFIGS/apps-links.json ~/mss/frontend/src/config/apps-links.json ||
-          echo "[]" > ~/mss/frontend/src/config/apps-links.json;
-          [[ -d ~/MSS_CONFIGS/platforms/ ]] &&
-          cp -r ~/MSS_CONFIGS/platforms ~/mss/frontend/public/img/
+          cp $CONFIGS_LOCATION_BASE/notifier-and-logger.config.json ./notifier/;
+          cp $CONFIGS_LOCATION_BASE/scrapper.config.json ./scrapper/;
+          cp $CONFIGS_LOCATION_BASE/backend.config.json ./backend/;
+          cp $CONFIGS_LOCATION_BASE/telegram-bot.config.json ./telegram/
+          [[ -f $CONFIGS_LOCATION_BASE/tag-manager.html ]] &&
+          cp $CONFIGS_LOCATION_BASE/tag-manager.html ./frontend/src/config/tag-manager.html ||
+          echo "" > ./frontend/src/config/tag-manager.html;
+          [[ -f $CONFIGS_LOCATION_BASE/apps-links.json ]] &&
+          cp $CONFIGS_LOCATION_BASE/apps-links.json ./frontend/src/config/apps-links.json ||
+          echo "[]" > ./frontend/src/config/apps-links.json;
+          [[ -d $CONFIGS_LOCATION_BASE/platforms/ ]] &&
+          cp -r $CONFIGS_LOCATION_BASE/platforms ./frontend/public/img/
 
-  notifier:
-    name: Deploy «notifier»
+  build:
+    name: Docker Build
     runs-on: self-hosted
-    needs: copy
+    needs: configure
 
     steps:
-      - name: npm install
-        run: cd ~/mss/notifier/ && npm i --progress=false --omit=dev
-      - name: Delete old PM2 instance
+      - name: Build Docker images
+        env:
+          CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
+        run: docker compose --env-file $CONFIGS_LOCATION_BASE/docker.env build --no-cache
+
+  deploy:
+    name: Docker Deploy
+    runs-on: self-hosted
+    needs: build
+
+    steps:
+      - name: Deploy Docker images
+        env:
+          CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
+        run: docker compose --env-file $CONFIGS_LOCATION_BASE/docker.env up -d --force-recreate --no-deps
+
+  clean:
+    name: Clean cache and dangling images
+    runs-on: self-hosted
+    needs: deploy
+
+    steps:
+      - name: Clean dangling images
         run: |
-          pm2 delete notifier-and-logger 2> /dev/null &&
-          echo "Process <notifier-and-logger> exited successfully" ||
-          echo "Process <notifier-and-logger> wasn't running"
-      - name: Start new PM2 instance
-        run: cd ~/mss/notifier/ && npm run production
-      - name: Delete previous PM2 logs
-        run: pm2 flush mss-notifier
+          DANGLING_IMAGES=$(docker images -qf "dangling=true");
+          [[ ! -z "$DANGLING_IMAGES" ]] && docker rmi $DANGLING_IMAGES || echo "No dangling images"
 
-  cicd:
-    name: Deploy «ci/cd»
-    runs-on: self-hosted
-    needs: notifier
-
-    steps:
-      - name: npm install
-        run: cd ~/mss/cicd/ && npm i --progress=false --omit=dev
-
-  scrapper:
-    name: Deploy «scrapper»
-    runs-on: self-hosted
-    needs: notifier
-
-    steps:
-      - name: npm install
-        run: cd ~/mss/scrapper/ && npm i --progress=false --omit=dev
-
-  backend:
-    name: Deploy «backend»
-    runs-on: self-hosted
-    needs: notifier
-
-    steps:
-      - name: npm install
-        run: cd ~/mss/backend/ && npm i --progress=false --omit=dev
-      - name: Delete old PM2 instance
-        run: |
-          pm2 delete backend-server 2> /dev/null &&
-          echo "Process <backend-server> exited successfully" ||
-          echo "Process <backend-server> wasn't running"
-      - name: Start new PM2 instance
-        run: cd ~/mss/backend/ && npm run production
-      - name: Delete previous PM2 logs
-        run: pm2 flush mss-backend-server
-
-  telegram:
-    name: Deploy «telegram»
-    runs-on: self-hosted
-    needs: notifier
-
-    steps:
-      - name: npm install
-        run: cd ~/mss/telegram/ && npm i --progress=false --omit=dev
-      - name: Delete old PM2 instance
-        run: |
-          pm2 delete telegram-bot 2> /dev/null &&
-          echo "Process <telegram-bot> exited successfully" ||
-          echo "Process <telegram-bot> wasn't running"
-      - name: Start new PM2 instance
-        run: cd ~/mss/telegram/ && npm run production
-      - name: Delete previous PM2 logs
-        run: pm2 flush mss-telegram-bot
-
-  frontend:
-    name: Deploy «frontend»
-    runs-on: self-hosted
-    needs:
-      - cicd
-      - scrapper
-      - backend
-      - telegram
-
-    steps:
-      - name: npm install
-        run: cd ~/mss/frontend/ && npm i --progress=false --omit=dev
-      - name: npm run build
-        run: cd ~/mss/frontend/ && npm run build
-      - name: Generate Redoc bundle file
-        run: cd ~/mss/frontend/ && npm exec -- redoc-cli bundle public/docs/api/latest.yml -o dist/docs/api/redoc.html
-      - name: Clear node_modules
-        run: cd ~/mss/frontend/ && rm -rf node_modules
-      - name: Copy to NGINX
-        run: cp -r ~/mss/frontend/dist/* /usr/share/nginx/mss/
-
-  final:
+  notify:
     name: Send final logs
     runs-on: self-hosted
-    needs: frontend
+    needs: deploy
 
     steps:
-      - name: Show PM2 processes list
-        run: pm2 list
-      - name: Send via notifier
+      - name: Send logs via notifier
+        env:
+          CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
         run: |
-          [ -f ~/mss/cicd/ci-notify.js ] &&
-          node ~/mss/cicd/ci-notify.js "Done merge into master, initiator – $GITHUB_ACTOR" ||
+          source $CONFIGS_LOCATION_BASE/docker.env;
+          curl http://127.0.0.1:$NOTIFIER_PUBLISH_PORT -d "{\"error\":false,\"args\":[\"Done merge into master, initiator – $GITHUB_ACTOR\"],\"tag\":\"ci\"}" ||
           echo "Done merge into master, initiator – $GITHUB_ACTOR"
