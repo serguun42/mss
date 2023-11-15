@@ -403,7 +403,9 @@ module.exports = (iModuleDataObject) => {
 			break;
 
 			case "ping":
-				GlobalSendCustom(200, "pong");
+				GlobalSendCustom(200, {
+					message: "pong"
+				});
 			break;
 
 			case "logs":
