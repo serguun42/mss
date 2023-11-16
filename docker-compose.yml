@@ -12,7 +12,7 @@ services:
       context: ./backend
     restart: always
     ports:
-      - ${BACKEND_PUBLISH_PORT}:80
+      - 127.0.0.1:${BACKEND_PUBLISH_PORT}:80
 
   mss-notifier:
     container_name: mss-notifier
@@ -21,7 +21,7 @@ services:
       context: ./notifier
     restart: always
     ports:
-      - ${NOTIFIER_PUBLISH_PORT}:80
+      - 127.0.0.1:${NOTIFIER_PUBLISH_PORT}:80
 
   mss-telegram:
     container_name: mss-telegram
