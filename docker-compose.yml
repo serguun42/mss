@@ -42,6 +42,8 @@ services:
     image: mss-frontend:latest
     build:
       context: ./frontend
+      args:
+        GITHUB_RUN_NUMBER_ARG: ${GITHUB_RUN_NUMBER}
     restart: always
     volumes:
       - ${FRONTEND_PUBLISH_PATH}:/usr/src/app/mount

@@ -1,5 +1,7 @@
 FROM node:lts-alpine
 
+ARG GITHUB_RUN_NUMBER_ARG
+
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 
