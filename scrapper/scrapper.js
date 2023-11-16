@@ -11,6 +11,7 @@ const {
   SCHEDULE_PAGES,
   INDEX_OF_LINE_WITH_GROUPS_NAMES,
   DEFAULT_HEIGHT_OF_GROUP,
+  PROXY_HOST,
   PROXY_PORT
 } = DEV ? require("../../DEV_CONFIGS/scrapper.config.json") : require("./scrapper.config.json");
 const FIXES = require("./scrapper.fixes.json");
@@ -18,7 +19,7 @@ const FIXES = require("./scrapper.fixes.json");
 const MongoDispatcher = require("./utils/database.js");
 const mongoDispatcher = new MongoDispatcher(DATABASE_NAME);
 
-const proxyAgent = PROXY_PORT ? new SocksProxyAgent({ hostname: "localhost", port: PROXY_PORT }) : null;
+const proxyAgent = PROXY_PORT ? new SocksProxyAgent({ hostname: PROXY_HOST, port: PROXY_PORT }) : null;
 
 const Logging = require("./utils/logging.js");
 
