@@ -20,12 +20,11 @@ const STATUSES = GetStatusCodes(http.STATUS_CODES);
 
 const UTIL = require("./utils/urls-and-cookies");
 
-http
-  .createServer((req, res) => {
-    const pathname = UTIL.SafeDecode(UTIL.SafeURL(req.url).pathname),
-      path = UTIL.ParsePath(pathname),
-      queries = UTIL.ParseQuery(UTIL.SafeURL(req.url).search),
-      cookies = UTIL.ParseCookie(req.headers);
+const CreateServer = () =>
+  http.createServer((req, res) => {
+    const path = UTIL.ParsePath(req.url);
+    const queries = UTIL.ParseQuery(UTIL.SafeURL(req.url).search);
+    const cookies = UTIL.ParseCookie(req.headers);
 
     res.setHeader("Content-Type", "charset=UTF-8");
 
@@ -65,7 +64,6 @@ http
     const CALLING_PROPS = {
       req,
       res,
-      pathname,
       path,
       queries,
       cookies,
@@ -75,5 +73,8 @@ http
 
     if (path[0] === "api") return require("./pages/api")(CALLING_PROPS);
     else return GlobalSend(404);
-  })
-  .listen(80);
+  });
+
+if (process.env.NODE_ENV !== "test") CreateServer().listen(80);
+
+module.exports = CreateServer;

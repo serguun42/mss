@@ -69,14 +69,14 @@ const SafeEscape = (iString) => {
 };
 
 /**
- * @param {string} iReqHeaders
+ * @param {string} reqHeaders
  * @returns {{[name: string]: string}}
  */
-const ParseCookie = (iReqHeaders) => {
-  if (!iReqHeaders.cookie) return {};
+const ParseCookie = (reqHeaders) => {
+  if (!reqHeaders.cookie) return {};
 
   const returningList = {},
-    cookies = iReqHeaders.cookie;
+    cookies = reqHeaders.cookie;
 
   cookies.split(";").forEach((cookie) => {
     const parts = cookie.split("="),
@@ -94,32 +94,25 @@ const ParseCookie = (iReqHeaders) => {
 };
 
 /**
- * @param {string | string[]} iPath
+ * @param {string} pathname
  * @returns {string[]}
  */
-const ParsePath = (iPath) => {
-  if (iPath instanceof Array) {
-    if (iPath.every((part) => typeof part == "string"))
-      return [].concat(...iPath.map((part) => part.split("/"))).filter((part) => !!part);
-    else return iPath;
-  } else if (typeof iPath == "string")
-    return iPath
-      .replace()
-      .split("/")
-      .filter((part) => !!part);
-  else return iPath;
+const ParsePath = (pathname) => {
+  const safePathname = SafeURL(SafeDecode(pathname)).pathname;
+
+  return safePathname.replace().split("/").filter(Boolean);
 };
 
 /**
- * @param {string} iQuery
+ * @param {string} query
  * @returns {{[queryName: string]: string | true}}
  */
-const ParseQuery = (iQuery) => {
-  if (!iQuery) return {};
+const ParseQuery = (query) => {
+  if (!query) return {};
 
   const returningList = {};
 
-  iQuery
+  query
     .toString()
     .replace(/^\?/, "")
     .split("&")
@@ -137,37 +130,37 @@ const ParseQuery = (iQuery) => {
 };
 
 /**
- * @param {{[queryName: string]: string | true}} iQueries
+ * @param {{[queryName: string]: string | true}} queries
  * @returns {string}
  */
-const CombineQueries = (iQueries) => {
-  if (typeof iQueries !== "object") return "";
-  if (!Object.keys(iQueries).length) return "";
+const CombineQueries = (queries) => {
+  if (typeof queries !== "object") return "";
+  if (!Object.keys(queries).length) return "";
 
   return (
     "?" +
-    Object.keys(iQueries)
-      .map((key) => (iQueries[key] === true ? key : `${key}=${encodeURIComponent(iQueries[key])}`))
+    Object.keys(queries)
+      .map((key) => (queries[key] === true ? key : `${key}=${encodeURIComponent(queries[key])}`))
       .join("&")
   );
 };
 
 /**
- * @param {string} iPathname
+ * @param {string} pathname
  * @returns {URL}
  */
-const SafeURL = (iPathname) => {
-  if (typeof iPathname !== "string") return new URL("/", `https://mirea.xyz`);
+const SafeURL = (pathname) => {
+  if (typeof pathname !== "string") return new URL("/", `https://mirea.xyz`);
 
-  return new URL(iPathname.replace(/\/+/g, "/"), `https://mirea.xyz`);
+  return new URL(pathname.replace(/\/+/g, "/"), `https://mirea.xyz`);
 };
 
 /**
- * @param {string} iLoc
+ * @param {string} location
  * @returns {string}
  */
-const SetMIMEType = (iLoc) => {
-  const filename = iLoc.toString().split("/").pop(),
+const SetMIMEType = (location) => {
+  const filename = location.toString().split("/").pop(),
     index = TYPES_ACCORDANCE.findIndex((type) => type.format === filename.split(".").pop());
 
   if (!filename.match(/\./)) return "text/plain";
@@ -176,11 +169,11 @@ const SetMIMEType = (iLoc) => {
 };
 
 /**
- * @param {string} iLoc
+ * @param {string} location
  * @returns {string}
  */
-const SetCompleteMIMEType = (iLoc) => {
-  const filename = iLoc.toString().split("/").pop(),
+const SetCompleteMIMEType = (location) => {
+  const filename = location.toString().split("/").pop(),
     index = TYPES_ACCORDANCE.findIndex((type) => type.format === filename.split(".").pop());
 
   if (!filename.match(/\./)) return "text/plain";

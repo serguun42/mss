@@ -36,18 +36,19 @@ class MongoDispatcher {
      */
     this.events = {};
 
-    mongoClient.connect(MONGO_URL, MONGO_CONNECTION_OPTIONS, (mongoError, mongoConnection) => {
-      if (mongoError) {
-        Logging("Error with connection to MongoDB on start-up", mongoError);
-      } else {
-        this.DB = mongoConnection.db(iDatabaseName);
+    if (process.env.NODE_ENV !== "test")
+      mongoClient.connect(MONGO_URL, MONGO_CONNECTION_OPTIONS, (mongoError, mongoConnection) => {
+        if (mongoError) {
+          Logging("Error with connection to MongoDB on start-up", mongoError);
+        } else {
+          this.DB = mongoConnection.db(iDatabaseName);
 
-        this.on("close", () => {
-          this.DB = null;
-          mongoConnection.close();
-        });
-      }
-    });
+          this.on("close", () => {
+            this.DB = null;
+            mongoConnection.close();
+          });
+        }
+      });
   }
 
   /**

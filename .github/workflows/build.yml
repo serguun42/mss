@@ -40,18 +40,29 @@ jobs:
       - name: Build Docker images
         env:
           CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
-        run: docker compose --env-file $CONFIGS_LOCATION_BASE/docker.env build --no-cache
+        run: docker compose -f docker-compose.yml --env-file $CONFIGS_LOCATION_BASE/docker.env build --no-cache
+
+  testing:
+    name: Unit and integration tests within Docker by Jest
+    runs-on: self-hosted
+    needs: configure
+
+    steps:
+      - name: Build Docker images with additional flags
+        run: docker compose -f docker-compose.testing.yml --env-file $CONFIGS_LOCATION_BASE/docker.env build --no-cache
 
   deploy:
     name: Docker Deploy
     runs-on: self-hosted
-    needs: build
+    needs:
+      - build
+      - testing
 
     steps:
       - name: Deploy Docker images
         env:
           CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
-        run: docker compose --env-file $CONFIGS_LOCATION_BASE/docker.env up -d --force-recreate --no-deps
+        run: docker compose -f docker-compose.yml --env-file $CONFIGS_LOCATION_BASE/docker.env up -d --force-recreate --no-deps
 
   clean:
     name: Clean cache and dangling images
@@ -63,6 +74,10 @@ jobs:
         run: |
           DANGLING_IMAGES=$(docker images -qf "dangling=true");
           [[ ! -z "$DANGLING_IMAGES" ]] && docker rmi $DANGLING_IMAGES || echo "No dangling images"
+      - name: Clean testing images
+        run: |
+          TESTING_IMAGES=$(docker images -qf "reference=mss-*:testing");
+          [[ ! -z "$TESTING_IMAGES" ]] && docker rmi $TESTING_IMAGES || echo "No testing images"
 
   notify:
     name: Send final logs

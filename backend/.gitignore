@@ -4,7 +4,6 @@
 /data/
 /out/
 /local-stuff/
-*test.js
 tsconfig.json
 *.bat
 *.example.json

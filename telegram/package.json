@@ -4,6 +4,7 @@
   "description": "",
   "main": "telegram.js",
   "scripts": {
+    "test": "jest ./tests/*",
     "production": "node telegram.js"
   },
   "keywords": [],
@@ -16,6 +17,7 @@
     "telegraf": "^4.11.2"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "typescript": "^4.9.5"
   }
 }

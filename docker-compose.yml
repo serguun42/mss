@@ -1,5 +1,3 @@
-# Docker Compose for running on stage and production
-
 version: "3.8"
 
 name: mss
