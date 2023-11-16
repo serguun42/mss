@@ -43,12 +43,14 @@ jobs:
         run: docker compose -f docker-compose.yml --env-file $CONFIGS_LOCATION_BASE/docker.env build --no-cache
 
   testing:
-    name: Unit and integration tests within Docker by Jest
+    name: Unit and integration tests
     runs-on: self-hosted
     needs: configure
 
     steps:
-      - name: Build Docker images with additional flags
+      - name: Build & test Docker images
+        env:
+          CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
         run: docker compose -f docker-compose.testing.yml --env-file $CONFIGS_LOCATION_BASE/docker.env build --no-cache
 
   deploy:
