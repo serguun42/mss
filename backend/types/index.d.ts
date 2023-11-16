@@ -1,7 +1,6 @@
 export type ModuleCallingObjectType = {
     req: import("http").IncomingMessage;
     res: import("http").ServerResponse;
-    pathname: string;
     path: string[];
     queries: {
         [queryName: string]: string | true;
@@ -26,7 +25,7 @@ export type UtilsType = {
     /** Example `UTIL.ParseCookie(req.headers)` */
     ParseCookie: (iHeaders: {[headerName: string]: string}) => {[name: string]: string};
 
-    /** Example `UTIL.ParsePath(pathname)` */
+    /** Example `UTIL.ParsePath(req.url)` */
     ParsePath: (iPath: string) => string[];
 
     /** Example `UTIL.ParseQuery(UTIL.SafeURL(req.url).search)` */

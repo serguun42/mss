@@ -4,6 +4,5 @@
 /data/
 /out/
 /local-stuff/
-*test.js
 tsconfig.json
 tsconfig.create.bat

@@ -1,0 +1,22 @@
+version: "3.8"
+
+name: mss
+
+services:
+  mss-backend:
+    extends:
+      file: docker-compose.yml
+      service: mss-backend
+    image: mss-backend:testing
+    build:
+      args:
+        TESTING: TESTING
+
+  mss-telegram:
+    extends:
+      file: docker-compose.yml
+      service: mss-telegram
+    image: mss-telegram:testing
+    build:
+      args:
+        TESTING: TESTING

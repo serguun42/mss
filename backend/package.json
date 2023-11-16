@@ -4,6 +4,7 @@
   "description": "",
   "main": "backend-server.js",
   "scripts": {
+    "test": "jest ./tests/*",
     "production": "node backend-server.js"
   },
   "author": "serguun42",
@@ -11,5 +12,8 @@
   "dependencies": {
     "mongodb": "^4.1.2",
     "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
