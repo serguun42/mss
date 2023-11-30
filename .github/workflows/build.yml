@@ -67,8 +67,28 @@ jobs:
           CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
         run: docker compose -f docker-compose.yml --env-file $CONFIGS_LOCATION_BASE/docker.env up -d --force-recreate --no-deps
 
-  cloud:
-    name: Cloud Healthcheck container
+  docker-hub:
+    name: Build and push to Docker Hub
+    runs-on: self-hosted
+    env:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    needs:
+      - build
+      - testing
+    steps:
+      - name: Retag container
+        run: docker tag mss-backend:latest $DOCKER_HUB_USERNAME/mss-backend:latest
+      - name: Log into Docker Hub
+        run: |
+          echo "$DOCKER_HUB_ACCESS_TOKEN" | docker login --username "$DOCKER_HUB_USERNAME" --password-stdin
+      - name: Push to Docker Hub
+        run: docker push $DOCKER_HUB_USERNAME/mss-backend:latest
+      - name: Docker logout
+        run: docker logout
+
+  yandex-cloud:
+    name: YandexCloud container
     runs-on: self-hosted
     env:
       YANDEX_CLOUD_REGISTRY_ID: ${{ secrets.YANDEX_CLOUD_REGISTRY_ID }}
@@ -78,6 +98,7 @@ jobs:
     needs:
       - build
       - testing
+      - docker-hub
 
     steps:
       - name: Build Docker image
@@ -101,13 +122,15 @@ jobs:
           revision-env: |
             CHECKING_ORIGIN=https://mirea.xyz
             API_VERSION=1.3
+      - name: Docker logout
+        run: docker logout
 
   clean:
     name: Clean unused images
     runs-on: self-hosted
     needs:
       - deploy
-      - cloud
+      - yandex-cloud
 
     steps:
       - name: Clean dangling images
@@ -124,7 +147,7 @@ jobs:
     runs-on: self-hosted
     needs:
       - deploy
-      - cloud
+      - yandex-cloud
 
     steps:
       - name: Send logs via notifier
