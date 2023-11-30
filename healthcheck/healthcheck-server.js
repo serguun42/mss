@@ -7,6 +7,7 @@ const CONFIG = IS_DEV ? require("../../DEV_CONFIGS/healthcheck.config.json") : r
 
 const CHECKING_ORIGIN = process.env.CHECKING_ORIGIN || CONFIG.CHECKING_ORIGIN;
 const API_VERSION = process.env.API_VERSION || CONFIG.API_VERSION;
+const LISTENING_PORT = parseInt(process.env.PORT) || 80;
 
 const PONG_API_METHOD = new URL(`/api/v${API_VERSION}/stats`, CHECKING_ORIGIN);
 const STATS_API_METHOD = new URL(`/api/v${API_VERSION}/stats`, CHECKING_ORIGIN);
@@ -76,4 +77,4 @@ http
         );
       });
   })
-  .listen(80);
+  .listen(LISTENING_PORT);
