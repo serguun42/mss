@@ -1,0 +1,9 @@
+.vscode
+/node_modules/
+
+/data/
+/out/
+/local-stuff/
+tsconfig.json
+*.bat
+*.example.json

@@ -21,6 +21,7 @@ jobs:
           cp $CONFIGS_LOCATION_BASE/notifier-and-logger.config.json ./notifier/;
           cp $CONFIGS_LOCATION_BASE/scrapper.config.json ./scrapper/;
           cp $CONFIGS_LOCATION_BASE/backend.config.json ./backend/;
+          cp $CONFIGS_LOCATION_BASE/healthcheck.config.json ./healthcheck/;
           cp $CONFIGS_LOCATION_BASE/telegram-bot.config.json ./telegram/
           [[ -f $CONFIGS_LOCATION_BASE/tag-manager.html ]] &&
           cp $CONFIGS_LOCATION_BASE/tag-manager.html ./frontend/src/config/tag-manager.html ||
@@ -66,10 +67,47 @@ jobs:
           CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
         run: docker compose -f docker-compose.yml --env-file $CONFIGS_LOCATION_BASE/docker.env up -d --force-recreate --no-deps
 
-  clean:
-    name: Clean cache and dangling images
+  cloud:
+    name: Build and deploy Cloud Healthcheck image
     runs-on: self-hosted
-    needs: deploy
+    env:
+      YANDEX_CLOUD_REGISTRY_ID: ${{ secrets.YANDEX_CLOUD_REGISTRY_ID }}
+      YANDEX_CLOUD_IMAGE_NAME: ${{ secrets.YANDEX_CLOUD_IMAGE_NAME }}
+      CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
+      YANDEX_CLOUD_JSON_KEYS_FILENAME: ${{ secrets.YANDEX_CLOUD_JSON_KEYS_FILENAME }}
+    needs:
+      - build
+      - testing
+
+    steps:
+      - name: Build Docker image
+        run: cd healthcheck && docker build . -t cr.yandex/$YANDEX_CLOUD_REGISTRY_ID/$YANDEX_CLOUD_IMAGE_NAME:latest
+      - name: Log into Yandex Cloud
+        run: |
+          cat $CONFIGS_LOCATION_BASE/$YANDEX_CLOUD_JSON_KEYS_FILENAME | docker login --username json_key --password-stdin cr.yandex
+      - name: Push to Yandex Cloud
+        run: |
+          docker push cr.yandex/$YANDEX_CLOUD_REGISTRY_ID/$YANDEX_CLOUD_IMAGE_NAME:latest
+      - name: Deploy serverless container
+        uses: yc-actions/yc-sls-container-deploy@v2
+        with:
+          yc-sa-json-credentials: ${{ secrets.YANDEX_CLOUD_JSON_KEYS }}
+          container-name: ${{ secrets.YANDEX_CLOUD_IMAGE_NAME }}
+          folder-id: ${{ secrets.YANDEX_CLOUD_FOLDER_ID }}
+          revision-service-account-id: ${{ secrets.YANDEX_CLOUD_SERVICE_ACCOUNT_ID }}
+          revision-image-url: cr.yandex/$YANDEX_CLOUD_REGISTRY_ID/$YANDEX_CLOUD_IMAGE_NAME:latest
+          revision-cores: 1
+          revision-memory: 256Mb
+          revision-env: |
+            CHECKING_ORIGIN=mirea.xyz
+            API_VERSION=1.3
+
+  clean:
+    name: Clean unused images
+    runs-on: self-hosted
+    needs:
+      - deploy
+      - cloud
 
     steps:
       - name: Clean dangling images
@@ -84,7 +122,9 @@ jobs:
   notify:
     name: Send final logs
     runs-on: self-hosted
-    needs: deploy
+    needs:
+      - deploy
+      - cloud
 
     steps:
       - name: Send logs via notifier

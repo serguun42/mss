@@ -1,0 +1,14 @@
+{
+  "name": "healthcheck",
+  "version": "1.0.0",
+  "description": "",
+  "main": "healthcheck-server.js",
+  "scripts": {
+    "production": "node healthcheck-server.js"
+  },
+  "author": "serguun42",
+  "license": "BSL-1.0",
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}
