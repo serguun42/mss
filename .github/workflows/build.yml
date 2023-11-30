@@ -33,7 +33,7 @@ jobs:
           cp -r $CONFIGS_LOCATION_BASE/platforms ./frontend/public/img/
 
   build:
-    name: Docker Build
+    name: Local Docker build
     runs-on: self-hosted
     needs: configure
 
@@ -55,7 +55,7 @@ jobs:
         run: docker compose -f docker-compose.testing.yml --env-file $CONFIGS_LOCATION_BASE/docker.env build --no-cache
 
   deploy:
-    name: Docker Deploy
+    name: Local Docker deploy
     runs-on: self-hosted
     needs:
       - build
@@ -133,7 +133,7 @@ jobs:
       - yandex-cloud
 
     steps:
-      - name: Clean dangling images
+      - name: Clean local images
         run: |
           DANGLING_IMAGES=$(docker images -qf "dangling=true");
           [[ ! -z "$DANGLING_IMAGES" ]] && docker rmi $DANGLING_IMAGES || echo "No dangling images"
@@ -143,7 +143,7 @@ jobs:
           [[ ! -z "$TESTING_IMAGES" ]] && docker rmi $TESTING_IMAGES || echo "No testing images"
 
   notify:
-    name: Send final logs
+    name: Logging
     runs-on: self-hosted
     needs:
       - deploy
