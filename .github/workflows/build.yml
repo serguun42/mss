@@ -68,7 +68,7 @@ jobs:
         run: docker compose -f docker-compose.yml --env-file $CONFIGS_LOCATION_BASE/docker.env up -d --force-recreate --no-deps
 
   cloud:
-    name: Build and deploy Cloud Healthcheck image
+    name: Cloud Healthcheck container
     runs-on: self-hosted
     env:
       YANDEX_CLOUD_REGISTRY_ID: ${{ secrets.YANDEX_CLOUD_REGISTRY_ID }}
@@ -95,7 +95,7 @@ jobs:
           container-name: ${{ secrets.YANDEX_CLOUD_IMAGE_NAME }}
           folder-id: ${{ secrets.YANDEX_CLOUD_FOLDER_ID }}
           revision-service-account-id: ${{ secrets.YANDEX_CLOUD_SERVICE_ACCOUNT_ID }}
-          revision-image-url: cr.yandex/$YANDEX_CLOUD_REGISTRY_ID/$YANDEX_CLOUD_IMAGE_NAME:latest
+          revision-image-url: cr.yandex/${{ secrets.YANDEX_CLOUD_REGISTRY_ID }}/${{ secrets.YANDEX_CLOUD_IMAGE_NAME }}:latest
           revision-cores: 1
           revision-memory: 256Mb
           revision-env: |
