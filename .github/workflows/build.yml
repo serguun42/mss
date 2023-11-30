@@ -68,7 +68,7 @@ jobs:
         run: docker compose -f docker-compose.yml --env-file $CONFIGS_LOCATION_BASE/docker.env up -d --force-recreate --no-deps
 
   docker-hub:
-    name: Build and push to Docker Hub
+    name: Push to Docker Hub
     runs-on: self-hosted
     env:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
@@ -88,7 +88,7 @@ jobs:
         run: docker logout
 
   yandex-cloud:
-    name: YandexCloud container
+    name: Yandex Cloud build & deploy
     runs-on: self-hosted
     env:
       YANDEX_CLOUD_REGISTRY_ID: ${{ secrets.YANDEX_CLOUD_REGISTRY_ID }}
