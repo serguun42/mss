@@ -7,7 +7,7 @@ volumes:
     name: mss-keycloak-postgres
 
 services:
-  mss-backend:
+  mss-backend: 
     container_name: mss-backend
     image: mss-backend:latest
     build:
@@ -63,10 +63,11 @@ services:
       KC_DB_PASSWORD: ${KEYCLOAK_POSTGRES_PASSWORD}
       KC_HOSTNAME: mirea.xyz
       KC_HOSTNAME_PORT: ${KEYCLOAK_PUBLISH_PORT}
+      KC_HOSTNAME_STRICT: "false"
       KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
       KC_HTTP_ENABLED: "true"
       KC_LOG_LEVEL: warn
-      KC_PROXY: none
+      KC_PROXY: edge
     ports:
       - 127.0.0.1:${KEYCLOAK_PUBLISH_PORT}:8443
     depends_on:
