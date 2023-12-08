@@ -2,6 +2,10 @@ version: "3.8"
 
 name: mss
 
+volumes:
+  mss-keycloak-postgres:
+    name: mss-keycloak-postgres
+
 services:
   mss-backend:
     container_name: mss-backend
