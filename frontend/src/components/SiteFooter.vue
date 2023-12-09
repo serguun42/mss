@@ -36,6 +36,9 @@
 			<div class="site-footer__section__item">
 				<span data-nosnippet class="material-icons material-icons-round">insights</span> <router-link to="/stats">Статистика</router-link>
 			</div>
+			<div class="site-footer__section__item">
+				<span data-nosnippet class="material-icons material-icons-round">settings</span> <router-link to="/stats">Панель конфигурации</router-link>
+			</div>
 		</section>
 
 		<section class="site-footer__section">
