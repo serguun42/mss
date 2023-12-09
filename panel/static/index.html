@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <link rel="icon" href="https://mirea.xyz/img/icons/round/round_192x192.png" />
+
+    <meta name="theme-color" data-meta-name="theme-color" content="#03589C" />
+    <link rel="icon" sizes="512x512" href="https://mirea.xyz/img/icons/round/round_512x512.png" />
+    <link rel="icon" sizes="192x192" href="https://mirea.xyz/img/icons/round/round_192x192.png" />
+
+    <meta name="apple-mobile-web-app-status-bar-style" data-meta-name="theme-color" content="#03589C" />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://mirea.xyz/img/icons/round/round_180x180.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="https://mirea.xyz/img/icons/round/round_152x152.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="https://mirea.xyz/img/icons/round/round_120x120.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="https://mirea.xyz/img/icons/round/round_76x76.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="https://mirea.xyz/img/icons/round/round_60x60.png" />
+    <link
+      rel="apple-touch-icon-precomposed"
+      sizes="180x180"
+      href="https://mirea.xyz/img/icons/round/round_180x180.png"
+    />
+    <link
+      rel="apple-touch-icon-precomposed"
+      sizes="152x152"
+      href="https://mirea.xyz/img/icons/round/round_152x152.png"
+    />
+    <link
+      rel="apple-touch-icon-precomposed"
+      sizes="120x120"
+      href="https://mirea.xyz/img/icons/round/round_120x120.png"
+    />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="https://mirea.xyz/img/icons/round/round_76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="https://mirea.xyz/img/icons/round/round_60x60.png" />
+
+    <meta name="msapplication-TileColor" data-meta-name="theme-color" content="#03589C" />
+    <meta name="msapplication-TileImage" content="https://mirea.xyz/img/icons/round/round_144x144.png" />
+
+    <title>MSS Panel</title>
+
+    <style>
+      @font-face {
+        font-family: "Roboto";
+        src: url("/Roboto-Medium.ttf");
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        padding: 0;
+        margin: 0;
+
+        font-family: Roboto, Arial, "Helvetica Neue", Helvetica, sans-serif;
+        font-weight: 500;
+        line-height: 1.3em;
+
+        background-color: #121212;
+        color: #e1e1e1;
+      }
+
+      .panel-container {
+        display: block;
+        position: relative;
+
+        width: 90%;
+        max-width: 800px;
+
+        padding: 16px;
+        margin: 120px auto 50px;
+
+        background-color: #444;
+        border-radius: 8px;
+      }
+
+      .panel-container h1 {
+        margin: 0 auto 16px;
+
+        font-size: 48px;
+        letter-spacing: -0.03em;
+        line-height: 1.2em;
+        text-align: center;
+      }
+
+      .panel__params-table {
+        border-spacing: 0;
+        border-collapse: separate;
+
+        margin: 0 auto;
+      }
+
+      .panel__params-table th,
+      .panel__params-table td {
+        border: 1px solid #777;
+        padding: 8px 20px;
+
+        line-height: 26px;
+      }
+
+      .panel__value-btn {
+        display: inline;
+        float: right;
+
+        margin: 0 0 0 16px;
+        height: 26px;
+        padding: 6px 10px;
+
+        cursor: pointer;
+        outline: none;
+        border: none;
+        border-radius: 4px;
+
+        font-size: 14px;
+        font-family: "Roboto", Arial, "Helvetica Neue", Helvetica, sans-serif;
+        font-weight: 500;
+        line-height: 1em;
+        text-transform: uppercase;
+
+        background-color: #121212;
+        color: #e1e1e1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="panel-container">
+      <h1 class="panel__header">MSS Panel</h1>
+      <table class="panel__params-table">
+        <thead>
+          <th>Parameter</th>
+          <th>Value</th>
+        </thead>
+        <tbody id="panel-table-body"></tbody>
+      </table>
+    </div>
+
+    <script>
+      /**
+       * @param {string} name
+       * @param {any} value
+       */
+      function UpdateParam(name, value) {
+        fetch("/set", {
+          method: "POST",
+          body: JSON.stringify({ name, value })
+        })
+          .then((res) => {
+            if (!res.ok)
+              return res.text().then(
+                (text) => Promise.reject(new Error(`Status code ${res.status} ${res.statusText} – ${text}`)),
+                () => Promise.reject(new Error(`Status code ${res.status} ${res.statusText}`))
+              );
+
+            alert(`Parameter ${name} was updated`);
+          })
+          .catch((e) => {
+            alert(e instanceof Error ? e.message : e);
+          });
+      }
+
+      function ListAllParams() {
+        window.addEventListener("load", () => {
+          fetch("/list", { method: "POST" })
+            .then((res) => {
+              if (!res.ok)
+                return res.text().then(
+                  (text) => Promise.reject(new Error(`Status code ${res.status} ${res.statusText} – ${text}`)),
+                  () => Promise.reject(new Error(`Status code ${res.status} ${res.statusText}`))
+                );
+
+              return res.json();
+            })
+            .then(
+              /** @param {{ name: string, value: any }[]} params */ (params) => {
+                const tableBody = document.getElementById("panel-table-body");
+
+                params.forEach(({ name, value }) => {
+                  const tr = document.createElement("tr");
+                  const [nameCell, valueCell] = [document.createElement("td"), document.createElement("td")];
+                  nameCell.innerText = name;
+
+                  const valueTextElem = document.createElement("span");
+                  valueTextElem.classList.add("panel__value-text");
+                  valueTextElem.innerText = value;
+
+                  const valueTextEditBtn = document.createElement("button");
+                  valueTextEditBtn.classList.add("panel__value-btn");
+                  valueTextEditBtn.innerText = "Edit";
+
+                  valueCell.append(valueTextElem, valueTextEditBtn);
+
+                  valueTextEditBtn.addEventListener("click", () => {
+                    const newValue = prompt("Enter new value", value);
+                    valueTextElem.innerText = newValue;
+                    UpdateParam(name, newValue);
+                  });
+
+                  tr.append(nameCell, valueCell);
+                  tableBody.append(tr);
+                });
+              }
+            )
+            .catch((e) => {
+              alert(e instanceof Error ? e.message : e);
+            });
+        });
+      }
+
+      if (new URL(window.location.href).searchParams.get("code")) window.location.assign("/");
+      else ListAllParams();
+    </script>
+  </body>
+</html>
