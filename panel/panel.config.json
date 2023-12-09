@@ -1,0 +1,17 @@
+{
+  "KEYCLOAK_ORIGIN": "https://keycloak.domain.tld",
+  "KEYCLOAK_REALM": "MSS",
+  "KEYCLOAK_CLIENT_ID": "client-id",
+  "KEYCLOAK_CLIENT_SECRET": "client-secret",
+
+  "PANEL_ORIGIN": "https://panel.domain.tld",
+  "PANEL_COOKIE_TTL_SECONDS": 7200,
+  "PANEL_USER_EMAIL": "email@domain.tld",
+
+  "DATABASE_NAME": "mss",
+  "DATABASE_CONNECTION_URI": "mongodb://host1:27017,host2:27017,host3:27017/?replicaSet=myRs&readPreference=primaryPreferred",
+
+  "LOGGING_TAG": "panel",
+  "LOGGING_HOST": "mss-notifier",
+  "LOGGING_PORT": 80
+}

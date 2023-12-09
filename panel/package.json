@@ -1,0 +1,16 @@
+{
+  "name": "panel",
+  "version": "1.0.0",
+  "description": "",
+  "main": "panel.js",
+  "type": "module",
+  "scripts": {
+    "production": "node panel.js"
+  },
+  "author": "serguun42",
+  "license": "BSL-1.0",
+  "dependencies": {
+    "mongodb": "^6.3.0",
+    "node-fetch": "^3.3.2"
+  }
+}

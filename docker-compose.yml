@@ -7,7 +7,7 @@ volumes:
     name: mss-keycloak-postgres
 
 services:
-  mss-backend: 
+  mss-backend:
     container_name: mss-backend
     image: mss-backend:latest
     build:
@@ -89,3 +89,12 @@ services:
     volumes:
       - mss-keycloak-postgres:/var/lib/postgresql/data
       - ./keycloak/postgresql.conf:/etc/postgresql/postgresql.conf
+
+  mss-panel:
+    container_name: mss-panel
+    image: mss-panel:latest
+    build:
+      context: ./panel
+    restart: always
+    ports:
+      - 127.0.0.1:${PANEL_PUBLISH_PORT}:80
