@@ -46,6 +46,7 @@ jobs:
   testing:
     name: Unit and integration tests
     runs-on: self-hosted
+    if: "contains(github.event.head_commit.message, 'Run tests')"
     needs: configure
 
     steps:
@@ -70,12 +71,15 @@ jobs:
   docker-hub:
     name: Push to Docker Hub
     runs-on: self-hosted
-    env:
-      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    if: "contains(github.event.head_commit.message, 'Run Cloud deploy')"
     needs:
       - build
       - testing
+
+    env:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
     steps:
       - name: Retag container
         run: docker tag mss-backend:latest $DOCKER_HUB_USERNAME/mss-backend:latest
@@ -90,15 +94,17 @@ jobs:
   yandex-cloud:
     name: Yandex Cloud build & deploy
     runs-on: self-hosted
+    if: "contains(github.event.head_commit.message, 'Run Cloud deploy')"
+    needs:
+      - build
+      - testing
+      - docker-hub
+
     env:
       YANDEX_CLOUD_REGISTRY_ID: ${{ secrets.YANDEX_CLOUD_REGISTRY_ID }}
       YANDEX_CLOUD_IMAGE_NAME: ${{ secrets.YANDEX_CLOUD_IMAGE_NAME }}
       CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
       YANDEX_CLOUD_JSON_KEYS_FILENAME: ${{ secrets.YANDEX_CLOUD_JSON_KEYS_FILENAME }}
-    needs:
-      - build
-      - testing
-      - docker-hub
 
     steps:
       - name: Build Docker image

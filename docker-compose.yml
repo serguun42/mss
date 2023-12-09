@@ -61,25 +61,21 @@ services:
       KC_DB_URL: jdbc:postgresql://mss-keycloak-postgres:5432/${KEYCLOAK_POSTGRES_DB}
       KC_DB_USERNAME: ${KEYCLOAK_POSTGRES_USER}
       KC_DB_PASSWORD: ${KEYCLOAK_POSTGRES_PASSWORD}
-      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME}
-      KC_HOSTNAME_PORT: ${KEYCLOAK_HOSTNAME_PORT}
-      KC_HOSTNAME_STRICT: "false"
-      KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
-      KC_HTTP_ENABLED: "true"
-      KC_LOG_LEVEL: warn
+      KC_HOSTNAME_URL: ${KEYCLOAK_HOSTNAME_URL}
+      KC_HOSTNAME_ADMIN_URL: ${KEYCLOAK_HOSTNAME_URL}
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_BACKCHANNEL: true
+      KC_HTTP_ENABLED: true
+      KC_LOG_LEVEL: WARN
       KC_PROXY: edge
     ports:
-      - 127.0.0.1:${KEYCLOAK_PUBLISH_PORT}:8443
+      - 127.0.0.1:${KEYCLOAK_PUBLISH_PORT}:8080
     depends_on:
       - mss-keycloak-postgres
     volumes:
       - ./keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
-      - ${KEYCLOAK_PUBLIC_CERT_FILE_PATH}:/opt/keycloak/conf/public.crt:ro
-      - ${KEYCLOAK_PRIVATE_KEY_FILE_PATH}:/opt/keycloak/conf/private.key:ro
     command:
       - start
-      - --https-certificate-file=/opt/keycloak/conf/public.crt
-      - --https-certificate-key-file=/opt/keycloak/conf/private.key
 
   mss-keycloak-postgres:
     container_name: mss-keycloak-postgres
