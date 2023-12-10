@@ -1,13 +1,13 @@
 import fetch from "node-fetch";
-import ReadConfig from "../util/read-config.js";
+import readConfig from "../util/read-config.js";
 
-const PANEL_CONFIG = ReadConfig();
+const PANEL_CONFIG = readConfig();
 
 /**
  * @param {string} code
  * @returns {Promise<string>}
  */
-export default function ExchangeCodeToToken(code) {
+export default function exchangeCodeToToken(code) {
   if (!code) return Promise.reject(new Error("No code was passed"));
 
   return fetch(`${PANEL_CONFIG.KEYCLOAK_ORIGIN}/realms/${PANEL_CONFIG.KEYCLOAK_REALM}/protocol/openid-connect/token`, {

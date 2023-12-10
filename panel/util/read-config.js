@@ -9,7 +9,7 @@ const CONFIG_HOT_STORAGE = {};
  *
  * @returns {import('../types').PanelConfig}
  */
-export default function ReadConfig() {
+export default function readConfig() {
   const configFileLocation = (IS_DEV && process.env.CONFIG_LOCATION) || "./panel.config.json";
 
   try {

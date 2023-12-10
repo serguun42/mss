@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: "backend-server"
+    static_configs:
+      - targets: ["172.25.240.1:80"]

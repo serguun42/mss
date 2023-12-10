@@ -1,5 +1,9 @@
 import logging from "../../util/logging.js";
 
+const SECOND = 1000;
+const MINUTE = SECOND * 60;
+const HOUR = MINUTE * 60;
+
 /** @param {import("../../types").APIModuleDTO} moduleDTO */
 export default function getCurrentWeek({ mongoDispatcher, sendCode, sendPayload }) {
   if (!mongoDispatcher) return sendCode(500);

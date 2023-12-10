@@ -9,9 +9,6 @@ import getStartTime from "./methods/get-start-time.js";
 import getCurrentWeek from "./methods/get-week.js";
 import getStats from "./methods/get-stats.js";
 
-const SECOND = 1e3;
-const MINUTE = SECOND * 60;
-const HOUR = MINUTE * 60;
 const { DATABASE_NAME } = readConfig();
 
 /** @param {import("../types").APIModuleDTO} moduleDTO */
@@ -27,7 +24,7 @@ export default function coreAPIModule(moduleDTO) {
 
   res.setHeader("Access-Control-Allow-Origin", "*");
 
-  if (path[0] !== "api" && path[1] !== "v1.3") return sendPayload(400, { error: true, message: "No such API version" });
+  if (path[0] !== "api" || path[1] !== "v1.3") return sendPayload(400, { error: true, message: "No such API version" });
 
   switch (path[2]) {
     case "groups":
@@ -53,7 +50,7 @@ export default function coreAPIModule(moduleDTO) {
           break;
 
         case "week":
-          getCurrentWeek();
+          getCurrentWeek(moduleDTO);
           break;
 
         default:

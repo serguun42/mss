@@ -4,6 +4,8 @@ export type PanelConfig = {
   KEYCLOAK_CLIENT_ID: string;
   KEYCLOAK_CLIENT_SECRET: string;
 
+  GRAFANA_ORIGIN: string;
+
   PANEL_ORIGIN: string;
   PANEL_COOKIE_TTL_SECONDS: number;
   PANEL_USER_EMAIL: string;

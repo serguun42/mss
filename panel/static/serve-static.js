@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
  * @param {import('http').IncomingMessage} req
  * @param {import('http').ServerResponse<import('http').IncomingMessage>} res
  */
-export default function ServeStatic(req, res) {
+export default function serveStatic(req, res) {
   const SendError = () => {
     res.status = 404;
     res.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -21,7 +21,7 @@ export default function ServeStatic(req, res) {
   const readingFile =
     req.url === "/favicon.ico"
       ? "./static/favicon.ico"
-      : req.url === "/Roboto-Medium.ttf"
+      : req.url === "/params-panel/static/Roboto-Medium.ttf"
       ? "./static/Roboto-Medium.ttf"
       : "./static/index.html";
 

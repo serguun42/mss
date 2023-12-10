@@ -1,7 +1,7 @@
-import ReadConfig from "../util/read-config.js";
+import readConfig from "../util/read-config.js";
 import MongoDispatcher from "./dispatcher.js";
 
-const mongoDispatcher = new MongoDispatcher(ReadConfig().DATABASE_NAME);
+const mongoDispatcher = new MongoDispatcher(readConfig().DATABASE_NAME);
 
 const DB_METHODS = {
   listAllParams() {

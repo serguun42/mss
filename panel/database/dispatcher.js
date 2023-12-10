@@ -1,8 +1,8 @@
 import { MongoClient } from "mongodb";
-import ReadConfig from "../util/read-config.js";
-import Logging from "../util/logging.js";
+import readConfig from "../util/read-config.js";
+import logging from "../util/logging.js";
 
-const MONGO_CONNECTION_URL = ReadConfig().DATABASE_CONNECTION_URI || "mongodb://127.0.0.1:27017/";
+const MONGO_CONNECTION_URL = readConfig().DATABASE_CONNECTION_URI || "mongodb://127.0.0.1:27017/";
 
 /**
  * @callback MongoDispatcherCallback
@@ -42,7 +42,7 @@ export default class MongoDispatcher {
           });
         })
         .catch((e) => {
-          Logging("Error with connection to MongoDB on start-up", e);
+          logging("Error with connection to MongoDB on start-up", e);
         });
   }
 
