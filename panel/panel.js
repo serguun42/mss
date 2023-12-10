@@ -63,7 +63,7 @@ createServer((req, res) => {
         return;
       }
 
-      if (path[0] === "params-panel" || path[0] === "favicon.ico") {
+      if (path[0] === "params-panel") {
         if (path[1] === "api" && path[2] === "list") {
           if (method !== "GET") {
             res.statusCode = 405;
@@ -108,12 +108,6 @@ createServer((req, res) => {
               logging(e);
               sendError();
             });
-        }
-
-        if (method !== "GET") {
-          res.statusCode = 405;
-          res.end("405 Method Not Allowed");
-          return;
         }
       }
 
