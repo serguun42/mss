@@ -2,6 +2,6 @@ global:
   scrape_interval: 5s
 
 scrape_configs:
-  - job_name: "backend-server"
+  - job_name: "mss-backend"
     static_configs:
-      - targets: ["172.25.240.1:80"]
+      - targets: ["mss-backend:80"]
