@@ -101,14 +101,24 @@ createServer((req, res) => {
         return;
       }
 
+      const sendingHeaders = req.headers;
+      sendingHeaders.host = "grafana";
+      delete sendingHeaders["X-Real-IP"];
+      delete sendingHeaders["Forwarded"];
+      delete sendingHeaders["X-Forwarded-For"];
+      delete sendingHeaders["X-Forwarded-Proto"];
+      delete sendingHeaders["X-Forwarded-Host"];
+      delete sendingHeaders["X-Forwarded-Port"];
+
       fetch(new URL(requestedURL, PANEL_CONFIG.GRAFANA_ORIGIN).href, {
         method,
-        headers: req.headers,
+        headers: sendingHeaders,
         body: method === "GET" ? undefined : req
       })
         .then((grafanaResponse) => {
           res.statusCode = grafanaResponse.status;
           res.statusMessage = grafanaResponse.statusText;
+
           for (const [name, value] of grafanaResponse.headers) res.setHeader(name, value);
 
           grafanaResponse.body.pipe(res);
