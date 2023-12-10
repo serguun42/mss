@@ -135,7 +135,7 @@
 
   <body>
     <div class="panel">
-      <a class="panel__header panel__header_link" href="/d/mss/mss-backend-dashboard">Open Grafana</a>
+      <a class="panel__header panel__header_link" href="/grafana/d/mss/mss-backend-dashboard">Open Grafana</a>
     </div>
 
     <div class="panel">
@@ -221,7 +221,7 @@
         });
       }
 
-      if (new URL(window.location.href).searchParams.get("code")) window.location.assign("/params-panel/");
+      if (new URL(window.location.href).searchParams.get("code")) window.location.assign("/");
       else ListAllParams();
     </script>
   </body>
