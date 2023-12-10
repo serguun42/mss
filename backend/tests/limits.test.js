@@ -1,8 +1,9 @@
-const RateLimiter = require("../utils/rate-limiter.js");
+import { jest } from "@jest/globals";
+import rateLimiter from "../util/rate-limiter.js";
 
 describe("Rate limiting", () => {
   test("Rate limiting", () => {
-    rateLimitCheck = jest.fn(RateLimiter);
+    rateLimitCheck = jest.fn(rateLimiter);
 
     const MOCKING_DATA = { socket: { remoteAddress: "1.2.3.4" } };
     const MOCKING_TIMES = 1000;

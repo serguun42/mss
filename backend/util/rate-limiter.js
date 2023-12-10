@@ -1,10 +1,11 @@
-const SECOND = 1e3,
-  MINUTE = SECOND * 60,
-  HOUR = MINUTE * 60,
-  DEV = require("os").platform() === "win32" || process.argv[2] === "DEV",
-  { MAX_NUMBER_OF_BACKEND_REQUESTS_IN_MINUTE, MAX_NUMBER_OF_BACKEND_REQUESTS_IN_HOUR, BACKEND_REQUESTS_WHITELIST } = DEV
-    ? require("../../../DEV_CONFIGS/backend.config.json")
-    : require("../backend.config.json");
+import readConfig from "./read-config.js";
+
+const SECOND = 1e3;
+const MINUTE = SECOND * 60;
+const HOUR = MINUTE * 60;
+
+const { MAX_NUMBER_OF_BACKEND_REQUESTS_IN_MINUTE, MAX_NUMBER_OF_BACKEND_REQUESTS_IN_HOUR, BACKEND_REQUESTS_WHITELIST } =
+  readConfig();
 
 /**
  * Connections from __*single IP*__ within __*last minute*__
@@ -25,7 +26,7 @@ const HOUR_IPS = new Object();
  * @param {import("http").IncomingMessage} req
  * @returns {boolean}
  */
-module.exports = (req) => {
+export default function rateLimiter(req) {
   const cIP = req.headers?.["x-real-ip"] || req.socket?.remoteAddress;
 
   if (!cIP) return true;
@@ -47,4 +48,4 @@ module.exports = (req) => {
   if (HOUR_IPS[cIP] > MAX_NUMBER_OF_BACKEND_REQUESTS_IN_HOUR) return true;
 
   return false;
-};
+}

@@ -7,10 +7,10 @@ const CONFIG_HOT_STORAGE = {};
 /**
  * Read config based on ENV
  *
- * @returns {import('../types').PanelConfig}
+ * @returns {import('../types/index.js').BackendConfig}
  */
 export default function readConfig() {
-  const configFileLocation = (IS_DEV && process.env.CONFIG_LOCATION) || "./panel.config.json";
+  const configFileLocation = (IS_DEV && process.env.CONFIG_LOCATION) || "./backend.config.json";
 
   try {
     if (!CONFIG_HOT_STORAGE.lastReadValue)

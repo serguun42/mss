@@ -5,6 +5,12 @@ name: mss
 volumes:
   mss-keycloak-postgres:
     name: mss-keycloak-postgres
+  mss-prometheus-data:
+    name: mss-prometheus-data
+  mss-grafana-data:
+    name: mss-grafana-data
+  mss-grafana-home:
+    name: mss-grafana-home
 
 services:
   mss-backend:
@@ -98,3 +104,28 @@ services:
     restart: always
     ports:
       - 127.0.0.1:${PANEL_PUBLISH_PORT}:80
+
+  mss-prometheus:
+    container_name: mss-prometheus
+    image: prom/prometheus
+    restart: always
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - mss-prometheus-data:/prometheus
+
+  mss-grafana:
+    container_name: mss-grafana
+    image: grafana/grafana
+    restart: on-failure
+    depends_on:
+      - mss-prometheus
+    environment:
+      GF_AUTH_DISABLE_LOGIN_FORM: true
+      GF_AUTH_ANONYMOUS_ENABLED: true
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+    volumes:
+      - ./monitoring/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ./monitoring/grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml
+      - ./monitoring/grafana/node-dashboard.json:/etc/grafana/provisioning/dashboards/node-dashboard.json
+      - mss-grafana-data:/var/lib/grafana
+      - mss-grafana-home:/usr/share/grafana

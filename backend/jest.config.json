@@ -1,0 +1,7 @@
+{
+  "extensionsToTreatAsEsm": [],
+  "transform": {},
+  "testMatch": [
+    "**/tests/**/*"
+  ]
+}

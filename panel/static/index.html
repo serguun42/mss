@@ -44,7 +44,7 @@
     <style>
       @font-face {
         font-family: "Roboto";
-        src: url("/Roboto-Medium.ttf");
+        src: url("/params-panel/static/Roboto-Medium.ttf");
       }
 
       * {
@@ -63,7 +63,7 @@
         color: #e1e1e1;
       }
 
-      .panel-container {
+      .panel {
         display: block;
         position: relative;
 
@@ -71,14 +71,15 @@
         max-width: 800px;
 
         padding: 16px;
-        margin: 120px auto 50px;
+        margin: 50px auto;
 
         background-color: #444;
         border-radius: 8px;
       }
 
-      .panel-container h1 {
-        margin: 0 auto 16px;
+      .panel__header {
+        display: block;
+        margin: 0 auto;
 
         font-size: 48px;
         letter-spacing: -0.03em;
@@ -86,11 +87,17 @@
         text-align: center;
       }
 
+      .panel__header_link,
+      .panel__header_link:visited {
+        color: #e1e1e1;
+        text-align: center;
+      }
+
       .panel__params-table {
         border-spacing: 0;
         border-collapse: separate;
 
-        margin: 0 auto;
+        margin: 16px auto 0;
       }
 
       .panel__params-table th,
@@ -127,8 +134,12 @@
   </head>
 
   <body>
-    <div class="panel-container">
-      <h1 class="panel__header">MSS Panel</h1>
+    <div class="panel">
+      <a class="panel__header panel__header_link" href="/d/mss/mss-backend-dashboard">Open Grafana</a>
+    </div>
+
+    <div class="panel">
+      <h1 class="panel__header">MSS Params</h1>
       <table class="panel__params-table">
         <thead>
           <th>Parameter</th>
@@ -144,7 +155,7 @@
        * @param {any} value
        */
       function UpdateParam(name, value) {
-        fetch("/set", {
+        fetch("/params-panel/api/set", {
           method: "POST",
           body: JSON.stringify({ name, value })
         })
@@ -164,7 +175,7 @@
 
       function ListAllParams() {
         window.addEventListener("load", () => {
-          fetch("/list", { method: "POST" })
+          fetch("/params-panel/api/list", { method: "GET" })
             .then((res) => {
               if (!res.ok)
                 return res.text().then(
@@ -210,7 +221,7 @@
         });
       }
 
-      if (new URL(window.location.href).searchParams.get("code")) window.location.assign("/");
+      if (new URL(window.location.href).searchParams.get("code")) window.location.assign("/params-panel/");
       else ListAllParams();
     </script>
   </body>

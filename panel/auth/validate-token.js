@@ -1,13 +1,13 @@
 import fetch from "node-fetch";
-import ReadConfig from "../util/read-config.js";
+import readConfig from "../util/read-config.js";
 
-const PANEL_CONFIG = ReadConfig();
+const PANEL_CONFIG = readConfig();
 
 /**
  * @param {string} token
  * @returns {Promise<void>}
  */
-export default function ValidateAccessToken(token) {
+export default function validateAccessToken(token) {
   if (!token) return Promise.reject(new Error("No token was passed"));
 
   return fetch(

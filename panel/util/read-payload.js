@@ -2,7 +2,7 @@
  * @param {import('http').IncomingMessage} req
  * @returns {Promise<Buffer>}
  */
-export default function ReadPayload(req) {
+export default function readPayload(req) {
   return new Promise((resolve, reject) => {
     /** @type {Buffer[]} */
     const chunks = [];

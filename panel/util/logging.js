@@ -1,14 +1,14 @@
 import fetch from "node-fetch";
-import ReadConfig from "./read-config.js";
+import readConfig from "./read-config.js";
 import IS_DEV from "./is-dev.js";
 
-const { LOGGING_HOST, LOGGING_PORT, LOGGING_TAG } = ReadConfig();
+const { LOGGING_HOST, LOGGING_PORT, LOGGING_TAG } = readConfig();
 
 /**
  * @param {(Error | String)[]} args
  * @returns {void}
  */
-export default function Logging(...args) {
+export default function logging(...args) {
   if (IS_DEV) return console.log(...args);
 
   const payload = {
