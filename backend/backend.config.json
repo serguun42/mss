@@ -1,14 +1,12 @@
 {
-	"DATABASE_NAME": "mss",
-	"DATABASE_CONNECTION_URI": "mongodb://host1:27017,host2:27017,host3:27017/?replicaSet=myRs&readPreference=primaryPreferred",
-	"LOGGING_TAG": "backend",
-	"LOGGING_HOST": "mss-notifier",
-	"LOGGING_PORT": 80,
-	"MAX_NUMBER_OF_BACKEND_REQUESTS_IN_MINUTE": 100,
-	"MAX_NUMBER_OF_BACKEND_REQUESTS_IN_HOUR": 500,
-	"BACKEND_REQUESTS_WHITELIST": [
-		"10.0.0.1",
-		"192.168.0.1",
-		"255.255.256.256"
-	]
+  "DATABASE_NAME": "mss",
+  "DATABASE_CONNECTION_URI": "mongodb://host1:27017,host2:27017,host3:27017/?replicaSet=myRs&readPreference=primaryPreferred",
+
+  "LOGGING_TAG": "backend",
+  "LOGGING_HOST": "mss-notifier",
+  "LOGGING_PORT": 80,
+
+  "MAX_NUMBER_OF_BACKEND_REQUESTS_IN_MINUTE": 100,
+  "MAX_NUMBER_OF_BACKEND_REQUESTS_IN_HOUR": 500,
+  "BACKEND_REQUESTS_WHITELIST": ["10.0.0.1", "192.168.0.1", "255.255.256.256"]
 }

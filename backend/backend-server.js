@@ -1,80 +1,53 @@
-const http = require("http");
+import { createServer, STATUS_CODES } from "node:http";
+import { parsePath, parseQuery } from "./util/urls-and-cookies.js";
+import coreAPIModule from "./api/core.js";
 
-/**
- * @param {{[code: string]: string}} iStatusCodes
- * @returns {{[code: number]: string}}
- */
-const GetStatusCodes = (iStatusCodes) => {
-  const newCodes = {};
+export default function createBackendServer() {
+  return createServer((req, res) => {
+    const path = parsePath(req.url);
+    const queries = parseQuery(req.url);
 
-  Object.keys(iStatusCodes).forEach((code) => (newCodes[code] = `${code} ${iStatusCodes[code]}`));
-
-  return newCodes;
-};
-
-/**
- * HTTP Response Statuses
- * @type {{[code: number]: string}}
- */
-const STATUSES = GetStatusCodes(http.STATUS_CODES);
-
-const UTIL = require("./utils/urls-and-cookies");
-
-const CreateServer = () =>
-  http.createServer((req, res) => {
-    const path = UTIL.ParsePath(req.url);
-    const queries = UTIL.ParseQuery(UTIL.SafeURL(req.url).search);
-    const cookies = UTIL.ParseCookie(req.headers);
-
-    res.setHeader("Content-Type", "charset=UTF-8");
+    res.setHeader("Content-Type", "text/plain; charset=UTF-8");
 
     /**
-     * @param {number} iCode
-     * @param {string | Buffer | ReadStream | Object} iData
-     * @returns {false}
+     * @param {number} code
+     * @param {string | Buffer | ReadStream | Object} data
      */
-    const GlobalSendCustom = (iCode, iData) => {
-      res.statusCode = iCode;
+    const sendPayload = (code, data) => {
+      res.statusCode = code;
 
-      if (iData instanceof Buffer || typeof iData == "string") {
-        const dataToSend = iData.toString();
+      if (data instanceof Buffer || typeof data == "string") {
+        const dataToSend = data.toString();
 
         res.end(dataToSend);
       } else {
-        const dataToSend = JSON.stringify(iData);
-        res.setHeader("Content-Type", UTIL.SetCompleteMIMEType(".json"));
+        const dataToSend = JSON.stringify(data);
+        res.setHeader("Content-Type", "application/json; charset=UTF-8");
 
         res.end(dataToSend);
       }
-
-      return false;
     };
 
-    /**
-     * @param {number} iCode
-     * @returns {false}
-     */
-    const GlobalSend = (iCode) => {
-      res.statusCode = iCode || 200;
-      res.end(STATUSES[iCode || 500]);
-      return false;
+    /** @param {number} code */
+    const sendCode = (code) => {
+      res.statusCode = code || 200;
+      res.end(`${code || 500} ${STATUS_CODES[code || 500]}`);
     };
 
-    /** @type {import("./types").ModuleCallingObjectType} */
-    const CALLING_PROPS = {
+    /** @type {import("./types").APIModuleDTO} */
+    const apiModuleDTO = {
       req,
       res,
       path,
       queries,
-      cookies,
-      GlobalSend,
-      GlobalSendCustom
+      sendCode,
+      sendPayload
     };
 
-    if (path[0] === "api") return require("./pages/api")(CALLING_PROPS);
-    else return GlobalSend(404);
+    if (path[0] !== "api") return sendCode(404);
+
+    return coreAPIModule(apiModuleDTO);
   });
+}
 
-if (process.env.NODE_ENV !== "test") CreateServer().listen(80);
-
-module.exports = CreateServer;
+if (process.env.NODE_ENV !== "test") createBackendServer().listen(80);

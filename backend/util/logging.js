@@ -1,15 +1,16 @@
-const fetch = require("node-fetch");
+import fetch from "node-fetch";
+import readConfig from "./read-config.js";
+import IS_DEV from "./is-dev.js";
 
-const DEV = require("os").platform() === "win32" || process.argv[2] === "DEV";
-const { LOGGING_HOST, LOGGING_PORT, LOGGING_TAG } = DEV
-  ? require("../../../DEV_CONFIGS/backend.config.json")
-  : require("../backend.config.json");
+const { LOGGING_HOST, LOGGING_PORT, LOGGING_TAG } = readConfig();
 
 /**
  * @param {(Error | String)[]} args
  * @returns {void}
  */
-const Logging = (...args) => {
+export default function logging(...args) {
+  if (IS_DEV) return console.log(...args);
+
   const payload = {
     error: args.findIndex((message) => message instanceof Error) > -1,
     args: args.map((arg) => (arg instanceof Error ? { ERROR_name: arg.name, ERROR_message: arg.message } : arg)),
@@ -32,6 +33,4 @@ const Logging = (...args) => {
       console.warn(new Date());
       console.warn(e);
     });
-};
-
-module.exports = DEV ? console.log : Logging;
+}
