@@ -124,6 +124,7 @@ services:
       GF_AUTH_ANONYMOUS_ENABLED: true
       GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
     volumes:
+      - ./monitoring/grafana/grafana.ini:/etc/grafana/grafana.ini
       - ./monitoring/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
       - ./monitoring/grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml
       - ./monitoring/grafana/node-dashboard.json:/etc/grafana/provisioning/dashboards/node-dashboard.json

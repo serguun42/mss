@@ -22,6 +22,7 @@ jobs:
           cp $CONFIGS_LOCATION_BASE/scrapper.config.json ./scrapper/;
           cp $CONFIGS_LOCATION_BASE/backend.config.json ./backend/;
           cp $CONFIGS_LOCATION_BASE/panel.config.json ./panel/;
+          cp $CONFIGS_LOCATION_BASE/grafana.ini ./monitoring/grafana/;
           cp $CONFIGS_LOCATION_BASE/healthcheck.config.json ./healthcheck/;
           cp $CONFIGS_LOCATION_BASE/telegram-bot.config.json ./telegram/
           [[ -f $CONFIGS_LOCATION_BASE/tag-manager.html ]] &&

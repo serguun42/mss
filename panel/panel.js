@@ -44,6 +44,25 @@ createServer((req, res) => {
 
   validateAccessToken(cookies.access_token)
     .then(() => {
+      if (path[0] === "grafana") {
+        fetch(new URL(requestedURL, PANEL_CONFIG.GRAFANA_ORIGIN).href, {
+          method,
+          headers: JSON.parse(JSON.stringify(req.headers)),
+          body: method === "GET" ? undefined : req
+        })
+          .then((grafanaResponse) => {
+            res.statusCode = grafanaResponse.status;
+            res.statusMessage = grafanaResponse.statusText;
+
+            Array.from(grafanaResponse.headers.entries()).forEach(([name, value]) => res.setHeader(name, value));
+
+            grafanaResponse.body.pipe(res);
+          })
+          .catch(() => sendError());
+
+        return;
+      }
+
       if (path[0] === "params-panel" || path[0] === "favicon.ico") {
         if (path[1] === "api" && path[2] === "list") {
           if (method !== "GET") {
@@ -96,34 +115,9 @@ createServer((req, res) => {
           res.end("405 Method Not Allowed");
           return;
         }
-
-        serveStatic(req, res);
-        return;
       }
 
-      const sendingHeaders = req.headers;
-      sendingHeaders.host = "grafana";
-      delete sendingHeaders["X-Real-IP"];
-      delete sendingHeaders["Forwarded"];
-      delete sendingHeaders["X-Forwarded-For"];
-      delete sendingHeaders["X-Forwarded-Proto"];
-      delete sendingHeaders["X-Forwarded-Host"];
-      delete sendingHeaders["X-Forwarded-Port"];
-
-      fetch(new URL(requestedURL, PANEL_CONFIG.GRAFANA_ORIGIN).href, {
-        method,
-        headers: sendingHeaders,
-        body: method === "GET" ? undefined : req
-      })
-        .then((grafanaResponse) => {
-          res.statusCode = grafanaResponse.status;
-          res.statusMessage = grafanaResponse.statusText;
-
-          for (const [name, value] of grafanaResponse.headers) res.setHeader(name, value);
-
-          grafanaResponse.body.pipe(res);
-        })
-        .catch(() => sendError());
+      serveStatic(req, res);
     })
     .catch(() => {
       if ("session_state" in queries && queries.code) {
