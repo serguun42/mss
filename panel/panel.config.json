@@ -5,6 +5,7 @@
   "KEYCLOAK_CLIENT_SECRET": "client-secret",
 
   "GRAFANA_ORIGIN": "http://mss-grafana:3000",
+  "GRAFANA_PUBLIC_URL": "https://panel.domain.tld/grafana/",
 
   "PANEL_ORIGIN": "https://panel.domain.tld",
   "PANEL_COOKIE_TTL_SECONDS": 7200,
