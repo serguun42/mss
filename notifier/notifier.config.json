@@ -1,4 +1,7 @@
 {
+  "DATABASE_NAME": "mss",
+  "DATABASE_CONNECTION_URI": "mongodb://host1:27017,host2:27017,host3:27017/?replicaSet=myRs&readPreference=primaryPreferred",
+
   "TELEGRAM_BOT_TOKEN": "000000000000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   "TELEGRAM_API_SERVER_HOST": "host.docker.internal",
   "TELEGRAM_API_SERVER_PORT": 8081,
