@@ -47,6 +47,8 @@ export default function createBackendServer() {
         res.end(dataToSend);
       }
 
+      if (code >= 400) logging(`Response code ${code} on url ${req.url}`);
+
       markMetrics({
         method: req.method,
         route: `/${path.join("/")}`,
@@ -58,6 +60,8 @@ export default function createBackendServer() {
     const sendCode = (code) => {
       res.statusCode = code || 200;
       res.end(`${code || 500} ${STATUS_CODES[code || 500]}`);
+
+      if (code >= 400) logging(`Response code ${code} on url ${req.url}`);
 
       markMetrics({
         method: req.method,

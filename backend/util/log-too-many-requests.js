@@ -1,5 +1,7 @@
 import logging from "./logging.js";
 
+const MINUTE = 60 * 1000;
+
 /**
  * Connections from single IP
  * @type {{[ip: string]: number}}
@@ -22,5 +24,7 @@ export default function logTooManyRequests(req) {
 
   if (RECENTLY_LOGGED_IPS[cIP] > 1) return;
 
-  logging(`Too many requests from ${typeof cIP === "string" ? cIP.replace("::ffff:", "") : cIP} to ${req.url}`);
+  logging(
+    new Error(`Too many requests from ${typeof cIP === "string" ? cIP.replace("::ffff:", "") : cIP} to ${req.url}`)
+  );
 }
