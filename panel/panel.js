@@ -64,7 +64,7 @@ createServer((req, res) => {
       }
 
       if (path[0] === "params-panel") {
-        if (path[1] === "api" && path[2] === "list") {
+        if (path[1] === "api" && path[2] === "params" && path[3] === "list") {
           if (method !== "GET") {
             res.statusCode = 405;
             res.end("405 Method Not Allowed");
@@ -83,7 +83,7 @@ createServer((req, res) => {
             });
         }
 
-        if (path[1] === "api" && path[2] === "set") {
+        if (path[1] === "api" && path[2] === "params" && path[3] === "set") {
           if (method !== "POST") {
             res.statusCode = 405;
             res.end("405 Method Not Allowed");
@@ -103,6 +103,25 @@ createServer((req, res) => {
               res.statusCode = 200;
               res.setHeader("Content-Type", "application/json; charset=utf-8");
               res.end(JSON.stringify({ updatedNumber }));
+            })
+            .catch((e) => {
+              logging(e);
+              sendError();
+            });
+        }
+
+        if (path[1] === "api" && path[2] === "logs" && path[3] === "list") {
+          if (method !== "GET") {
+            res.statusCode = 405;
+            res.end("405 Method Not Allowed");
+            return;
+          }
+
+          return DB_METHODS.getLogs(parseInt(queries.skip), parseInt(queries.limit))
+            .then((logs) => {
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json; charset=utf-8");
+              res.end(JSON.stringify(logs));
             })
             .catch((e) => {
               logging(e);
