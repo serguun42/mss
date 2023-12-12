@@ -371,7 +371,7 @@
             return res.json();
           })
           .then(
-            /** @param {{ isError: boolean, args: string[], tag: string, date?: Date }[]} logs */ (logs) => {
+            /** @param {{ isError: boolean, args: string[], tag: string, date?: string }[]} logs */ (logs) => {
               logsTableBody.innerHTML = null;
 
               logs.forEach((log, index) => {
@@ -381,7 +381,13 @@
                 indexCell.innerText = LOGS_STORAGE.CURRENT_PAGE * LOGS_STORAGE.PER_PAGE + index + 1;
 
                 const timestamp = document.createElement("td");
-                timestamp.innerText = log.date ? log.date.toISOString() : "";
+                if (log.date) {
+                  try {
+                    timestamp.innerText = new Date(log.date).toISOString();
+                  } catch (_) {
+                    timestamp.innerText = log.date;
+                  }
+                } else timestamp.innerText = "";
 
                 const isError = document.createElement("td");
                 isError.innerText = log.isError ? "🔴" : "";
