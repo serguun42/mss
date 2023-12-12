@@ -50,6 +50,7 @@ const DB_METHODS = {
       db
         .collection("logs")
         .find({})
+        .sort({ date: -1 })
         .skip(skip || 0)
         .limit(limit || 0)
         .project({ _id: false })
