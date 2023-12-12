@@ -374,7 +374,7 @@
             /** @param {{ isError: boolean, args: string[], tag: string, date?: string }[]} logs */ (logs) => {
               logsTableBody.innerHTML = null;
 
-              logs.forEach((log, index) => {
+              logs.filter(Boolean).forEach((log, index) => {
                 const row = document.createElement("tr");
 
                 const indexCell = document.createElement("td");
@@ -394,18 +394,19 @@
 
                 const messages = document.createElement("td");
                 messages.classList.add("panel__table__logs-messages");
-                log.args.forEach((arg) => {
-                  const pre = document.createElement("pre");
-                  if (typeof arg === "string") pre.innerText = arg;
-                  else {
-                    try {
-                      pre.innerText = JSON.stringify(arg, null, 2);
-                    } catch (_) {
-                      pre.innerText = `${arg}`;
+                if (Array.isArray(log.args))
+                  log.args.forEach((arg) => {
+                    const pre = document.createElement("pre");
+                    if (typeof arg === "string") pre.innerText = arg;
+                    else {
+                      try {
+                        pre.innerText = JSON.stringify(arg, null, 2);
+                      } catch (_) {
+                        pre.innerText = `${arg}`;
+                      }
                     }
-                  }
-                  messages.appendChild(pre);
-                });
+                    messages.appendChild(pre);
+                  });
 
                 const tag = document.createElement("td");
                 tag.innerText = log.tag;
