@@ -1,18 +1,22 @@
 const fetch = require("node-fetch");
 
-const DEV = require("os").platform() === "win32" || process.argv[2] === "DEV";
-const { LOGGING_HOST, LOGGING_PORT, LOGGING_TAG } = DEV
+const IS_DEV = require("os").platform() === "win32" || process.argv[2] === "DEV";
+const { LOGGING_HOST, LOGGING_PORT, LOGGING_TAG } = IS_DEV
   ? require("../../../DEV_CONFIGS/telegram-bot.config.json")
   : require("../telegram-bot.config.json");
 
 /**
- * @param {(Error | String)[]} args
+ * @param {(Error | string)[]} args
  * @returns {void}
  */
 const Logging = (...args) => {
+  if (IS_DEV) return console.log(...args);
+
   const payload = {
-    error: args.findIndex((message) => message instanceof Error) > -1,
-    args: args.map((arg) => (arg instanceof Error ? arg?.message || arg : arg)),
+    isError: args.some((message) => message instanceof Error),
+    args: args.map((arg) =>
+      arg instanceof Error ? `${arg.name}\n${arg.message}${arg.stack ? `\n\n${arg.stack}` : ""}` : `${arg}`
+    ),
     tag: LOGGING_TAG
   };
 
@@ -21,17 +25,17 @@ const Logging = (...args) => {
     body: JSON.stringify(payload)
   })
     .then((res) => {
-      if (res.status !== 200)
-        return res.text().then((text) => {
-          console.warn(new Date());
-          console.warn(`Status code = ${res.status}`);
-          console.warn(text);
-        });
+      if (res.ok) {
+        console.warn(new Date());
+        console.warn(`Notifier response status code ${res.status} ${res.statusText}`);
+        console.warn(text);
+      }
     })
     .catch((e) => {
       console.warn(new Date());
+      console.warn("Notifier logging error");
       console.warn(e);
     });
 };
 
-module.exports = DEV ? console.log : Logging;
+module.exports = IS_DEV ? console.log : Logging;

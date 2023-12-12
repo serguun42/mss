@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "notifier.js",
+  "type": "module",
   "scripts": {
     "production": "node notifier.js"
   },
   "author": "serguun42",
   "license": "BSL-1.0",
   "dependencies": {
-    "telegraf": "^4.1.2"
+    "mongodb": "^6.3.0",
+    "telegraf": "^4.15.3"
   }
 }

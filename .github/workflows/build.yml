@@ -18,7 +18,7 @@ jobs:
         env:
           CONFIGS_LOCATION_BASE: ${{ secrets.CONFIGS_LOCATION_BASE }}
         run: |
-          cp $CONFIGS_LOCATION_BASE/notifier-and-logger.config.json ./notifier/;
+          cp $CONFIGS_LOCATION_BASE/notifier.config.json ./notifier/;
           cp $CONFIGS_LOCATION_BASE/scrapper.config.json ./scrapper/;
           cp $CONFIGS_LOCATION_BASE/backend.config.json ./backend/;
           cp $CONFIGS_LOCATION_BASE/panel.config.json ./panel/;
