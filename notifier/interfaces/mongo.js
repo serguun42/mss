@@ -10,7 +10,7 @@ const mongoDispatcher = new MongoDispatcher(DATABASE_NAME);
 export default function LogToMongo(loggingPayload) {
   mongoDispatcher
     .callDB()
-    .then((db) => db.collection("logs").insertOne({ loggingPayload, date: new Date() }))
+    .then((db) => db.collection("logs").insertOne({ ...loggingPayload, date: new Date() }))
     .catch((e) => {
       LogToConsole({
         isError: true,
