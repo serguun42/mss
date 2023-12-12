@@ -490,6 +490,8 @@ const SETTINGS_COMMANDS = [
                     foundUser.waitingForTextForSettings = false;
                     foundUser.group = `${foundGroups[0].groupName}&${foundGroups[0].groupSuffix || ""}`;
 
+                    Logging(`User {foundUser.username} (#${foundUser.id}) updated the group to ${foundUser.group}`);
+
                     SaveUser(foundUser, ctx)
                       .then(() => {
                         PushIntoSendingImmediateQueue({
@@ -502,6 +504,8 @@ const SETTINGS_COMMANDS = [
                       .catch(Logging);
                   } else {
                     foundUser.selectingGroupName = foundUser.selectingGroupName || plainGroupNameOrSuffix;
+
+                    Logging(`User ${foundUser.username} (#${foundUser.id}) requested narrower group selection`);
 
                     SaveUser(foundUser, ctx)
                       .then(() => {
@@ -529,6 +533,8 @@ const SETTINGS_COMMANDS = [
               });
           } else {
             foundUser.waitingForGroupSelection = true;
+
+            Logging(`User ${foundUser.username} (#${foundUser.id}) initialized group changing`);
 
             PushIntoSendingImmediateQueue({
               text: `Давайте поменяем группу! Напишите её название точно. Если необходимо, надо будет уточнить группу (по названию кафедры).\n\nЕсли что-то пойдёт не так, вызовите команду /start ещё раз – выбор группы отменится.`,
@@ -792,6 +798,8 @@ telegraf.start(
         late_evening: true,
         waitingForGroupSelection: true
       };
+
+      Logging(`New user – ${newUser.username} (#${newUser.id})`);
 
       USERS.push(newUser);
 

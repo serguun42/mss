@@ -17,6 +17,6 @@ export default function routeLoggingPayload(loggingPayload) {
   if (!loggingPayload?.tag) loggingPayload.tag = "unknown";
 
   LogToConsole(loggingPayload);
-  if (loggingPayload.isError) LogToTelegram(loggingPayload);
+  if (loggingPayload.isError || loggingPayload.tag === "ci") LogToTelegram(loggingPayload);
   LogToMongo(loggingPayload);
 }
