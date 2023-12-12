@@ -34,6 +34,27 @@ const DB_METHODS = {
         db.collection("params").updateOne({ name: payload.name }, { $set: { value: trueParamValue } }, { upsert: true })
       )
       .then((updateResult) => Promise.resolve(updateResult.modifiedCount));
+  },
+
+  /**
+   * @param {number} [skip]
+   * @param {number} [limit]
+   */
+  getLogs(skip, limit) {
+    if (!skip) skip = 0;
+    if (!limit) limit = 50;
+
+    limit = Math.min(limit, 100);
+
+    return mongoDispatcher.callDB().then((db) =>
+      db
+        .collection("logs")
+        .find({})
+        .skip(skip || 0)
+        .limit(limit || 0)
+        .project({ _id: false })
+        .toArray()
+    );
   }
 };
 

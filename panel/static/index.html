@@ -59,7 +59,7 @@
         font-weight: 500;
         line-height: 1.3em;
 
-        background-color: #121212;
+        background-color: #000;
         color: #e1e1e1;
       }
 
@@ -73,36 +73,56 @@
         padding: 16px;
         margin: 50px auto;
 
-        background-color: #444;
+        background-color: #151515;
         border-radius: 8px;
+      }
+
+      .panel.panel_logs {
+        min-width: 90%;
       }
 
       .panel__header {
         display: block;
-        margin: 0 auto;
+
+        width: fit-content;
+        margin: 0 auto 20px;
 
         font-size: 48px;
         letter-spacing: -0.03em;
         line-height: 1.2em;
         text-align: center;
+
+        user-select: none;
+      }
+
+      .panel__header:last-child {
+        margin-bottom: 0;
       }
 
       .panel__header_link,
       .panel__header_link:visited {
+        font-size: 32px;
         color: #e1e1e1;
         text-align: center;
       }
 
+      .panel__header_button {
+        border-bottom: 2px dotted currentColor;
+
+        cursor: pointer;
+        -webkit-touch-callout: none;
+      }
+
       .panel__params-table {
         border-spacing: 0;
-        border-collapse: separate;
+        border-collapse: collapse;
 
-        margin: 16px auto 0;
+        margin: 0 auto;
       }
 
       .panel__params-table th,
       .panel__params-table td {
-        border: 1px solid #777;
+        border: 1px solid #444;
         padding: 8px 20px;
 
         line-height: 26px;
@@ -127,8 +147,83 @@
         line-height: 1em;
         text-transform: uppercase;
 
-        background-color: #121212;
-        color: #e1e1e1;
+        background-color: #e1e1e1;
+        color: #121212;
+
+        user-select: none;
+      }
+
+      #logs-panel {
+        display: none;
+      }
+
+      .logs-change-buttons-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: nowrap;
+        align-items: center;
+
+        width: 100%;
+      }
+
+      .logs-change-page-button {
+        display: block;
+        position: relative;
+
+        margin: 8px;
+        padding: 10px 12px;
+
+        border-radius: 7px;
+        background-color: #e1e1e1;
+        cursor: pointer;
+
+        color: #121212;
+        font-size: 15px;
+        line-height: 15px;
+        font-weight: 500;
+        white-space: nowrap;
+        text-transform: uppercase;
+        user-select: none;
+      }
+
+      .panel__logs-table {
+        border-spacing: 0;
+        border-collapse: collapse;
+
+        margin: 0 auto;
+
+        width: 100%;
+      }
+
+      .panel__logs-table th {
+        border: 1px solid #444;
+        padding: 8px;
+
+        line-height: 26px;
+      }
+
+      .panel__logs-table td {
+        border: 1px solid #444;
+        padding: 8px;
+
+        vertical-align: top;
+        text-align: center;
+      }
+
+      .panel__logs-table td.panel__table__logs-messages {
+        text-align: left;
+      }
+
+      .panel__table__logs-messages pre {
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 13px;
+
+        margin: 0 0 8px;
+      }
+
+      .panel__table__logs-messages pre:last-child {
+        margin-bottom: 0;
       }
     </style>
   </head>
@@ -136,26 +231,52 @@
   <body>
     <div class="panel">
       <a class="panel__header panel__header_link" href="/grafana/d/mss/mss-backend-dashboard">Open Grafana</a>
+      <span class="panel__header panel__header_link panel__header_button" id="show-logs-button">Show recent logs</span>
     </div>
 
-    <div class="panel">
+    <div class="panel" id="params-panel">
       <h1 class="panel__header">MSS Params</h1>
       <table class="panel__params-table">
         <thead>
           <th>Parameter</th>
           <th>Value</th>
         </thead>
-        <tbody id="panel-table-body"></tbody>
+        <tbody id="panel-params-table-body"></tbody>
+      </table>
+    </div>
+
+    <div class="panel panel_logs" id="logs-panel">
+      <div class="logs-change-buttons-container">
+        <span class="logs-change-page-button" id="logs-show-previous-button">Newer logs</span>
+        <span class="logs-change-page-button" id="logs-show-next-button">Later logs</span>
+      </div>
+
+      <table class="panel__logs-table">
+        <thead>
+          <th>№</th>
+          <th>Error</th>
+          <th>Messages</th>
+          <th>Tag</th>
+        </thead>
+        <tbody id="panel-logs-table-body"></tbody>
       </table>
     </div>
 
     <script>
+      const LOGS_STORAGE = {
+        PER_PAGE: 50,
+        CURRENT_PAGE: 0,
+
+        /** @type {Map<number, any[]>} */
+        PAGES: new Map()
+      };
+
       /**
        * @param {string} name
        * @param {any} value
        */
-      function UpdateParam(name, value) {
-        fetch("/params-panel/api/set", {
+      function updateParam(name, value) {
+        fetch("/params-panel/api/params/set", {
           method: "POST",
           body: JSON.stringify({ name, value })
         })
@@ -173,9 +294,9 @@
           });
       }
 
-      function ListAllParams() {
+      function listAllParams() {
         window.addEventListener("load", () => {
-          fetch("/params-panel/api/list", { method: "GET" })
+          fetch("/params-panel/api/params/list", { method: "GET" })
             .then((res) => {
               if (!res.ok)
                 return res.text().then(
@@ -187,7 +308,7 @@
             })
             .then(
               /** @param {{ name: string, value: any }[]} params */ (params) => {
-                const tableBody = document.getElementById("panel-table-body");
+                const tableBody = document.getElementById("panel-params-table-body");
 
                 params.forEach(({ name, value }) => {
                   const tr = document.createElement("tr");
@@ -207,7 +328,7 @@
                   valueTextEditBtn.addEventListener("click", () => {
                     const newValue = prompt("Enter new value", value);
                     valueTextElem.innerText = newValue;
-                    UpdateParam(name, newValue);
+                    updateParam(name, newValue);
                   });
 
                   tr.append(nameCell, valueCell);
@@ -221,8 +342,90 @@
         });
       }
 
+      function listAllLogs() {
+        const paramsPanel = document.getElementById("params-panel");
+        const logsPanel = document.getElementById("logs-panel");
+        const logsTableBody = document.getElementById("panel-logs-table-body");
+
+        if (!logsTableBody) return;
+
+        if (paramsPanel) paramsPanel.style.display = "none";
+        if (logsPanel) logsPanel.style.display = "block";
+
+        fetch(
+          `/params-panel/api/logs/list?limit=${LOGS_STORAGE.PER_PAGE}&skip=${
+            LOGS_STORAGE.CURRENT_PAGE * LOGS_STORAGE.PER_PAGE
+          }`,
+          {
+            method: "GET"
+          }
+        )
+          .then((res) => {
+            if (!res.ok)
+              return res.text().then(
+                (text) => Promise.reject(new Error(`Status code ${res.status} ${res.statusText} – ${text}`)),
+                () => Promise.reject(new Error(`Status code ${res.status} ${res.statusText}`))
+              );
+
+            return res.json();
+          })
+          .then(
+            /** @param {{ isError: boolean, args: string[], tag: string }[]} logs */ (logs) => {
+              logsTableBody.innerHTML = null;
+
+              logs.forEach((log, index) => {
+                const row = document.createElement("tr");
+
+                const number = document.createElement("td");
+                number.innerText = LOGS_STORAGE.CURRENT_PAGE * LOGS_STORAGE.PER_PAGE + index + 1;
+
+                const isError = document.createElement("td");
+                isError.innerText = log.isError ? "🔴" : "";
+
+                const messages = document.createElement("td");
+                messages.classList.add("panel__table__logs-messages");
+                log.args.forEach((arg) => {
+                  const pre = document.createElement("pre");
+                  if (typeof arg === "string") pre.innerText = arg;
+                  else {
+                    try {
+                      pre.innerText = JSON.stringify(arg, null, 2);
+                    } catch (_) {
+                      pre.innerText = `${arg}`;
+                    }
+                  }
+                  messages.appendChild(pre);
+                });
+
+                const tag = document.createElement("td");
+                tag.innerText = log.tag;
+
+                row.append(number, isError, messages, tag);
+                logsTableBody.appendChild(row);
+              });
+            }
+          );
+      }
+
       if (new URL(window.location.href).searchParams.get("code")) window.location.assign("/");
-      else ListAllParams();
+      else {
+        listAllParams();
+
+        document.getElementById("show-logs-button")?.addEventListener("click", () => {
+          listAllLogs();
+
+          document.getElementById("logs-show-next-button")?.addEventListener("click", () => {
+            LOGS_STORAGE.CURRENT_PAGE++;
+            listAllLogs();
+          });
+          document.getElementById("logs-show-previous-button")?.addEventListener("click", () => {
+            if (LOGS_STORAGE.CURRENT_PAGE > 0) {
+              LOGS_STORAGE.CURRENT_PAGE--;
+              listAllLogs();
+            }
+          });
+        });
+      }
     </script>
   </body>
 </html>

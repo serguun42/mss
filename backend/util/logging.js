@@ -24,7 +24,7 @@ export default function logging(...args) {
     body: JSON.stringify(payload)
   })
     .then((res) => {
-      if (res.ok) {
+      if (!res.ok) {
         console.warn(new Date());
         console.warn(`Notifier response status code ${res.status} ${res.statusText}`);
         console.warn(text);
