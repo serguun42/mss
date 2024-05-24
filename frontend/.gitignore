@@ -28,13 +28,14 @@ pnpm-debug.log*
 jsconfig.json
 tsconfig.json
 tsconfig.create.bat
-src/config/local.env
+src/config/*.env
 public/manifest.json
 public/manifest.webmanifest
 public/robots.txt
 public/sitemap.xml
 public/version.txt
 public/build_hash
+public/preview
 public/docs/api/*.html
 public/maps.json
 public/service-worker.js

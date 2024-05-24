@@ -95,10 +95,13 @@ export default {
 
 
 		const LocalSetThemeToDocument = () => {
-			if (store.getters.theme.dark)
+			if (store.getters.theme.dark) {
 				document.body.classList.add("is-dark");
-			else
+				document.documentElement.classList.add("is-dark");
+			} else {
 				document.body.classList.remove("is-dark");
+				document.documentElement.classList.remove("is-dark");
+			}
 		};
 
 		LocalSetThemeToDocument();

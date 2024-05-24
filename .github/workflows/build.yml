@@ -24,7 +24,9 @@ jobs:
           cp $CONFIGS_LOCATION_BASE/panel.config.json ./panel/;
           cp $CONFIGS_LOCATION_BASE/grafana.ini ./monitoring/grafana/;
           cp $CONFIGS_LOCATION_BASE/healthcheck.config.json ./healthcheck/;
-          cp $CONFIGS_LOCATION_BASE/telegram-bot.config.json ./telegram/
+          cp $CONFIGS_LOCATION_BASE/telegram-bot.config.json ./telegram/;
+          [[ -f $CONFIGS_LOCATION_BASE/production.env ]] &&
+          cp $CONFIGS_LOCATION_BASE/production.env ./frontend/src/config/production.env;
           [[ -f $CONFIGS_LOCATION_BASE/tag-manager.html ]] &&
           cp $CONFIGS_LOCATION_BASE/tag-manager.html ./frontend/src/config/tag-manager.html ||
           echo "" > ./frontend/src/config/tag-manager.html;
@@ -32,7 +34,9 @@ jobs:
           cp $CONFIGS_LOCATION_BASE/apps-links.json ./frontend/src/config/apps-links.json ||
           echo "[]" > ./frontend/src/config/apps-links.json;
           [[ -d $CONFIGS_LOCATION_BASE/platforms/ ]] &&
-          cp -r $CONFIGS_LOCATION_BASE/platforms ./frontend/public/img/
+          cp -r $CONFIGS_LOCATION_BASE/platforms ./frontend/public/img/;
+          [[ -d $CONFIGS_LOCATION_BASE/preview/ ]] &&
+          cp -r $CONFIGS_LOCATION_BASE/preview ./frontend/public
 
   build:
     name: Local Docker build
