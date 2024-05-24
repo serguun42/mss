@@ -21,6 +21,8 @@
 
 		<week-switch :preselectedWeek="preselectedWeek" @weekSelected="onWeekSelected" />
 
+		<preview />
+
 		<div id="single-group-page__days" ref="days" v-show="apiData && apiData.schedule">
 			<day
 				v-for="(day, dayIndex) in apiData.schedule"
@@ -45,12 +47,14 @@ import { GetCurrentWeek, GetGroupsByNameAndSuffix } from "@/utils/api";
 import Day from "@/components/Day.vue";
 import router from "@/router";
 import WeekSwitch from "@/components/WeekSwitch.vue";
+import Preview from "@/components/Preview.vue";
 
 export default {
   components: {
-	WeekSwitch,
-	Day
-  },
+    WeekSwitch,
+    Day,
+    Preview
+},
 	name: "single-group-page",
 	props: {
 		name: String,

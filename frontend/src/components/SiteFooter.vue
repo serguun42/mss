@@ -50,7 +50,7 @@
 				<span data-nosnippet class="material-icons material-icons-round">insights</span>
 				<router-link to="/stats">Статистика</router-link>
 			</div>
-			<div class="site-footer__section__item">
+			<div class="site-footer__section__item" style="display: none">
 				<span data-nosnippet class="material-icons material-icons-round">settings</span>
 				<a v-bind:href="panelUrl" target="_blank" rel="noopener noreferrer">Панель и мониторинг</a>
 			</div>
@@ -91,7 +91,7 @@
 				<span data-nosnippet class="material-icons material-icons-round">info</span>
 				<router-link to="/about">О проекте</router-link>
 			</div>
-			<div class="site-footer__section__item">
+			<div class="site-footer__section__item" style="display: none">
 				<span data-nosnippet class="material-icons material-icons-round">contact_mail</span>
 				<a href="https://github.com/serguun42/mss/issues" target="_blank" rel="noopener noreferrer"
 					>Баги и пожелания</a

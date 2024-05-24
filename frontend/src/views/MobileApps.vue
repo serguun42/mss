@@ -3,6 +3,8 @@
 		<h2 id="header" class="default-header">Мобильные приложения и другие сервисы</h2>
 		<h3 id="sub-header" class="default-header">От наших коллег по цеху</h3>
 
+		<preview />
+
 		<div class="card" v-for="appLink in APPS_LINKS" :key="appLink.title">
 			<div class="card__header default-header" v-text="appLink.title"></div>
 			<p class="card__description" v-if="appLink.description" v-text="appLink.description"></p>
@@ -34,6 +36,7 @@
 <script>
 import Dispatcher from "@/utils/dispatcher.js";
 import APPS_LINKS from "@/config/apps-links.json";
+import Preview from "@/components/Preview.vue";
 
 const PLATFORMS_BADGES = {
 	google_play: "/img/platforms/google_play_badge.png",
@@ -43,6 +46,9 @@ const PLATFORMS_BADGES = {
 
 export default {
 	name: "mobile-apps",
+	components: {
+		Preview
+	},
 	data() {
 		return {
 			/** @type {import("@/types").AppsLinks} */
