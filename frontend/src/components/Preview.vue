@@ -3,7 +3,8 @@
 		<div class="preview__background"></div>
 		<div class="preview__logo" ref="logo"></div>
 		<div class="preview__title" ref="title"></div>
-		<div class="preview__subtitle" ref="subtitle"></div>
+		<div class="preview__text-short" ref="text-short"></div>
+		<div class="preview__text-long" ref="text-long"></div>
 		<div class="preview__button" ref="button"></div>
 		<div class="preview__mascot" ref="mascot"></div>
 	</a>
@@ -19,12 +20,13 @@ import { GlobalAnimation, FadeIn } from "@/utils/animation";
 const animatePreview = (refs) => {
 	if (!refs) return;
 
-	const { logo, title, subtitle, button, mascot } = refs;
-	if (!logo || !title || !subtitle || !button || !mascot) return;
+	const { logo, title, "text-short": textShort, "text-long": textLong, button, mascot } = refs;
+	if (!logo || !title || !textShort || !button || !mascot) return;
 
 	FadeIn(logo, 500)
 		.then(() => FadeIn(title, 500))
-		.then(() => FadeIn(subtitle, 500))
+		.then(() => FadeIn(textShort, 500))
+		.then(() => FadeIn(textLong, 500))
 		.then(() => FadeIn(button, 500))
 		.then(() => FadeIn(mascot, 250))
 		.then(() =>
@@ -152,7 +154,7 @@ export default {
 	position: relative;
 
 	margin: 24px auto;
-	padding: calc(var(--preview-size-block) * 20) calc(var(--preview-size-block) * 10);
+	padding: calc(var(--preview-size-block) * 20) calc(var(--preview-size-block) * 10) calc(var(--preview-size-block) * 12);
 	box-sizing: border-box;
 
 	width: calc(var(--preview-size-block) * 300);
@@ -206,7 +208,7 @@ export default {
 	width: calc(var(--preview-size-block) * 120);
 	height: calc(var(--preview-size-block) * 20);
 
-	margin: 0 auto;
+	margin: 0 auto calc(var(--preview-size-block) * 12);
 	padding: 0;
 
 	background-image: url("../../public/preview/logo.svg");
@@ -224,7 +226,7 @@ export default {
 	width: calc(var(--preview-size-block) * 278);
 	height: calc(var(--preview-size-block) * 44);
 
-	margin: calc(var(--preview-size-block) * 25) auto calc(var(--preview-size-block) * 20);
+	margin: calc(var(--preview-size-block) * 12) auto;
 	padding: 0;
 
 	background-image: url("../../public/preview/title.svg");
@@ -235,17 +237,35 @@ export default {
 	opacity: 0;
 }
 
-.preview__subtitle {
+.preview__text-short {
 	display: block;
 	position: relative;
 
-	width: calc(var(--preview-size-block) * 278);
-	height: calc(var(--preview-size-block) * 44);
+	width: calc(var(--preview-size-block) * 269);
+	height: calc(var(--preview-size-block) * 28);
 
-	margin: calc(var(--preview-size-block) * 20) auto;
+	margin: calc(var(--preview-size-block) * 12) auto;
 	padding: 0;
 
-	background-image: url("../../public/preview/subtitle.svg");
+	background-image: url("../../public/preview/text-short.svg");
+	background-position: center center;
+	background-size: contain;
+	background-repeat: no-repeat;
+
+	opacity: 0;
+}
+
+.preview__text-long {
+	display: block;
+	position: relative;
+
+	width: calc(var(--preview-size-block) * 256);
+	height: calc(var(--preview-size-block) * 42);
+
+	margin: calc(var(--preview-size-block) * 12) auto;
+	padding: 0;
+
+	background-image: url("../../public/preview/text-long.svg");
 	background-position: center center;
 	background-size: contain;
 	background-repeat: no-repeat;
@@ -260,7 +280,7 @@ export default {
 	width: calc(var(--preview-size-block) * 142);
 	height: calc(var(--preview-size-block) * 28);
 
-	margin: calc(var(--preview-size-block) * 20) auto;
+	margin: calc(var(--preview-size-block) * 12) auto calc(var(--preview-size-block) * 20);
 	padding: 0;
 
 	background-image: url("../../public/preview/button.svg");
